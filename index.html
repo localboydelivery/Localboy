@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Login</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for fail-safe icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #ff6a00;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            overflow: hidden; 
+        }
+
+        .main-card {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 35px;
+            padding: 40px 25px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+        }
+
+        /* Top Circular Icons */
+        .top-icons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .icon-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 8px; /* Added padding so online icons fit nicely */
+        }
+
+        .icon-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+        }
+
+        /* Brand Name & Scooter */
+        .brand-container {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .brand-local { color: #1a202c; }
+        .brand-boy { color: #ff5200; margin-left: 5px; }
+
+        .scooter-img {
+            width: 70px;
+            position: absolute;
+            bottom: 5px;
+            right: -65px;
+            animation: driveIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes driveIn {
+            0% { transform: translateX(-150px); opacity: 0; }
+            40% { opacity: 1; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Tagline & Animated Underline */
+        .tagline {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #4a5568;
+            line-height: 1.3;
+            margin-bottom: 35px;
+        }
+
+        .just-for-you {
+            position: relative;
+            display: inline-block;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .animated-underline {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 2.5px;
+            background-color: #ff5200;
+            border-radius: 5px;
+            width: 0;
+            animation: drawLine 1s ease-out 1.2s forwards; 
+        }
+
+        @keyframes drawLine {
+            to { width: 100%; }
+        }
+
+        /* Input Field */
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%; 
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            padding: 5px 15px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #ff5200;
+        }
+
+        .country-icon {
+            color: #ff5200;
+            font-size: 18px;
+            margin-right: 12px;
+        }
+
+        .country-code {
+            font-weight: 600;
+            color: #1a202c;
+            padding-right: 12px;
+            border-right: 1px solid #d1d5db;
+            margin-right: 12px;
+            font-size: 15px;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #1a202c;
+            background: transparent;
+        }
+
+        /* Primary Button */
+        .primary-btn {
+            background: #ff5200; 
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);
+            transition: 0.3s;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Features Section */
+        .features {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #4a5568;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .feature-item i {
+            font-size: 20px;
+            color: #ff5200;
+        }
+
+        /* OTP Section */
+        #otp-section { display: none; }
+        #recaptcha-container { display: flex; justify-content: center; margin-top: 10px; }
+        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; display: none; }
+
+        /* Bottom Text */
+        .bottom-tagline {
+            position: absolute;
+            bottom: 20px;
+            font-family: 'Caveat', cursive;
+            color: white;
+            font-size: 22px;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        
+        <!-- Top Icons (Direct online URLs used here so images always load) -->
+        <!-- Alt tags kept completely empty so letters never appear -->
+        <div class="top-icons">
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt=""></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3082/3082011.png" alt=""></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3143/3143645.png" alt=""></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/869/869466.png" alt=""></div>
+        </div>
+
+        <!-- Brand Name & Animated Scooter (Direct online URL for Scooter) -->
+        <div class="brand-container">
+            <span class="brand-local">Local</span><span class="brand-boy">Boy</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="" class="scooter-img">
+        </div>
+
+        <!-- Tagline -->
+        <div class="tagline">
+            "Smart Food, Grocery & More... <br>
+            <span class="just-for-you">
+                Just for You!
+                <div class="animated-underline"></div>
+            </span>"
+        </div>
+
+        <!-- Mobile Number Input -->
+        <div id="mobile-section">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-mobile-screen-button country-icon"></i>
+                <span class="country-code">+91</span>
+                <input type="tel" id="mobile-number" placeholder="Enter mobile number" maxlength="10">
+            </div>
+
+            <button class="primary-btn" id="get-otp-btn" onclick="sendOTP()">
+                Get OTP
+            </button>
+            <div id="recaptcha-container"></div>
+        </div>
+
+        <!-- OTP Input -->
+        <div id="otp-section">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-unlock-keyhole country-icon"></i>
+                <input type="number" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center;">
+            </div>
+            <button class="primary-btn" id="verify-otp-btn" onclick="verifyOTP()">
+                Verify Login
+            </button>
+        </div>
+
+        <div class="error-message" id="error-msg"></div>
+
+        <!-- Bottom Features -->
+        <div class="features">
+            <div class="feature-item">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Safe &<br>Secure</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-solid fa-bolt"></i>
+                <span>Fast<br>Delivery</span>
+            </div>
+            <div class="feature-item">
+                <i class="fa-regular fa-face-smile"></i>
+                <span>Better<br>Experience</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-tagline">Local to Your Life</div>
+
+    <!-- Firebase Logic -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4T6Te-6zvXJoRML8hnH0XJ59FLVQsYOE",
+            authDomain: "local-boy-2a05e.firebaseapp.com",
+            projectId: "local-boy-2a05e",
+            storageBucket: "local-boy-2a05e.firebasestorage.app",
+            messagingSenderId: "717569157806",
+            appId: "1:717569157806:web:YOUR_WEB_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        let coderesult;
+
+        window.onload = function () {
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {}
+            });
+        };
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.innerText = msg;
+            errorDiv.style.display = 'block';
+        }
+
+        function sendOTP() {
+            const number = document.getElementById('mobile-number').value;
+            if (number.length !== 10) {
+                showError("Please enter a valid 10-digit mobile number.");
+                return;
+            }
+            const phoneNumber = "+91" + number;
+            const appVerifier = window.recaptchaVerifier;
+
+            document.getElementById('get-otp-btn').innerText = 'Sending...';
+
+            firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    coderesult = confirmationResult;
+                    document.getElementById('mobile-section').style.display = 'none';
+                    document.getElementById('otp-section').style.display = 'block';
+                    document.getElementById('error-msg').style.display = 'none';
+                }).catch((error) => {
+                    document.getElementById('get-otp-btn').innerText = 'Get OTP';
+                    showError(error.message);
+                });
+        }
+
+        function verifyOTP() {
+            const code = document.getElementById('otp-input').value;
+            if (code.length !== 6) {
+                showError("Please enter the 6-digit OTP.");
+                return;
+            }
+            document.getElementById('verify-otp-btn').innerText = 'Verifying...';
+
+            coderesult.confirm(code).then((result) => {
+                alert("Login Successful! Welcome to LOCAL BOY.");
+            }).catch((error) => {
+                document.getElementById('verify-otp-btn').innerText = 'Verify Login';
+                showError("Invalid OTP. Please try again.");
+            });
+        }
+    </script>
+</body>
+</html>
