@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Select Location</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet CSS (For Real Map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: #fafafa;
+            color: #1a202c;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.97); opacity: 0.8; }
+
+        /* --- Top Bar --- */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; }
+        .top-bar h2 { font-size: 18px; font-weight: 700; }
+
+        /* --- Search Bar --- */
+        .search-container { padding: 20px; background: #ffffff; }
+        .search-box { display: flex; align-items: center; background: #f7fafc; border-radius: 12px; padding: 12px 15px; border: 1px solid #e2e8f0; }
+        .search-box input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; }
+        .search-icon { color: #ff5200; font-size: 18px; }
+
+        /* --- Current Location Button --- */
+        .current-loc-btn { display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: #ffffff; border-bottom: 1px solid #edf2f7; color: #ff5200; cursor: pointer;}
+        .current-loc-btn i { font-size: 20px; }
+        .current-loc-btn .text-content { display: flex; flex-direction: column; }
+        .current-loc-btn h3 { font-size: 15px; font-weight: 600; }
+        .current-loc-btn p { font-size: 12px; color: #718096; margin-top: 2px; }
+
+        /* --- Saved Addresses Section --- */
+        .section-container { padding: 20px; }
+        .section-title { font-size: 13px; color: #718096; text-transform: uppercase; font-weight: 600; margin-bottom: 15px; }
+        .address-list { display: flex; flex-direction: column; gap: 15px; }
+        .address-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; background: #ffffff; border-radius: 16px; border: 1px solid #f7fafc; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .address-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; }
+        .address-details { flex: 1; }
+        .address-details h3 { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+        .address-details p { font-size: 12px; color: #718096; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* --- Add New Address Button --- */
+        .add-new-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 20px; padding: 15px; border-radius: 12px; border: 1.5px dashed #ff5200; color: #ff5200; font-size: 15px; font-weight: 600; cursor: pointer; }
+
+        /* --- Bottom Sheet & Map --- */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; max-height: 90vh; overflow-y: auto; }
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .sheet-header h3 { font-size: 18px; font-weight: 700; }
+        .close-sheet { font-size: 20px; color: #a0aec0; cursor: pointer; }
+
+        /* Interactive Map Container */
+        .map-container { position: relative; width: 100%; height: 220px; border-radius: 12px; overflow: hidden; margin-bottom: 10px; border: 1px solid #e2e8f0;}
+        #real-map { width: 100%; height: 100%; z-index: 1; }
+        .map-center-pin { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); font-size: 35px; color: #ff5200; z-index: 2; pointer-events: none; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
+
+        .manual-entry-link { font-size: 12px; color: #ff5200; font-weight: 600; text-align: right; margin-bottom: 15px; cursor: pointer; display: block;}
+
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .input-group { flex: 1; }
+        .input-group input, .input-group textarea { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f7fafc; font-size: 13px; outline: none; }
+        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; }
+        .input-group textarea { resize: none; height: 70px; }
+
+        .save-btn { width: 100%; background: #ff5200; color: white; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;}
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="home.html" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Select a location</h2>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" placeholder="Search for area, street name...">
+        </div>
+    </div>
+
+    <!-- 🔴 Real GPS Current Location Button -->
+    <div class="current-loc-btn clickable" onclick="fetchRealLocation()">
+        <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
+        <div class="text-content">
+            <h3 id="gps-text">Use current location</h3>
+            <p>Using real GPS to find you</p>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <h4 class="section-title">Saved Addresses</h4>
+        <div class="address-list">
+            <a href="home.html" class="address-item clickable">
+                <div class="address-icon"><i class="fa-solid fa-house"></i></div>
+                <div class="address-details">
+                    <h3>Home</h3>
+                    <p>12-3, Main Road, Near Clock Tower, Tenali</p>
+                </div>
+            </a>
+            <a href="home.html" class="address-item clickable">
+                <div class="address-icon"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="address-details">
+                    <h3>Work</h3>
+                    <p>Tech Park, 4th Floor, Autonagar, Tenali</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Add New Location -->
+    <div class="add-new-btn clickable" onclick="openBottomSheet(16.2366, 80.6405)">
+        <i class="fa-solid fa-plus"></i> Add + New Location
+    </div>
+
+    <!-- 🔴 Bottom Sheet with Interactive Map & Details -->
+    <div class="overlay" id="sheetOverlay" onclick="closeBottomSheet()"></div>
+    
+    <div class="bottom-sheet" id="addressSheet">
+        <div class="sheet-header">
+            <h3 id="sheet-title">Pin your exact location</h3>
+            <i class="fa-solid fa-xmark close-sheet" onclick="closeBottomSheet()"></i>
+        </div>
+
+        <!-- Real Leaflet Map Container -->
+        <div class="map-container" id="mapWrapper">
+            <div id="real-map"></div>
+            <!-- Pin stays in center while map moves -->
+            <i class="fa-solid fa-location-dot map-center-pin"></i> 
+        </div>
+
+        <span class="manual-entry-link" id="manualBtn" onclick="toggleMap()">Enter address manually</span>
+
+        <!-- Name, Surname, Full Address Fields -->
+        <div class="input-row">
+            <div class="input-group">
+                <input type="text" id="fname" placeholder="Name">
+            </div>
+            <div class="input-group">
+                <input type="text" id="sname" placeholder="Surname">
+            </div>
+        </div>
+
+        <div class="input-group" style="margin-bottom: 15px;">
+            <textarea id="fullAddress" placeholder="Enter Full Address (House No, Street, Landmark)"></textarea>
+        </div>
+
+        <button class="save-btn" onclick="saveLocation()">Save Address</button>
+    </div>
+
+    <!-- Leaflet JS (Required for Map) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const sheet = document.getElementById('addressSheet');
+        const overlay = document.getElementById('sheetOverlay');
+        const mapWrapper = document.getElementById('mapWrapper');
+        const manualBtn = document.getElementById('manualBtn');
+        let map;
+
+        // 1. Fetch User's Real GPS Location
+        function fetchRealLocation() {
+            document.getElementById('gps-text').innerText = "Locating you...";
+            document.getElementById('gps-icon').className = "fa-solid fa-spinner fa-spin";
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Success: Reset text and open map with user's coordinates
+                        document.getElementById('gps-text').innerText = "Use current location";
+                        document.getElementById('gps-icon').className = "fa-solid fa-location-crosshairs";
+                        openBottomSheet(position.coords.latitude, position.coords.longitude);
+                    },
+                    (error) => {
+                        // Denied/Failed: Show alert and open map with default coordinates (Tenali)
+                        alert("Location access denied. Please pin manually.");
+                        document.getElementById('gps-text').innerText = "Use current location";
+                        document.getElementById('gps-icon').className = "fa-solid fa-location-crosshairs";
+                        openBottomSheet(16.2366, 80.6405); 
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
+                );
+            } else {
+                alert("Geolocation is not supported by your browser");
+                openBottomSheet(16.2366, 80.6405);
+            }
+        }
+
+        // 2. Open Bottom Sheet and Initialize Map
+        function openBottomSheet(lat, lng) {
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
+            sheet.style.transform = 'translateY(0)';
+            
+            // Ensure Map is visible
+            mapWrapper.style.display = 'block';
+            manualBtn.innerText = "Enter address manually";
+
+            // Initialize or update Map
+            if(!map) {
+                map = L.map('real-map', { zoomControl: false }).setView([lat, lng], 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(map);
+            } else {
+                map.setView([lat, lng], 16);
+            }
+
+            // Fix for map rendering inside a hidden div
+            setTimeout(() => { map.invalidateSize(); }, 300);
+        }
+
+        // 3. Close Sheet
+        function closeBottomSheet() {
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+            sheet.style.transform = 'translateY(100%)';
+        }
+
+        // 4. Toggle Map (Enter Manually)
+        function toggleMap() {
+            if (mapWrapper.style.display === 'none') {
+                mapWrapper.style.display = 'block';
+                manualBtn.innerText = "Enter address manually";
+                document.getElementById('sheet-title').innerText = "Pin your exact location";
+                setTimeout(() => { map.invalidateSize(); }, 100);
+            } else {
+                mapWrapper.style.display = 'none';
+                manualBtn.innerText = "Pick on map instead";
+                document.getElementById('sheet-title').innerText = "Enter Address Details";
+            }
+        }
+
+        // 5. Save Action
+        function saveLocation() {
+            const fname = document.getElementById('fname').value;
+            if(!fname) {
+                alert("Please enter at least your Name");
+                return;
+            }
+            // After saving, go back to home page
+            window.location.href = "home.html";
+        }
+    </script>
+</body>
+</html>
