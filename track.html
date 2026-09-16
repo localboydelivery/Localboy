@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: #fafafa; color: #1a202c; overflow: hidden; }
         a { text-decoration: none; }
         
@@ -15,15 +15,11 @@
         
         #google-map { width: 100%; height: 50vh; }
         
-        /* Bottom Tracking Card */
         .track-details { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 24px 24px 0 0; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); height: 55vh; z-index: 100; overflow-y: auto; }
-        
-        /* ETA Header */
         .eta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .eta-header h2 { font-size: 22px; font-weight: 800; color: #10b981; }
         .eta-header p { font-size: 13px; color: #718096; font-weight: 600;}
         
-        /* Delivery Boy Details */
         .delivery-boy { display: flex; align-items: center; justify-content: space-between; background: #f7fafc; padding: 15px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #edf2f7;}
         .boy-info { display: flex; align-items: center; gap: 15px; }
         .boy-info img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
@@ -34,21 +30,18 @@
         .btn-call { background: #e6f8f1; color: #10b981; }
         .btn-msg { background: #fff8eb; color: #ff5200; }
 
-        /* Order Status Timeline */
         .timeline { padding-left: 10px; margin-top: 10px;}
         .timeline-item { display: flex; gap: 15px; margin-bottom: 25px; position: relative; }
         .timeline-item::before { content: ''; position: absolute; left: 11px; top: 25px; bottom: -30px; width: 2px; background: #edf2f7; }
         .timeline-item:last-child::before { display: none; }
-        
         .timeline-icon { width: 24px; height: 24px; border-radius: 50%; background: #edf2f7; display: flex; align-items: center; justify-content: center; z-index: 1; color: #a0aec0; font-size: 10px; }
         .timeline-content h4 { font-size: 14px; font-weight: 700; color: #a0aec0; }
         .timeline-content p { font-size: 11px; color: #cbd5e0; }
 
-        /* Active/Completed States */
         .timeline-item.completed .timeline-icon { background: #10b981; color: white; }
         .timeline-item.completed .timeline-content h4 { color: #1a202c; }
         .timeline-item.completed .timeline-content p { color: #718096; }
-        .timeline-item.completed::before { background: #10b981; } /* Green line */
+        .timeline-item.completed::before { background: #10b981; } 
 
         .timeline-item.current .timeline-icon { background: #ff5200; color: white; animation: pulse 1.5s infinite; }
         .timeline-item.current .timeline-content h4 { color: #ff5200; }
@@ -61,10 +54,8 @@
 
     <a href="javascript:history.back()" class="back-btn-float"><i class="fa-solid fa-arrow-left"></i></a>
 
-    <!-- Map Area -->
     <div id="google-map"></div>
 
-    <!-- Tracking Details -->
     <div class="track-details">
         <div class="eta-header">
             <div>
@@ -74,7 +65,6 @@
             <i class="fa-solid fa-motorcycle" style="font-size: 30px; color: #ff5200;"></i>
         </div>
 
-        <!-- Rider Details with Call & Message -->
         <div class="delivery-boy">
             <div class="boy-info">
                 <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop" alt="Rider">
@@ -89,47 +79,31 @@
             </div>
         </div>
 
-        <!-- Order Status Timeline -->
         <div class="timeline">
             <div class="timeline-item completed">
                 <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
-                <div class="timeline-content">
-                    <h4>Order Accepted</h4>
-                    <p>Restaurant is preparing your food.</p>
-                </div>
+                <div class="timeline-content"><h4>Order Accepted</h4><p>Restaurant is preparing your food.</p></div>
             </div>
             <div class="timeline-item completed">
                 <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
-                <div class="timeline-content">
-                    <h4>Restaurant Reached</h4>
-                    <p>Ramesh is waiting at the restaurant.</p>
-                </div>
+                <div class="timeline-content"><h4>Restaurant Reached</h4><p>Ramesh is waiting at the restaurant.</p></div>
             </div>
             <div class="timeline-item current">
                 <div class="timeline-icon"><i class="fa-solid fa-motorcycle"></i></div>
-                <div class="timeline-content">
-                    <h4>On the Way</h4>
-                    <p>Ramesh has picked up your order.</p>
-                </div>
+                <div class="timeline-content"><h4>On the Way</h4><p>Ramesh has picked up your order.</p></div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-icon"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="timeline-content">
-                    <h4>Reached Location</h4>
-                    <p>Waiting for rider to reach your address.</p>
-                </div>
+                <div class="timeline-content"><h4>Reached Location</h4><p>Waiting for rider to reach your address.</p></div>
             </div>
             <div class="timeline-item">
                 <div class="timeline-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                <div class="timeline-content">
-                    <h4>Delivered</h4>
-                    <p>Enjoy your meal!</p>
-                </div>
+                <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your meal!</p></div>
             </div>
         </div>
     </div>
 
-    <!-- Google Map API -->
+    <!-- 🔴 Update API KEY -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAITao9tzWyZuXcMiGCfoTF3GboS32_48U&callback=initMap"></script>
     <script>
         function initMap() {
@@ -138,8 +112,7 @@
                 center: restLoc, zoom: 15, disableDefaultUI: true
             });
             new google.maps.Marker({ 
-                position: restLoc, 
-                map: map, 
+                position: restLoc, map: map, 
                 icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#ff5200", fillOpacity: 1, strokeWeight: 2, strokeColor: "white" } 
             });
         }
