@@ -6,7 +6,6 @@
     <title>LOCAL BOY - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #fafafa; padding-bottom: 90px; color: #1a202c; }
@@ -28,6 +27,7 @@
         .search-box { display: flex; align-items: center; background: #ffffff; border-radius: 14px; padding: 12px 15px; border: 1px solid #edf2f7; box-shadow: 0 4px 12px rgba(0,0,0,0.03); width: 100%; }
         .search-box span { flex: 1; font-size: 14px; padding: 0 10px; color: #a0aec0; }
         .search-icon { color: #ff5200; font-size: 18px; }
+        .mic-icon { color: #4a5568; font-size: 18px; }
 
         .quick-filters { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 20px; }
         .filter-item { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 65px; }
@@ -55,11 +55,13 @@
         .rest-img-container { position: relative; height: 160px; }
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .discount-tag { position: absolute; top: 15px; left: 15px; background: #ff5200; color: white; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; }
+        .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
+        .open-tag i { color: #10b981; font-size: 8px;}
         .rest-details { padding: 15px; position: relative; }
         .rest-details h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
         
-        /* 🔴 UPDATED: Favorite Icon Styling & Index to stay above link */
-        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 22px; background: rgba(255,255,255,0.8); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        /* 🔴 Favorite Icon (z-index added so it clicks separately from card) */
+        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.9); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer;}
         
         .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 10px; }
         .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
@@ -72,14 +74,19 @@
         .promo-content p { font-size: 11px; color: #718096; }
         .promo-img { position: absolute; right: -20px; bottom: -20px; width: 150px; z-index: 1; border-radius: 50%;}
 
-        /* Cart Footer & Active Order */
+        /* Cart Footer & Bottom Nav */
         .cart-footer { position: fixed; bottom: 70px; left: 0; width: 100%; padding: 0 15px 15px; transform: translateY(200%); transition: transform 0.3s ease; z-index: 99; }
         .cart-footer.show { transform: translateY(0); }
         .cart-banner { background: #ff5200; border-radius: 12px; padding: 12px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); cursor: pointer;}
+        .cart-info h4 { font-size: 13px; font-weight: 700; }
+        .cart-info p { font-size: 11px; opacity: 0.9; }
+        .view-cart-text { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100; border-radius: 24px 24px 0 0; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; }
         .nav-item.active { color: #ff5200; }
+        .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .nav-item:active i { transform: scale(0.85); }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
     </style>
 </head>
@@ -100,11 +107,12 @@
         <a href="search.html" class="search-box clickable">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <span>Search food, groceries & more</span>
+            <i class="fa-solid fa-microphone mic-icon"></i>
         </a>
     </div>
 
-    <!-- Active Order Banner (Dynamic) -->
-    <a href="track.html" class="clickable" id="activeOrderBanner" style="display: none; margin: 0 20px 15px; background: #fff8eb; border: 1px solid #ff5200; border-radius: 16px; padding: 15px; text-decoration: none; color: inherit;">
+    <!-- Active Order Banner -->
+    <a href="track.html" class="clickable" id="activeOrderBanner" style="display: none; margin: 0 20px 15px; background: #fff8eb; border: 1px solid #ff5200; border-radius: 16px; padding: 15px; text-decoration: none; color: inherit; box-shadow: 0 4px 10px rgba(255,82,0,0.1);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
             <h4 style="font-size: 14px; font-weight: 800; color: #ff5200;"><i class="fa-solid fa-fire-burner fa-bounce"></i> Preparing your food</h4>
             <span style="font-size: 12px; font-weight: 700; color: #10b981;">20 min ETA</span>
@@ -118,7 +126,23 @@
     <div class="quick-filters hide-scrollbar">
         <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span></a>
         <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span></a>
+        <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400&auto=format&fit=crop" alt="Veg"></div><span>Healthy</span></a>
         <a href="categories.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
+    </div>
+
+    <div class="main-categories">
+        <a href="restaurants.html" class="category-card clickable">
+            <img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Food">
+            <div class="overlay"></div>
+            <div class="cat-icon-badge cat-food-badge"><i class="fa-solid fa-utensils"></i></div>
+            <div class="cat-content"><h3>FOOD</h3><p>Restaurants & meals</p></div>
+        </a>
+        <a href="categories.html" class="category-card clickable">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Grocery">
+            <div class="overlay"></div>
+            <div class="cat-icon-badge cat-grocery-badge"><i class="fa-solid fa-basket-shopping"></i></div>
+            <div class="cat-content"><h3>GROCERY</h3><p>Fresh groceries</p></div>
+        </a>
     </div>
 
     <div class="section-header">
@@ -127,43 +151,30 @@
     </div>
 
     <div class="restaurant-scroll hide-scrollbar">
-        <!-- 🔴 UPDATED: added onclick to Heart Icon with event.preventDefault() -->
         <a href="restaurant-details.html?id=1" class="rest-card clickable">
             <div class="rest-img-container">
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop" alt="Biryani">
                 <div class="discount-tag">20% OFF</div>
+                <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
+                <!-- 🔴 Fix for Favorite Icon (preventDefault added) -->
                 <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
             </div>
             <div class="rest-details">
                 <h3>Bawarchi Biryani</h3>
-                <div class="rest-stats">
-                    <span class="rating"><i class="fa-solid fa-star"></i> 4.5</span>
-                    <span><i class="fa-regular fa-clock"></i> 30 mins</span>
-                </div>
-                <div class="rest-desc">
-                    <span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Biryani, Indian</span>
-                </div>
-            </div>
-        </a>
-
-        <a href="restaurant-details.html?id=2" class="rest-card clickable">
-            <div class="rest-img-container">
-                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop" alt="Burger">
-                <div class="discount-tag">25% OFF</div>
-                <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
-            </div>
-            <div class="rest-details">
-                <h3>Burger Spot</h3>
-                <div class="rest-stats">
-                    <span class="rating"><i class="fa-solid fa-star"></i> 4.3</span>
-                    <span><i class="fa-regular fa-clock"></i> 25 mins</span>
-                </div>
-                <div class="rest-desc">
-                    <span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Burgers, Fast Food</span>
-                </div>
+                <div class="rest-stats"><span class="rating"><i class="fa-solid fa-star"></i> 4.5</span><span><i class="fa-regular fa-clock"></i> 30 mins</span></div>
+                <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Biryani, Indian, Mughlai</span></div>
             </div>
         </a>
     </div>
+
+    <a href="offers.html" class="promo-banner clickable">
+        <div class="promo-content">
+            <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
+            <h3>Your Favourite Foods</h3>
+            <p>From top restaurants near you</p>
+        </div>
+        <img src="https://images.unsplash.com/photo-1617470702892-e01504297e84?q=80&w=400&auto=format&fit=crop" alt="Promo" class="promo-img">
+    </a>
 
     <div class="cart-footer" id="cartFooter">
         <a href="cart.html" class="cart-banner clickable">
@@ -183,9 +194,9 @@
     </div>
 
     <script>
-        // 🔴 Heart Icon Toggle Logic (Prevents page from opening)
+        // Prevent clicking the heart from opening the restaurant page
         function toggleHomeFav(event, element) {
-            event.preventDefault(); // This stops the link from opening
+            event.preventDefault(); 
             if (element.classList.contains('fa-regular')) {
                 element.classList.remove('fa-regular');
                 element.classList.add('fa-solid');
@@ -201,12 +212,13 @@
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
             const cartBadge = document.querySelector('.cart-badge');
             const cartFooter = document.getElementById('cartFooter');
-            
+            const totalItemsText = document.getElementById('totalItems');
+
             if (cartData && cartData.totalQty > 0) {
                 if(cartBadge) { cartBadge.innerText = cartData.totalQty; cartBadge.style.display = 'flex'; }
                 if(cartFooter) {
                     cartFooter.classList.add('show');
-                    document.getElementById('totalItems').innerText = `${cartData.totalQty} Items added`;
+                    totalItemsText.innerText = cartData.totalQty === 1 ? "1 Item added" : `${cartData.totalQty} Items added`;
                     document.body.style.paddingBottom = "150px"; 
                 }
             } else {
@@ -214,6 +226,7 @@
                 if(cartFooter) { cartFooter.classList.remove('show'); document.body.style.paddingBottom = "90px"; }
             }
 
+            // Show active order banner if exists
             if (localStorage.getItem('activeOrder') === 'true') {
                 document.getElementById('activeOrderBanner').style.display = 'block';
             } else {
@@ -221,6 +234,7 @@
             }
         }
 
+        // Run every time page is shown (fixes back-button caching issue)
         window.addEventListener('pageshow', function() {
             updateHomeCartUI();
             const savedLocation = localStorage.getItem("userSavedAddress");
