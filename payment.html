@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f1f5f9; padding: 20px; text-align: center; }
+        .pay-btn { background: #ff5200; color: white; padding: 15px 30px; border-radius: 12px; font-weight: bold; border: none; font-size: 16px; margin-top: 50px; cursor: pointer; width: 100%;}
+    </style>
+</head>
+<body>
+    <h2>Select Payment Method</h2>
+    <div style="background: white; padding: 20px; border-radius: 16px; margin-top: 20px;">
+        <h3>Cash On Delivery</h3>
+        <p style="color: #718096; font-size: 12px; margin-top: 10px;">Pay the rider when food arrives</p>
+    </div>
+    <button class="pay-btn" onclick="pay()">Place Order</button>
+    <script>
+        function pay() {
+            document.querySelector('.pay-btn').innerText = "Processing...";
+            setTimeout(() => { window.location.href = "success.html"; }, 1500);
+        }
+    </script>
+</body>
+</html>

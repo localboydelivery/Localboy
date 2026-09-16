@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Order Success</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #10b981; color: white; text-align: center; font-family: 'Poppins', sans-serif; padding-top: 100px;}
+        h1 { margin-bottom: 10px; }
+        .btn { background: white; color: #10b981; padding: 15px; border-radius: 12px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 30px; width: 80%;}
+    </style>
+</head>
+<body>
+    <h1>Order Placed!</h1>
+    <p>Your food is being prepared.</p>
+    <a href="track.html" class="btn">Track Order</a>
+    <script>
+        window.onload = function() {
+            localStorage.setItem('localBoyCart', JSON.stringify({ restId: null, items: {}, totalQty: 0 }));
+            localStorage.setItem('activeOrder', 'true');
+        };
+    </script>
+</body>
+</html>

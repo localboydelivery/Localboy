@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f1f5f9; padding: 20px; }
+        .order-card { background: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+        .btn { padding: 10px 20px; background: #ff5200; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;}
+    </style>
+</head>
+<body>
+    <h2 style="margin-bottom: 20px;">My Orders</h2>
+    <div class="order-card" id="activeOrder" style="display: none;">
+        <h3 style="color: #ff5200; margin-bottom: 10px;">Preparing Food</h3>
+        <p style="margin-bottom: 15px;">Bawarchi Biryani</p>
+        <a href="track.html" class="btn">Track on Map</a>
+    </div>
+    
+    <div class="order-card">
+        <h3 style="margin-bottom: 10px;">Delivered</h3>
+        <p style="margin-bottom: 15px;">Chicken Dum Biryani (Bawarchi)</p>
+        <button class="btn" style="border:none; cursor:pointer;" onclick="rateOrder()">Rate Order</button>
+        <button class="btn" style="border:none; cursor:pointer; background:#10b981;" onclick="reorder('1')">Reorder</button>
+    </div>
+
+    <script>
+        window.addEventListener('pageshow', function() {
+            if (localStorage.getItem('activeOrder') === 'true') {
+                document.getElementById('activeOrder').style.display = 'block';
+            }
+        });
+
+        function reorder(id) {
+            let cartData = { restId: '1', items: {'1': 1}, totalQty: 1 };
+            localStorage.setItem('localBoyCart', JSON.stringify(cartData));
+            window.location.href = 'cart.html';
+        }
+
+        function rateOrder() { alert("Rating Submitted Successfully!"); }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Location</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { padding: 20px; background: #fafafa; }
+        .input-box { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 10px; }
+        .save-btn { width: 100%; padding: 15px; background: #ff5200; color: white; font-weight: bold; border: none; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Enter Address</h2>
+    <input type="text" id="addressInput" class="input-box" placeholder="House No, Street, City">
+    <button class="save-btn" onclick="saveLoc()">Save</button>
+    <script>
+        function saveLoc() {
+            let val = document.getElementById('addressInput').value;
+            if(val) {
+                localStorage.setItem("userSavedAddress", val);
+                const urlParams = new URLSearchParams(window.location.search);
+                window.location.href = urlParams.get('from') === 'cart' ? 'cart.html' : 'home.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f1f5f9; color: #1a202c; padding-bottom: 90px; }
+        .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .back-btn { font-size: 20px; margin-right: 15px; color: #1a202c; text-decoration: none;}
+        .section-box { background: #ffffff; margin: 15px 15px 0; padding: 15px; border-radius: 20px; }
+        .checkout-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);}
+        .btn-checkout { background: #ff5200; color: white; padding: 14px 24px; border-radius: 12px; font-weight: 700; text-decoration: none;}
+        .empty-cart-state { display: none; text-align: center; padding: 60px 20px; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .qty-controls { display: flex; background: #fff8eb; border: 1px solid #ff5200; border-radius: 8px; }
+        .qty-controls span { width: 28px; text-align: center; font-weight: bold; color: #ff5200; cursor: pointer; padding: 5px 0;}
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Checkout</h2>
+    </div>
+
+    <div class="empty-cart-state" id="emptyCartState">
+        <h3>Your Cart is Empty</h3>
+        <a href="home.html" style="color: #ff5200; text-decoration: none; font-weight: bold;">Browse Restaurants</a>
+    </div>
+
+    <div class="section-box" id="itemsSection">
+        <h4 style="margin-bottom: 15px;">Bawarchi Biryani</h4>
+        <div id="dynamicCartItems"></div>
+    </div>
+
+    <div class="section-box" id="billSection">
+        <h3 style="margin-bottom: 10px;">Bill Details</h3>
+        <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px;">
+            <span>To Pay</span><span id="bill-to-pay">₹0.00</span>
+        </div>
+    </div>
+
+    <div class="checkout-footer" id="checkoutFooter">
+        <h4 id="footer-to-pay">₹0.00</h4>
+        <a href="payment.html" class="btn-checkout">Proceed to Pay <i class="fa-solid fa-caret-right"></i></a>
+    </div>
+
+    <script>
+        const menuDB = { '1': { name: 'Chicken Dum Biryani', price: 280 } };
+        let cartData;
+
+        function initCart() {
+            cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
+            
+            if (cartData.totalQty === 0) {
+                document.getElementById('emptyCartState').style.display = 'block';
+                document.getElementById('itemsSection').style.display = 'none';
+                document.getElementById('billSection').style.display = 'none';
+                document.getElementById('checkoutFooter').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('emptyCartState').style.display = 'none';
+            document.getElementById('itemsSection').style.display = 'block';
+            document.getElementById('billSection').style.display = 'block';
+            document.getElementById('checkoutFooter').style.display = 'flex';
+
+            let itemsHTML = '';
+            let total = 0;
+            for (let id in cartData.items) {
+                if(menuDB[id]) {
+                    itemsHTML += `<div class="cart-item">
+                        <div>${menuDB[id].name}<br>₹${menuDB[id].price}</div>
+                        <div class="qty-controls"><span onclick="updateCart('${id}', -1)">−</span><span style="color:#000;">${cartData.items[id]}</span><span onclick="updateCart('${id}', 1)">+</span></div>
+                    </div>`;
+                    total += (menuDB[id].price * cartData.items[id]);
+                }
+            }
+            document.getElementById('dynamicCartItems').innerHTML = itemsHTML;
+            let finalTotal = total + 30 + 25; // added fee & tax
+            document.getElementById('bill-to-pay').innerText = `₹${finalTotal}`;
+            document.getElementById('footer-to-pay').innerText = `₹${finalTotal}`;
+        }
+
+        function updateCart(id, change) {
+            let qty = (cartData.items[id] || 0) + change;
+            if (qty > 0) cartData.items[id] = qty;
+            else delete cartData.items[id];
+            
+            cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
+            if(cartData.totalQty === 0) cartData.restId = null;
+            localStorage.setItem('localBoyCart', JSON.stringify(cartData));
+            initCart();
+        }
+
+        window.addEventListener('pageshow', initCart);
+    </script>
+</body>
+</html>
