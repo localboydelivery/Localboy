@@ -6,6 +6,7 @@
     <title>LOCAL BOY - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #fafafa; padding-bottom: 90px; color: #1a202c; }
@@ -60,7 +61,6 @@
         .rest-details { padding: 15px; position: relative; }
         .rest-details h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
         
-        /* 🔴 Favorite Icon (z-index added so it clicks separately from card) */
         .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.9); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer;}
         
         .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 10px; }
@@ -79,7 +79,7 @@
         .cart-footer.show { transform: translateY(0); }
         .cart-banner { background: #ff5200; border-radius: 12px; padding: 12px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); cursor: pointer;}
         .cart-info h4 { font-size: 13px; font-weight: 700; }
-        .cart-info p { font-size: 11px; opacity: 0.9; }
+        .cart-info p { font-size: 11px; opacity: 0.9; margin-top: 2px; font-weight: 500;}
         .view-cart-text { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100; border-radius: 24px 24px 0 0; }
@@ -127,7 +127,7 @@
         <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span></a>
         <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span></a>
         <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400&auto=format&fit=crop" alt="Veg"></div><span>Healthy</span></a>
-        <a href="categories.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
+        <a href="groceries.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
     </div>
 
     <div class="main-categories">
@@ -137,7 +137,9 @@
             <div class="cat-icon-badge cat-food-badge"><i class="fa-solid fa-utensils"></i></div>
             <div class="cat-content"><h3>FOOD</h3><p>Restaurants & meals</p></div>
         </a>
-        <a href="categories.html" class="category-card clickable">
+        
+        <!-- 🔴 UPDATED: This now perfectly links to groceries.html -->
+        <a href="groceries.html" class="category-card clickable">
             <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Grocery">
             <div class="overlay"></div>
             <div class="cat-icon-badge cat-grocery-badge"><i class="fa-solid fa-basket-shopping"></i></div>
@@ -156,13 +158,26 @@
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop" alt="Biryani">
                 <div class="discount-tag">20% OFF</div>
                 <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
-                <!-- 🔴 Fix for Favorite Icon (preventDefault added) -->
                 <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
             </div>
             <div class="rest-details">
                 <h3>Bawarchi Biryani</h3>
                 <div class="rest-stats"><span class="rating"><i class="fa-solid fa-star"></i> 4.5</span><span><i class="fa-regular fa-clock"></i> 30 mins</span></div>
                 <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Biryani, Indian, Mughlai</span></div>
+            </div>
+        </a>
+
+        <a href="restaurant-details.html?id=2" class="rest-card clickable">
+            <div class="rest-img-container">
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop" alt="Burger">
+                <div class="discount-tag">25% OFF</div>
+                <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
+                <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
+            </div>
+            <div class="rest-details">
+                <h3>Burger Spot</h3>
+                <div class="rest-stats"><span class="rating"><i class="fa-solid fa-star"></i> 4.3</span><span><i class="fa-regular fa-clock"></i> 25 mins</span></div>
+                <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Burgers, Fast Food</span></div>
             </div>
         </a>
     </div>
@@ -186,9 +201,10 @@
         </a>
     </div>
 
+    <!-- 🔴 UPDATED: Bottom Nav links perfectly to groceries.html -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
-        <a href="categories.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
+        <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
         <a href="cart.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i><span class="cart-badge">0</span><span>Cart</span></a>
         <a href="orders.html" class="nav-item"><i class="fa-solid fa-clipboard-list"></i><span>Orders</span></a>
     </div>
