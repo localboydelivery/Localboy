@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Restaurants</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #fafafa; color: #1a202c; padding-bottom: 20px;}
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.97); opacity: 0.8; }
+
+        /* Top Bar */
+        .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; }
+        .top-bar h2 { font-size: 18px; font-weight: 700; text-transform: capitalize;}
+
+        /* Restaurant List */
+        .restaurant-list { padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+
+        .rest-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: relative; border: 1px solid #f7fafc; display: block; }
+        .rest-img-container { position: relative; height: 180px; }
+        .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .discount-tag { position: absolute; top: 15px; left: 15px; background: #ff5200; color: white; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); }
+        .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
+        .open-tag i { color: #10b981; font-size: 8px;}
+
+        .rest-details { padding: 15px; position: relative; }
+        .rest-details h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; }
+        
+        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 10px; }
+        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+        
+        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 50px 20px; display: none; }
+        .empty-state i { font-size: 50px; color: #cbd5e0; margin-bottom: 15px;}
+        .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 5px;}
+        .empty-state p { font-size: 13px; color: #718096; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="home.html" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2 id="pageTitle">All Restaurants</h2>
+    </div>
+
+    <div class="restaurant-list" id="restaurantList">
+        <!-- Restaurants will be loaded here by JavaScript -->
+    </div>
+
+    <div class="empty-state" id="emptyState">
+        <i class="fa-solid fa-store-slash"></i>
+        <h3>No Restaurants Found</h3>
+        <p>Sorry, we couldn't find any restaurants for this category in your area.</p>
+    </div>
+
+    <script>
+        // 1. మన యాప్ లో ఉన్న రెస్టారెంట్స్ లిస్ట్ (డేటాబేస్ లాగా)
+        const allRestaurants = [
+            {
+                id: 1,
+                name: "Bawarchi Biryani",
+                categories: ["biryani", "indian", "meals"],
+                rating: "4.5", time: "30 mins", price: "200",
+                img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop",
+                location: "1.2 km away • Kothapet", discount: "20% OFF"
+            },
+            {
+                id: 2,
+                name: "Domino's Pizza",
+                categories: ["pizza", "fast food"],
+                rating: "4.2", time: "35 mins", price: "300",
+                img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=800&auto=format&fit=crop",
+                location: "2.0 km away • Brodipet", discount: "Flat ₹100 OFF"
+            },
+            {
+                id: 3,
+                name: "Burger Spot",
+                categories: ["burger", "fast food", "snacks"],
+                rating: "4.3", time: "25 mins", price: "150",
+                img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop",
+                location: "1.5 km away • Autonagar", discount: "15% OFF"
+            },
+            {
+                id: 4,
+                name: "Paradise Biryani",
+                categories: ["biryani", "mughlai"],
+                rating: "4.7", time: "40 mins", price: "250",
+                img: "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?q=80&w=800&auto=format&fit=crop",
+                location: "3.5 km away • Main Road", discount: "10% OFF"
+            },
+            {
+                id: 5,
+                name: "South Indian Express",
+                categories: ["dosa", "meals", "veg", "healthy"],
+                rating: "4.6", time: "20 mins", price: "100",
+                img: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?q=80&w=800&auto=format&fit=crop",
+                location: "0.5 km away • Market Center", discount: "Free Delivery"
+            }
+        ];
+
+        // 2. ఏ కేటగిరీ నొక్కారో తెలుసుకోవడం (URL Parameter)
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedCategory = urlParams.get('category'); // ఉదా: ?category=biryani
+
+        const pageTitle = document.getElementById('pageTitle');
+        const restaurantList = document.getElementById('restaurantList');
+        const emptyState = document.getElementById('emptyState');
+
+        // 3. పేజీ టైటిల్ మార్చడం
+        if (selectedCategory) {
+            pageTitle.innerText = selectedCategory + " Restaurants";
+        }
+
+        // 4. డేటాని ఫిల్టర్ చేయడం
+        let filteredRestaurants = allRestaurants;
+        
+        if (selectedCategory) {
+            filteredRestaurants = allRestaurants.filter(rest => 
+                rest.categories.includes(selectedCategory.toLowerCase())
+            );
+        }
+
+        // 5. రిజల్ట్స్ ని స్క్రీన్ మీద చూపించడం
+        if (filteredRestaurants.length > 0) {
+            filteredRestaurants.forEach(rest => {
+                // కేటగిరీస్ ని క్యాపిటల్ లెటర్స్ తో కామా పెట్టి చూపించడానికి
+                const tags = rest.categories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(", ");
+
+                restaurantList.innerHTML += `
+                    <a href="restaurant-details.html?id=${rest.id}" class="rest-card clickable">
+                        <div class="rest-img-container">
+                            <img src="${rest.img}" alt="${rest.name}">
+                            <div class="discount-tag">${rest.discount}</div>
+                            <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
+                        </div>
+                        <div class="rest-details">
+                            <h3>${rest.name}</h3>
+                            <i class="fa-regular fa-heart fav-icon"></i>
+                            <div class="rest-stats">
+                                <span class="rating"><i class="fa-solid fa-star"></i> ${rest.rating}</span>
+                                <span><i class="fa-regular fa-clock"></i> ${rest.time}</span>
+                                <span><i class="fa-solid fa-indian-rupee-sign"></i> ${rest.price} for one</span>
+                            </div>
+                            <div class="rest-desc">
+                                <span><i class="fa-solid fa-utensils" style="width: 15px;"></i> ${tags}</span>
+                                <span><i class="fa-solid fa-location-dot" style="width: 15px;"></i> ${rest.location}</span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            });
+        } else {
+            // ఒకవేళ ఆ కేటగిరీలో రెస్టారెంట్స్ లేకపోతే
+            emptyState.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
