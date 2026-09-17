@@ -12,7 +12,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; }
         a { text-decoration: none; color: inherit; }
-        
+        .clickable:active { transform: scale(0.97); opacity: 0.9; }
+
         .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
         .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
         .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
@@ -41,7 +42,7 @@
 <body>
 
     <div class="top-bar">
-        <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <h2>Payments</h2>
     </div>
 
@@ -53,7 +54,7 @@
     <div class="payment-section">
         <div class="payment-title">Recommended Options</div>
         
-        <div class="pay-option" onclick="selectPayment(this)">
+        <div class="pay-option clickable" onclick="selectPayment(this)">
             <div class="pay-details">
                 <div class="pay-icon" style="background: #ecfdf5; color: #10b981;"><i class="fa-brands fa-google-pay"></i></div>
                 <h4>Google Pay</h4>
@@ -61,7 +62,7 @@
             <div class="radio-circle active"></div>
         </div>
 
-        <div class="pay-option" onclick="selectPayment(this)">
+        <div class="pay-option clickable" onclick="selectPayment(this)">
             <div class="pay-details">
                 <div class="pay-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-building-columns"></i></div>
                 <h4>PhonePe / UPI</h4>
@@ -71,7 +72,7 @@
 
         <div class="payment-title" style="border-top: 6px solid #f8fafc;">Other Options</div>
 
-        <div class="pay-option" onclick="selectPayment(this)">
+        <div class="pay-option clickable" onclick="selectPayment(this)">
             <div class="pay-details">
                 <div class="pay-icon" style="background: #fff8eb; color: #ff5200;"><i class="fa-solid fa-money-bill-wave"></i></div>
                 <h4>Cash on Delivery (COD)</h4>
@@ -81,53 +82,47 @@
     </div>
 
     <div class="pay-btn-container">
-        <button class="btn-pay" onclick="processPayment()">Pay Now</button>
+        <button class="btn-pay clickable" onclick="processPayment()">Pay Now</button>
     </div>
 
     <script>
-        // 🔴 FULL DATABASE ADDED HERE (Food + Premium Groceries)
-        const menuDB = {
-            // Food Items
-            '1': { price: 280 }, 
-            '2': { price: 220 }, 
-            '3': { price: 190 },
-            
-            // Grocery Items (g1 to g12)
-            'g1': { price: 45 }, 
-            'g2': { price: 30 }, 
-            'g3': { price: 28 },
-            'g4': { price: 140 }, 
-            'g5': { price: 160 }, 
-            'g6': { price: 1250 },
-            'g7': { price: 20 }, 
-            'g8': { price: 40 }, 
-            'g9': { price: 140 },
-            'g10': { price: 20 }, 
-            'g11': { price: 15 }, 
-            'g12': { price: 30 }
-        };
-
+        // 🔴 SIMPLE & BULLETPROOF CALCULATION
         window.onload = function() {
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+            
+            // కార్ట్‌లో ఐటెమ్స్ లేకపోతేనే వెనక్కి పంపుతుంది
+            if(!cartData || cartData.totalQty === 0) {
+                window.location.href = "home.html";
+                return;
+            }
+
+            const menuDB = {
+                // Food
+                '1': 280, '2': 220, '3': 190,
+                // Groceries
+                'g1': 45, 'g2': 30, 'g3': 28, 'g4': 140, 'g5': 160, 'g6': 1250,
+                'g7': 20, 'g8': 40, 'g9': 140, 'g10': 20, 'g11': 15, 'g12': 30
+            };
+
             let itemTotal = 0;
             
-            if(cartData && cartData.items) { 
+            if(cartData.items) { 
                 for (let id in cartData.items) { 
-                    if(menuDB[id]) itemTotal += (menuDB[id].price * cartData.items[id]); 
+                    // ఐడీ దొరికితే ఆ రేటు తీసుకుంటుంది, లేదంటే డిఫాల్ట్ గా 0
+                    let price = menuDB[id] || 0; 
+                    itemTotal += (price * cartData.items[id]); 
                 } 
             }
             
             let deliveryFee = 30; 
             let discount = Math.round(itemTotal * 0.10); 
             let taxes = 25;
+            
+            // ఫైనల్ అమౌంట్
             let toPay = itemTotal + deliveryFee - discount + taxes;
             
-            // Item total unte payment page lo amount chupisthundhi, lekapothe home page ki vellipothundhi
-            if(itemTotal > 0) {
-                document.getElementById('payAmount').innerText = `₹${toPay.toFixed(2)}`;
-            } else {
-                window.location.href = "home.html";
-            }
+            // అమౌంట్ ఎంత వచ్చినా సరే.. ఇక్కడే ఉండి చూపిస్తుంది
+            document.getElementById('payAmount').innerText = `₹${toPay.toFixed(2)}`;
         };
 
         function selectPayment(element) { 
