@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - All Categories</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #fafafa; color: #1a202c; padding-bottom: 90px;}
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* Top Bar */
+        .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; color: #1a202c;}
+        .top-bar h2 { font-size: 18px; font-weight: 700; }
+
+        .section-container { padding: 20px 20px 0; }
+        .section-title { font-size: 18px; font-weight: 800; color: #1a202c; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;}
+        .section-title i { color: #ff5200; font-size: 20px;}
+
+        /* Category Grid Setup */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px 10px;
+            margin-bottom: 30px;
+        }
+
+        .cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .cat-img-box {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            overflow: hidden;
+            border: 1px solid #f7fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cat-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cat-item span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #4a5568;
+            line-height: 1.2;
+        }
+
+        /* Gradient specific for non-image icons */
+        .icon-box { background: linear-gradient(135deg, #fff8eb, #ffedd5); color: #ff5200; font-size: 24px; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100; border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; }
+        .nav-item.active { color: #ff5200; }
+        .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .nav-item:active i { transform: scale(0.85); }
+        .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Explore Categories</h2>
+    </div>
+
+    <!-- Food Categories Section -->
+    <div class="section-container">
+        <h3 class="section-title"><i class="fa-solid fa-utensils"></i> Food Delivery</h3>
+        
+        <div class="category-grid">
+            <a href="restaurants.html?category=biryani" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop" alt="Biryani"></div>
+                <span>Biryani</span>
+            </a>
+            <a href="restaurants.html?category=pizza" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200&auto=format&fit=crop" alt="Pizza"></div>
+                <span>Pizza</span>
+            </a>
+            <a href="restaurants.html?category=burger" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop" alt="Burger"></div>
+                <span>Burger</span>
+            </a>
+            <a href="restaurants.html?category=dosa" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?q=80&w=200&auto=format&fit=crop" alt="Dosa"></div>
+                <span>Dosa</span>
+            </a>
+            <a href="restaurants.html?category=meals" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop" alt="Meals"></div>
+                <span>Meals</span>
+            </a>
+            <a href="restaurants.html?category=chinese" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=200&auto=format&fit=crop" alt="Chinese"></div>
+                <span>Chinese</span>
+            </a>
+            <a href="restaurants.html?category=desserts" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=200&auto=format&fit=crop" alt="Desserts"></div>
+                <span>Desserts</span>
+            </a>
+            <a href="restaurants.html?category=cakes" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=200&auto=format&fit=crop" alt="Cakes"></div>
+                <span>Cakes</span>
+            </a>
+        </div>
+    </div>
+
+    <hr style="border: none; border-top: 5px solid #edf2f7; margin: 10px 0;">
+
+    <!-- Grocery Categories Section -->
+    <div class="section-container">
+        <h3 class="section-title" style="color: #10b981;"><i class="fa-solid fa-basket-shopping" style="color: #10b981;"></i> Groceries & Essentials</h3>
+        
+        <div class="category-grid">
+            <a href="search.html?query=vegetables" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?q=80&w=200&auto=format&fit=crop" alt="Vegetables"></div>
+                <span>Fresh Veggies</span>
+            </a>
+            <a href="search.html?query=fruits" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=200&auto=format&fit=crop" alt="Fruits"></div>
+                <span>Fresh Fruits</span>
+            </a>
+            <a href="search.html?query=dairy" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=200&auto=format&fit=crop" alt="Dairy"></div>
+                <span>Dairy & Milk</span>
+            </a>
+            <a href="search.html?query=meat" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=200&auto=format&fit=crop" alt="Meat"></div>
+                <span>Meat & Fish</span>
+            </a>
+            <a href="search.html?query=snacks" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=200&auto=format&fit=crop" alt="Snacks"></div>
+                <span>Snacks</span>
+            </a>
+            <a href="search.html?query=drinks" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200&auto=format&fit=crop" alt="Drinks"></div>
+                <span>Cold Drinks</span>
+            </a>
+            <a href="search.html?query=pharmacy" class="cat-item clickable">
+                <div class="cat-img-box icon-box"><i class="fa-solid fa-pills"></i></div>
+                <span>Pharmacy</span>
+            </a>
+            <a href="search.html?query=petcare" class="cat-item clickable">
+                <div class="cat-img-box icon-box" style="background: linear-gradient(135deg, #e6f8f1, #d1fae5); color: #10b981;"><i class="fa-solid fa-paw"></i></div>
+                <span>Pet Care</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="categories.html" class="nav-item active"> <!-- 🔴 Active Tab -->
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span>Grocery</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="cart-badge">0</span>
+            <span>Cart</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Orders</span>
+        </a>
+    </div>
+
+    <script>
+        // Update Cart Badge on Page Load
+        window.addEventListener('pageshow', function() {
+            const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+            const cartBadge = document.querySelector('.cart-badge');
+            
+            if (cartData && cartData.totalQty > 0) {
+                if(cartBadge) {
+                    cartBadge.innerText = cartData.totalQty;
+                    cartBadge.style.display = 'flex';
+                }
+            } else {
+                if(cartBadge) {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
