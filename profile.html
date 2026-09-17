@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Profile</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
@@ -17,20 +19,23 @@
         .clickable:active { transform: scale(0.97); opacity: 0.8; }
 
         .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b;}
+        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
         .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
 
-        .profile-header { background: #ffffff; margin: 20px; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; position: relative; }
+        /* Profile Header Layout Fix */
+        .profile-header { background: #ffffff; margin: 20px; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
         .avatar { width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 700; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); flex-shrink: 0; }
-        .user-info { flex: 1; }
-        .user-info h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; color: #0f172a;}
+        .user-info { flex: 1; min-width: 0; /* Allows text truncation */ }
+        .user-info h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .user-info p { font-size: 12px; color: #64748b; margin-bottom: 2px; font-weight: 500;}
-        .user-info .email { font-size: 11px; color: #94a3b8; }
-        .edit-btn { position: absolute; top: 20px; right: 20px; color: #ff5200; font-size: 13px; font-weight: 700; background: #fff8eb; padding: 6px 14px; border-radius: 12px; cursor: pointer; }
+        .user-info .email { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .edit-btn { color: #ff5200; font-size: 13px; font-weight: 700; background: #fff8eb; padding: 6px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0; }
 
+        /* Menus */
         .menu-container { background: #ffffff; margin: 0 20px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; overflow: hidden; }
         .menu-item { display: flex; align-items: center; padding: 18px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
         .menu-item:last-child { border-bottom: none; }
+        .menu-item:active { background: #f8fafc; }
         .menu-icon { width: 38px; height: 38px; border-radius: 12px; background: #f1f5f9; color: #475569; display: flex; justify-content: center; align-items: center; font-size: 16px; margin-right: 15px; }
         .menu-item.highlight .menu-icon { background: #fff8eb; color: #ff5200; }
         .menu-text { flex: 1; }
@@ -38,22 +43,26 @@
         .menu-text p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;}
         .menu-arrow { color: #cbd5e0; font-size: 14px; }
 
-        .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 20px 20px; padding: 16px; border-radius: 16px; background: #fef2f2; color: #ef4444; font-size: 15px; font-weight: 800; cursor: pointer; border: 1px solid #fee2e2; }
+        /* Logout & App Version */
+        .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 20px 20px; padding: 16px; border-radius: 16px; background: #fef2f2; color: #ef4444; font-size: 15px; font-weight: 800; cursor: pointer; border: 1px solid #fee2e2; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.05); }
         .app-version { text-align: center; font-size: 11px; color: #cbd5e0; font-weight: 600; margin-top: 10px; }
 
+        /* Bottom Sheets UI */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px);}
         .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; max-height: 85vh; overflow-y: auto; }
         .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .sheet-header h3 { font-size: 18px; font-weight: 800; color: #0f172a;}
         .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
 
+        /* Inputs & Buttons */
         .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .input-group { flex: 1; }
         .input-group input { width: 100%; padding: 14px 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 14px; outline: none; color: #1e293b; font-weight: 500;}
         .input-group input:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1);}
         .primary-btn { width: 100%; background: #ff5200; color: white; padding: 16px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 10px; text-align: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
 
-        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        /* Inner Sheet Styles */
+        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);}
         .wallet-card h4 { font-size: 13px; color: #94a3b8; font-weight: 600;}
         .wallet-card h2 { font-size: 28px; font-weight: 800; margin-top: 5px;}
         .add-money-btn { background: #ff5200; color: white; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;}
@@ -71,11 +80,21 @@
         .setting-row:last-child { border-bottom: none; }
         .setting-row h4 { font-size: 14px; font-weight: 700; color: #1e293b;}
         .setting-row p { font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500;}
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .4s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(20px); }
 
+        /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
         .nav-item.active { color: #ff5200; }
         .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .nav-item:active i { transform: scale(0.85); }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
     </style>
 </head>
@@ -86,7 +105,7 @@
         <h2>My Profile</h2>
     </div>
 
-    <!-- Profile Header -->
+    <!-- Profile Header (Layout Fixed) -->
     <div class="profile-header">
         <div class="avatar" id="displayInitials">LB</div>
         <div class="user-info">
@@ -97,6 +116,7 @@
         <div class="edit-btn clickable" onclick="openSheet('editProfileSheet')">Edit</div>
     </div>
 
+    <!-- Main Menu Options -->
     <div class="menu-container">
         <a href="orders.html" class="menu-item">
             <div class="menu-icon"><i class="fa-solid fa-clipboard-list"></i></div>
@@ -126,6 +146,7 @@
         </div>
     </div>
 
+    <!-- Settings & Support Options -->
     <div class="menu-container">
         <div class="menu-item highlight clickable" onclick="openSheet('favoritesSheet')">
             <div class="menu-icon"><i class="fa-solid fa-heart"></i></div>
@@ -144,26 +165,42 @@
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </div>
+
+        <div class="menu-item clickable" onclick="openSheet('settingsSheet')">
+            <div class="menu-icon"><i class="fa-solid fa-gear"></i></div>
+            <div class="menu-text">
+                <h3>Settings</h3>
+                <p>Notifications, permissions, etc.</p>
+            </div>
+            <i class="fa-solid fa-chevron-right menu-arrow"></i>
+        </div>
     </div>
 
+    <!-- Logout Button -->
     <div class="logout-btn clickable" onclick="logoutApp()">
         <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
     </div>
 
-    <div class="app-version">LOCAL BOY App v1.0.0</div>
+    <div class="app-version">
+        LOCAL BOY App v1.0.0
+    </div>
 
-    <!-- BOTTOM SHEETS -->
+    <!-- ================= BOTTOM SHEETS ================= -->
     <div class="overlay" id="overlay" onclick="closeAllSheets()"></div>
 
-    <!-- Edit Profile Sheet -->
+    <!-- 1. Edit Profile Sheet -->
     <div class="bottom-sheet" id="editProfileSheet">
         <div class="sheet-header">
             <h3>Edit Profile</h3>
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
         <div class="input-row">
-            <div class="input-group"><input type="text" id="editName" placeholder="First Name"></div>
-            <div class="input-group"><input type="text" id="editSurname" placeholder="Last Name"></div>
+            <div class="input-group">
+                <input type="text" id="editName" placeholder="First Name">
+            </div>
+            <div class="input-group">
+                <input type="text" id="editSurname" placeholder="Last Name">
+            </div>
         </div>
         <div class="input-group" style="margin-bottom: 15px;">
             <input type="email" id="editEmail" placeholder="Email Address">
@@ -171,33 +208,46 @@
         <button class="primary-btn clickable" onclick="saveProfile()">Save Changes</button>
     </div>
 
-    <!-- Payments Sheet -->
+    <!-- 2. Payments Sheet -->
     <div class="bottom-sheet" id="paymentsSheet">
         <div class="sheet-header">
             <h3>Payments</h3>
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
         <div class="wallet-card">
-            <div><h4>Local Boy Cash</h4><h2><i class="fa-solid fa-indian-rupee-sign"></i> 0.00</h2></div>
+            <div>
+                <h4>Local Boy Cash</h4>
+                <h2><i class="fa-solid fa-indian-rupee-sign"></i> 0.00</h2>
+            </div>
             <div class="add-money-btn clickable">Add Money</div>
+        </div>
+        <div class="action-list">
+            <div class="action-item clickable"><i class="fa-brands fa-google-pay" style="color: #10b981;"></i> Add UPI ID</div>
+            <div class="action-item clickable"><i class="fa-regular fa-credit-card" style="color: #3b82f6;"></i> Add Credit/Debit Card</div>
+            <div class="action-item clickable"><i class="fa-solid fa-building-columns" style="color: #6366f1;"></i> Net Banking</div>
         </div>
     </div>
 
-    <!-- Favorites Sheet -->
+    <!-- 3. Favorites Sheet -->
     <div class="bottom-sheet" id="favoritesSheet">
         <div class="sheet-header">
             <h3>Favorites</h3>
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
-        <div id="favoritesList" style="display: flex; flex-direction: column; gap: 15px; max-height: 50vh; overflow-y: auto;"></div>
+        
+        <div id="favoritesList" style="display: flex; flex-direction: column; gap: 15px; max-height: 50vh; overflow-y: auto;">
+            <!-- Rendered by JS -->
+        </div>
+
         <div class="empty-state" id="emptyFavorites" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/869/869022.png" alt="Empty Heart">
             <h3>No favorites yet!</h3>
-            <p>Save your favorite restaurants to find them quickly here.</p>
+            <p>Save your favorite restaurants and items to find them quickly here.</p>
+            <div class="primary-btn clickable" onclick="window.location.href='home.html'">Explore Restaurants</div>
         </div>
     </div>
 
-    <!-- Support Sheet -->
+    <!-- 4. Support Sheet -->
     <div class="bottom-sheet" id="supportSheet">
         <div class="sheet-header">
             <h3>Help & Support</h3>
@@ -206,6 +256,46 @@
         <div class="action-list">
             <a href="tel:+919876543210" class="action-item clickable"><i class="fa-solid fa-phone" style="color: #10b981;"></i> Call Us (+91 98765 43210)</a>
             <a href="https://wa.me/919876543210" class="action-item clickable"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp Support</a>
+            <a href="mailto:support@localboy.com" class="action-item clickable"><i class="fa-regular fa-envelope" style="color: #3b82f6;"></i> Email Support</a>
+            <div class="action-item clickable"><i class="fa-regular fa-circle-question" style="color: #64748b;"></i> Browse FAQs</div>
+        </div>
+    </div>
+
+    <!-- 5. Settings Sheet -->
+    <div class="bottom-sheet" id="settingsSheet">
+        <div class="sheet-header">
+            <h3>Settings</h3>
+            <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
+        </div>
+        <div class="setting-row">
+            <div>
+                <h4>Push Notifications</h4>
+                <p>Order updates & delivery status</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row">
+            <div>
+                <h4>Promotional Offers</h4>
+                <p>Discounts, coupons & deals</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row">
+            <div>
+                <h4>Dark Mode</h4>
+                <p>Switch to dark theme</p>
+            </div>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
         </div>
     </div>
 
@@ -221,50 +311,62 @@
     </div>
 
     <script>
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        const overlay = document.getElementById('overlay');
+        const sheets = document.querySelectorAll('.bottom-sheet');
         const userPhone = localStorage.getItem('userPhone');
 
         window.addEventListener('pageshow', function() {
-            if (!userPhone) {
-                window.location.replace("index.html");
-                return;
-            }
-
+            // Cart Badge Check
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
             const bottomNavBadge = document.getElementById('bottomNavCartBadge');
             if (cartData && cartData.totalQty > 0) {
-                bottomNavBadge.style.display = 'flex'; bottomNavBadge.innerText = cartData.totalQty;
-            } else { bottomNavBadge.style.display = 'none'; }
+                bottomNavBadge.style.display = 'flex';
+                bottomNavBadge.innerText = cartData.totalQty;
+            } else {
+                bottomNavBadge.style.display = 'none';
+            }
 
+            // Load Saved Location to Profile 
             const savedAddr = localStorage.getItem("userSavedAddress");
             if(savedAddr) {
                 const addressElement = document.getElementById('profileSavedAddress');
-                addressElement.innerText = savedAddr; addressElement.style.color = '#10b981'; 
+                addressElement.innerText = savedAddr;
+                addressElement.style.color = '#10b981';
             }
 
-            document.getElementById('displayPhone').innerText = userPhone;
-            database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
-                const profileData = snapshot.val();
-                if (profileData) {
-                    const fName = profileData.firstName || "Local";
-                    const lName = profileData.lastName || "Boy";
-                    document.getElementById('displayFullName').innerText = fName + " " + lName;
-                    document.getElementById('displayEmail').innerText = profileData.email || "Add email";
-                    document.getElementById('displayInitials').innerText = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
+            // Fetch Firebase Profile Details
+            if (userPhone) {
+                document.getElementById('displayPhone').innerText = userPhone;
+                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
+                    const profileData = snapshot.val();
+                    if (profileData) {
+                        const fName = profileData.firstName || "Local";
+                        const lName = profileData.lastName || "Boy";
+                        document.getElementById('displayFullName').innerText = fName + " " + lName;
+                        document.getElementById('displayEmail').innerText = profileData.email || "Add email";
+                        document.getElementById('displayInitials').innerText = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
 
-                    document.getElementById('editName').value = fName;
-                    document.getElementById('editSurname').value = lName;
-                    document.getElementById('editEmail').value = profileData.email || "";
-                }
-            });
+                        document.getElementById('editName').value = fName;
+                        document.getElementById('editSurname').value = lName;
+                        document.getElementById('editEmail').value = profileData.email || "";
+                    }
+                });
+            }
 
+            // Load Favorites from LocalStorage
             loadFavorites();
         });
 
@@ -295,20 +397,21 @@
             let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
             favs = favs.filter(f => f.name !== name);
             localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
-            loadFavorites(); 
+            loadFavorites();
         }
 
-        const overlay = document.getElementById('overlay');
-        const sheets = document.querySelectorAll('.bottom-sheet');
-
         function openSheet(sheetId) {
-            overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto';
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto';
             document.getElementById(sheetId).style.transform = 'translateY(0)';
         }
 
         function closeAllSheets() {
-            overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
-            sheets.forEach(sheet => { sheet.style.transform = 'translateY(100%)'; });
+            overlay.style.opacity = '0';
+            overlay.style.pointerEvents = 'none';
+            sheets.forEach(sheet => {
+                sheet.style.transform = 'translateY(100%)';
+            });
         }
 
         function saveProfile() {
@@ -318,12 +421,17 @@
 
             if (fName && lName) {
                 const profileData = { firstName: fName, lastName: lName, email: email, phone: userPhone };
+                
+                // Save locally and in Firebase
                 localStorage.setItem('userProfileData', JSON.stringify(profileData));
-                database.ref('users/' + userPhone + '/profile').set(profileData);
+                if(userPhone) {
+                    database.ref('users/' + userPhone + '/profile').set(profileData);
+                }
 
                 document.getElementById('displayFullName').innerText = fName + " " + lName;
                 document.getElementById('displayEmail').innerText = email;
                 document.getElementById('displayInitials').innerText = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
+                
                 closeAllSheets();
             } else {
                 alert("Please enter both First Name and Last Name");
@@ -332,8 +440,7 @@
 
         function logoutApp() {
             if(confirm("Are you sure you want to logout?")) {
-                localStorage.removeItem('userPhone');
-                localStorage.removeItem('userProfileData');
+                localStorage.clear();
                 window.location.replace("index.html");
             }
         }
