@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 120px; }
@@ -110,10 +114,10 @@
         <!-- Delivery Address -->
         <div class="section-box" id="addressSection">
             <div class="delivery-header">
-                <h3><i class="fa-solid fa-house"></i> Delivery at Home</h3>
+                <h3><i class="fa-solid fa-house"></i> Delivery Location</h3>
                 <a href="location.html?from=cart" class="change-btn clickable">Change</a>
             </div>
-            <p class="address-text" id="cartAddressText">12-3, Main Road, Near Clock Tower, Tenali, Andhra Pradesh.</p>
+            <p class="address-text" id="cartAddressText">Loading address...</p>
             <div class="time-estimate">
                 <i class="fa-solid fa-clock"></i> Delivery in 15 - 30 mins
             </div>
@@ -176,32 +180,42 @@
             <h4 id="footer-to-pay">₹0.00</h4>
             <p class="view-bill-text clickable" onclick="scrollToBill()">View Detailed Bill</p>
         </div>
-        <a href="payment.html" class="btn-checkout clickable">
+        <a href="javascript:void(0)" onclick="proceedToPay()" class="btn-checkout clickable">
             Proceed to Pay <i class="fa-solid fa-caret-right"></i>
         </a>
     </div>
 
-    <!-- 🔴 UPDATED: Bottom Nav links correctly to groceries.html and stays fixed -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
         <a href="cart.html" class="nav-item active">
             <i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-badge" id="bottomNavCartBadge">0</span>
+            <span class="cart-badge" id="bottomNavCartBadge" style="display: none;">0</span>
             <span>Cart</span>
         </a>
         <a href="orders.html" class="nav-item"><i class="fa-solid fa-clipboard-list"></i><span>Orders</span></a>
     </div>
 
     <script>
-        // 🔴 Full Database (Food + Groceries) combined
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Database logic for products
         const menuDB = {
-            // Food Items
             '1': { name: 'Chicken Dum Biryani', price: 280, type: 'nonveg' },
             '2': { name: 'Paneer Butter Masala', price: 220, type: 'veg' },
             '3': { name: 'Chicken 65', price: 190, type: 'nonveg' },
-            
-            // Premium Grocery Items (A to Z)
             'g1': { name: 'Onions (Medium)', price: 45, type: 'veg' },
             'g2': { name: 'Fresh Tomatoes', price: 30, type: 'veg' },
             'g3': { name: 'Amul Taaza Milk', price: 28, type: 'veg' },
@@ -228,7 +242,6 @@
             const bottomNavBadge = document.getElementById('bottomNavCartBadge');
             const cartRestName = document.getElementById('cartRestName');
 
-            // Bottom Nav Badge Update
             if (cartData.totalQty > 0) {
                 bottomNavBadge.style.display = 'flex';
                 bottomNavBadge.innerText = cartData.totalQty;
@@ -236,23 +249,18 @@
                 bottomNavBadge.style.display = 'none';
             }
 
-            // 1. Check if Cart is Empty
             if (cartData.totalQty === 0 || !cartData.restId) {
                 emptyState.style.display = 'block';
                 cartContentWrapper.style.display = 'none';
                 checkoutFooter.style.display = 'none';
-                
-                // Reset local storage to clean state
                 localStorage.setItem('localBoyCart', JSON.stringify({ restId: null, items: {}, totalQty: 0 }));
                 return;
             }
 
-            // 2. Render Cart if items exist
             emptyState.style.display = 'none';
             cartContentWrapper.style.display = 'block';
             checkoutFooter.style.display = 'flex';
 
-            // Set Header based on Restaurant or Grocery Store
             if (cartData.restId === 'grocery_store') {
                 cartRestName.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3194/3194591.png" style="background:#ecfdf5; padding:2px;"> Local Boy Groceries`;
             } else {
@@ -265,7 +273,6 @@
             for (let id in cartData.items) {
                 let qty = cartData.items[id];
                 let item = menuDB[id];
-                
                 if(!item) continue;
                 
                 itemTotal += (item.price * qty);
@@ -289,7 +296,6 @@
                 `;
             }
 
-            // Calculations
             let deliveryFee = 30;
             let discount = Math.round(itemTotal * 0.10); 
             let taxes = 25;
@@ -310,15 +316,11 @@
             } else {
                 if(confirm("Remove item from cart?")) {
                     delete cartData.items[id];
-                } else {
-                    return; 
-                }
+                } else { return; }
             }
             
             cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
-            if (cartData.totalQty === 0) {
-                cartData.restId = null;
-            }
+            if (cartData.totalQty === 0) { cartData.restId = null; }
             
             localStorage.setItem('localBoyCart', JSON.stringify(cartData));
             initCart();
@@ -327,22 +329,54 @@
         function scrollToBill() {
             const billSection = document.getElementById('billSection');
             if (billSection) {
-                // Calculate correct scroll position preventing the sticky footer from hiding it
                 const y = billSection.getBoundingClientRect().top + window.scrollY - 100;
                 window.scrollTo({top: y, behavior: 'smooth'});
             }
         }
 
-        // Use pageshow event so cart data stays fresh when swiping back to this page
+        function proceedToPay() {
+            const currentAddress = document.getElementById("cartAddressText").innerText;
+            if(currentAddress === "Loading address..." || currentAddress === "Please add your delivery address" || currentAddress === "") {
+                alert("Please add a delivery address before proceeding to pay.");
+                window.location.href = "location.html?from=cart";
+            } else {
+                window.location.href = "payment.html";
+            }
+        }
+
+        function displayAddress(addressStr) {
+            const addressTextElem = document.getElementById("cartAddressText");
+            if(addressStr) {
+                addressTextElem.innerText = addressStr;
+                addressTextElem.style.color = "#64748b";
+            } else {
+                addressTextElem.innerText = "Please add your delivery address";
+                addressTextElem.style.color = "#ef4444";
+            }
+        }
+
         window.addEventListener('pageshow', function() {
             initCart();
             
-            const savedLocation = localStorage.getItem("userSavedAddress");
-            if (savedLocation) {
-                const addressText = document.getElementById("cartAddressText");
-                if (addressText) {
-                    addressText.innerText = savedLocation;
-                }
+            const userPhone = localStorage.getItem('userPhone');
+            if(userPhone) {
+                // Fetch latest address from Firebase
+                database.ref('users/' + userPhone + '/profile/address').once('value').then((snapshot) => {
+                    const fbAddress = snapshot.val();
+                    if(fbAddress) {
+                        displayAddress(fbAddress);
+                        localStorage.setItem('userSavedAddress', fbAddress);
+                    } else {
+                        const savedLocation = localStorage.getItem("userSavedAddress");
+                        displayAddress(savedLocation);
+                    }
+                }).catch(() => {
+                    const savedLocation = localStorage.getItem("userSavedAddress");
+                    displayAddress(savedLocation);
+                });
+            } else {
+                const savedLocation = localStorage.getItem("userSavedAddress");
+                displayAddress(savedLocation);
             }
         });
     </script>
