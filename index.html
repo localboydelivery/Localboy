@@ -5,173 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Login</title>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase Web SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script> <!-- RTDB added -->
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #ff6a00; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden; }
-        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 35px; padding: 40px 25px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); text-align: center; position: relative; }
-        .top-icons { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
-        .icon-circle { width: 55px; height: 55px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 8px; }
-        .icon-circle img { width: 100%; height: 100%; object-fit: contain; }
-        .brand-container { position: relative; display: inline-flex; align-items: flex-end; font-size: 42px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; }
-        .brand-local { color: #1a202c; }
-        .brand-boy { color: #ff5200; margin-left: 5px; }
-        .scooter-img { width: 70px; position: absolute; bottom: 5px; right: -65px; animation: driveIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        @keyframes driveIn { 0% { transform: translateX(-150px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(0); opacity: 1; } }
-        .tagline { font-family: 'Caveat', cursive; font-size: 20px; color: #4a5568; line-height: 1.3; margin-bottom: 35px; }
-        .just-for-you { position: relative; display: inline-block; color: #2d3748; font-weight: 700; }
-        .animated-underline { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); height: 2.5px; background-color: #ff5200; border-radius: 5px; width: 0; animation: drawLine 1s ease-out 1.2s forwards; }
-        @keyframes drawLine { to { width: 100%; } }
-        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 15px; margin-bottom: 20px; background: #fff; }
-        .input-wrapper:focus-within { border-color: #ff5200; }
-        .country-icon { color: #ff5200; font-size: 18px; margin-right: 12px; }
-        .country-code { font-weight: 600; color: #1a202c; padding-right: 12px; border-right: 1px solid #d1d5db; margin-right: 12px; font-size: 15px; }
-        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 16px; line-height: normal; min-height: 45px; color: #1a202c; background: transparent; }
-        .primary-btn { background: #ff5200; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); transition: 0.3s; }
-        .primary-btn:active { transform: scale(0.98); }
-        .features { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
-        .feature-item { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; color: #4a5568; text-align: center; line-height: 1.2; }
-        .feature-item i { font-size: 20px; color: #ff5200; }
-        #otp-section { display: none; }
-        #recaptcha-container { display: flex; justify-content: center; margin-top: 10px; }
-        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; display: none; font-weight: 500;}
+        body { background-color: #ffffff; color: #1e293b; height: 100vh; display: flex; flex-direction: column; }
+        .clickable:active { transform: scale(0.97); opacity: 0.9; }
+
+        /* Splash Image Section */
+        .splash-img-container { flex: 1; background: #ecfdf5; display: flex; justify-content: center; align-items: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: relative; overflow: hidden;}
+        .splash-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8;}
+        
+        /* App Logo Box */
+        .logo-box { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: #ffffff; padding: 20px 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 80%;}
+        .logo-box i { font-size: 50px; color: #ff5200; margin-bottom: 10px;}
+        .logo-box h1 { font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -1px;}
+        .logo-box p { font-size: 13px; color: #10b981; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px;}
+
+        /* Login Section */
+        .login-section { padding: 40px 20px; text-align: center; }
+        .login-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
+        .login-subtitle { font-size: 14px; color: #64748b; font-weight: 500; margin-bottom: 30px;}
+
+        /* Login Buttons */
+        .btn-phone { width: 100%; background: #ff5200; color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;}
+        .btn-google { width: 100%; background: #ffffff; color: #1e293b; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; border: 1px solid #e2e8f0; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);}
+
+        .terms { font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 25px;}
+        .terms a { color: #10b981; text-decoration: underline;}
     </style>
 </head>
 <body>
 
-    <div class="main-card">
-        <div class="top-icons">
-            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Food"></div>
-            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3082/3082011.png" alt="Grocery"></div>
-            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3143/3143645.png" alt="Meat"></div>
-            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/869/869466.png" alt="Pharmacy"></div>
-        </div>
-
-        <div class="brand-container">
-            <span class="brand-local">Local</span><span class="brand-boy">Boy</span>
-            <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="Scooter" class="scooter-img">
-        </div>
-
-        <div class="tagline">
-            "Smart Food, Grocery & More... <br>
-            <span class="just-for-you">
-                Just for You!
-                <div class="animated-underline"></div>
-            </span>"
-        </div>
-
-        <div id="mobile-section">
-            <div class="input-wrapper">
-                <i class="fa-solid fa-mobile-screen-button country-icon"></i>
-                <span class="country-code">+91</span>
-                <input type="tel" id="mobile-number" placeholder="Enter mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-
-            <button class="primary-btn" id="get-otp-btn" onclick="sendOTP()">
-                Get OTP
-            </button>
-            <div id="recaptcha-container"></div>
-        </div>
-
-        <div id="otp-section">
-            <div class="input-wrapper">
-                <i class="fa-solid fa-unlock-keyhole country-icon"></i>
-                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 2px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-            <button class="primary-btn" id="verify-otp-btn" onclick="verifyOTP()">
-                Verify Login
-            </button>
-        </div>
-
-        <div class="error-message" id="error-msg"></div>
-
-        <div class="features">
-            <div class="feature-item"><i class="fa-solid fa-shield-halved"></i><span>Safe &<br>Secure</span></div>
-            <div class="feature-item"><i class="fa-solid fa-bolt"></i><span>Fast<br>Delivery</span></div>
-            <div class="feature-item"><i class="fa-regular fa-face-smile"></i><span>Better<br>Experience</span></div>
+    <div class="splash-img-container">
+        <!-- Background Image -->
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop" alt="Food Delivery">
+        
+        <div class="logo-box">
+            <i class="fa-solid fa-motorcycle"></i>
+            <h1>LOCAL BOY</h1>
+            <p>Food & Groceries</p>
         </div>
     </div>
 
-    <!-- Firebase Logic -->
-    <script>
-        // 🔴 మీ కంప్లీట్ ఫైర్‌బేస్ కాన్ఫిగరేషన్ 🔴
-        const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
-            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            // కింది లైన్ లో 1:184676228358:web: అని ఉండే మీ WEB ID ని వేయాలి.
-            appId: "YOUR_WEB_APP_ID_HERE" 
-        };
+    <div class="login-section">
+        <h2 class="login-title">Get Started with Local Boy</h2>
+        <p class="login-subtitle">Enter your details to find food and groceries near you.</p>
+
+        <!-- For now, we will redirect straight to home page to keep testing easy -->
+        <button class="btn-phone clickable" onclick="loginSuccess()">
+            <i class="fa-solid fa-phone"></i> Continue with Phone
+        </button>
         
-        firebase.initializeApp(firebaseConfig);
-        let coderesult;
+        <button class="btn-google clickable" onclick="loginSuccess()">
+            <i class="fa-brands fa-google" style="color: #ea4335;"></i> Continue with Google
+        </button>
 
-        window.onload = function () {
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible',
-                'callback': (response) => {}
-            });
+        <p class="terms">By continuing, you agree to our <br> <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a></p>
+    </div>
+
+    <!-- 🔴 FIREBASE INTEGRATION (Based on your JSON file) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Your specific Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4T6Te-6zvXJoRML8hnH0XJ59FLVQsYOE",
+            authDomain: "local-boy-2a05e.firebaseapp.com",
+            databaseURL: "https://local-boy-2a05e-default-rtdb.firebaseio.com",
+            projectId: "local-boy-2a05e",
+            storageBucket: "local-boy-2a05e.firebasestorage.app",
+            messagingSenderId: "717569157806",
+            appId: "1:717569157806:web:YOUR_APP_ID" // We will update this later if needed
         };
 
-        function showError(msg) {
-            const errorDiv = document.getElementById('error-msg');
-            errorDiv.innerText = msg;
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 4000);
-        }
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        function sendOTP() {
-            const number = document.getElementById('mobile-number').value;
-            if (number.length !== 10) {
-                showError("Please enter a valid 10-digit mobile number.");
-                return;
-            }
-            const phoneNumber = "+91" + number;
-            const appVerifier = window.recaptchaVerifier;
-
-            document.getElementById('get-otp-btn').innerText = 'Sending...';
-
-            firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    coderesult = confirmationResult;
-                    document.getElementById('mobile-section').style.display = 'none';
-                    document.getElementById('otp-section').style.display = 'block';
-                    document.getElementById('error-msg').style.display = 'none';
-                }).catch((error) => {
-                    document.getElementById('get-otp-btn').innerText = 'Get OTP';
-                    showError(error.message);
-                });
-        }
-
-        function verifyOTP() {
-            const code = document.getElementById('otp-input').value;
-            if (code.length !== 6) {
-                showError("Please enter the 6-digit OTP.");
-                return;
-            }
-            document.getElementById('verify-otp-btn').innerText = 'Verifying...';
-
-            coderesult.confirm(code).then((result) => {
-                alert("Login Successful! Welcome to LOCAL BOY.");
-                window.location.href = "home.html"; 
-            }).catch((error) => {
-                document.getElementById('verify-otp-btn').innerText = 'Verify Login';
-                showError("Invalid OTP. Please try again.");
-            });
+        // Dummy Login Action (Will link real OTP later)
+        function loginSuccess() {
+            // Setting a test user profile in Local Storage
+            const profileData = { firstName: "Local", lastName: "Boy User", email: "user@localboy.com" };
+            localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            
+            // Go to home page
+            window.location.href = "home.html";
         }
     </script>
 </body>
