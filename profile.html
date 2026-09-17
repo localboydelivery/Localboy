@@ -86,11 +86,11 @@
 <body>
 
     <div class="top-bar">
-        <a href="home.html" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <h2>My Profile</h2>
     </div>
 
-    <!-- 🔴 Profile Header -->
+    <!-- Profile Header -->
     <div class="profile-header">
         <div class="avatar" id="displayInitials">BR</div>
         <div class="user-info">
@@ -101,7 +101,7 @@
         <div class="edit-btn clickable" onclick="openSheet('editProfileSheet')">Edit</div>
     </div>
 
-    <!-- 🔴 Main Menu Options -->
+    <!-- Main Menu Options -->
     <div class="menu-container">
         <!-- My Orders -->
         <a href="orders.html" class="menu-item">
@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <!-- 🔴 Settings & Support Options -->
+    <!-- Settings & Support Options -->
     <div class="menu-container">
         <!-- Favorites -->
         <div class="menu-item highlight" onclick="openSheet('favoritesSheet')">
@@ -167,7 +167,7 @@
         </div>
     </div>
 
-    <!-- 🔴 Logout Button -->
+    <!-- Logout Button -->
     <div class="logout-btn clickable" onclick="logoutApp()">
         <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
     </div>
@@ -290,6 +290,23 @@
         const overlay = document.getElementById('overlay');
         const sheets = document.querySelectorAll('.bottom-sheet');
 
+        // 🔴 Load User Data from Local Storage on Page Load
+        window.onload = function() {
+            const savedProfile = JSON.parse(localStorage.getItem('userProfileData'));
+            if (savedProfile) {
+                document.getElementById('displayFullName').innerText = savedProfile.firstName + " " + savedProfile.lastName;
+                document.getElementById('displayEmail').innerText = savedProfile.email;
+                
+                const initials = savedProfile.firstName.charAt(0).toUpperCase() + savedProfile.lastName.charAt(0).toUpperCase();
+                document.getElementById('displayInitials').innerText = initials;
+
+                // Update the input fields in the edit sheet
+                document.getElementById('editName').value = savedProfile.firstName;
+                document.getElementById('editSurname').value = savedProfile.lastName;
+                document.getElementById('editEmail').value = savedProfile.email;
+            }
+        };
+
         function openSheet(sheetId) {
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = 'auto';
@@ -304,18 +321,27 @@
             });
         }
 
-        // Save Profile Details Logic
+        // 🔴 Save Profile Details Logic with Local Storage
         function saveProfile() {
             const fName = document.getElementById('editName').value;
             const lName = document.getElementById('editSurname').value;
             const email = document.getElementById('editEmail').value;
 
             if (fName && lName) {
+                const profileData = {
+                    firstName: fName,
+                    lastName: lName,
+                    email: email
+                };
+                
+                // Save to local storage
+                localStorage.setItem('userProfileData', JSON.stringify(profileData));
+
+                // Update UI immediately
                 const fullName = fName + " " + lName;
                 document.getElementById('displayFullName').innerText = fullName;
                 document.getElementById('displayEmail').innerText = email;
                 
-                // Update Avatar Initials
                 const initials = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
                 document.getElementById('displayInitials').innerText = initials;
                 
@@ -327,6 +353,10 @@
 
         function logoutApp() {
             if(confirm("Are you sure you want to logout?")) {
+                // Clear app data on logout
+                localStorage.removeItem('localBoyCart');
+                localStorage.removeItem('activeOrder');
+                // Redirect to login page
                 window.location.href = "index.html";
             }
         }
