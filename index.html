@@ -3,74 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCAL BOY - Auth</title>
+    <title>LOCAL BOY - Login</title>
+    
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #ff6a00; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
-        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 30px; padding: 30px 25px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); text-align: center; }
-        
-        .brand-container { font-size: 38px; font-weight: 800; margin-bottom: 20px; }
-        .brand-local { color: #1a202c; } .brand-boy { color: #ff5200; }
-        
-        .auth-tabs { display: flex; background: #f1f5f9; border-radius: 12px; margin-bottom: 25px; overflow: hidden;}
-        .auth-tab { flex: 1; padding: 12px; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.3s;}
-        .auth-tab.active { background: #ff5200; color: white; }
-
-        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 15px; margin-bottom: 15px; background: #fff; }
-        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 15px; color: #1a202c; background: transparent; }
-        .country-code { font-weight: 600; padding-right: 12px; border-right: 1px solid #d1d5db; margin-right: 12px; }
-        
-        .primary-btn { background: #ff5200; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
-        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; font-weight: 600; display: none; }
+        body { background: #ff6a00; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden; }
+        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 35px; padding: 40px 25px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); text-align: center; position: relative; }
+        .top-icons { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
+        .icon-circle { width: 55px; height: 55px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 8px; }
+        .icon-circle img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-container { position: relative; display: inline-flex; align-items: flex-end; font-size: 42px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; }
+        .brand-local { color: #1a202c; }
+        .brand-boy { color: #ff5200; margin-left: 5px; }
+        .scooter-img { width: 70px; position: absolute; bottom: 5px; right: -65px; animation: driveIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        @keyframes driveIn { 0% { transform: translateX(-150px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(0); opacity: 1; } }
+        .tagline { font-family: 'Caveat', cursive; font-size: 20px; color: #4a5568; line-height: 1.3; margin-bottom: 35px; }
+        .just-for-you { position: relative; display: inline-block; color: #2d3748; font-weight: 700; }
+        .animated-underline { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); height: 2.5px; background-color: #ff5200; border-radius: 5px; width: 0; animation: drawLine 1s ease-out 1.2s forwards; }
+        @keyframes drawLine { to { width: 100%; } }
+        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 15px; margin-bottom: 20px; background: #fff; }
+        .input-wrapper:focus-within { border-color: #ff5200; }
+        .country-icon { color: #ff5200; font-size: 18px; margin-right: 12px; }
+        .country-code { font-weight: 600; color: #1a202c; padding-right: 12px; border-right: 1px solid #d1d5db; margin-right: 12px; font-size: 15px; }
+        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 16px; line-height: normal; min-height: 45px; color: #1a202c; background: transparent; }
+        .primary-btn { background: #ff5200; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); transition: 0.3s; }
+        .primary-btn:active { transform: scale(0.98); }
+        .features { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
+        .feature-item { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; color: #4a5568; text-align: center; line-height: 1.2; }
+        .feature-item i { font-size: 20px; color: #ff5200; }
         
         #otp-section, #profile-section { display: none; }
+        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; display: none; font-weight: 500;}
+        
+        /* Hide google recaptcha badge so it won't block UI */
+        .grecaptcha-badge { visibility: hidden !important; }
     </style>
 </head>
 <body>
 
     <div class="main-card">
-        <div class="brand-container"><span class="brand-local">Local</span><span class="brand-boy">Boy</span></div>
-        
-        <div class="auth-tabs">
-            <div class="auth-tab active" id="tab-login" onclick="switchMode('login')">Login</div>
-            <div class="auth-tab" id="tab-signup" onclick="switchMode('signup')">Sign Up</div>
+        <div class="top-icons">
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Food"></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3082/3082011.png" alt="Grocery"></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/3143/3143645.png" alt="Meat"></div>
+            <div class="icon-circle"><img src="https://cdn-icons-png.flaticon.com/512/869/869466.png" alt="Pharmacy"></div>
+        </div>
+
+        <div class="brand-container">
+            <span class="brand-local">Local</span><span class="brand-boy">Boy</span>
+            <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" alt="Scooter" class="scooter-img">
+        </div>
+
+        <div class="tagline">
+            "Smart Food, Grocery & More... <br>
+            <span class="just-for-you">
+                Just for You!
+                <div class="animated-underline"></div>
+            </span>"
         </div>
 
         <div id="mobile-section">
             <div class="input-wrapper">
+                <i class="fa-solid fa-mobile-screen-button country-icon"></i>
                 <span class="country-code">+91</span>
-                <input type="tel" id="mobile-number" placeholder="Enter mobile number" maxlength="10">
+                <input type="tel" id="mobile-number" placeholder="Enter mobile number" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
-            <button class="primary-btn" id="action-btn" onclick="processAuth()">Get OTP</button>
-            <div id="recaptcha-container" style="display:flex; justify-content:center; margin-top:10px;"></div>
+
+            <button class="primary-btn" id="get-otp-btn" onclick="sendOTP()">
+                Login Securely
+            </button>
+
+            <!-- Login / Signup Toggle -->
+            <div id="auth-toggle" style="font-size: 13px; color: #4a5568; margin-top: 15px; font-weight: 600; cursor: pointer;" onclick="toggleAuthMode()">
+                Don't have an account? <span style="color: #ff5200; text-decoration: underline;">Sign up here</span>
+            </div>
+
+            <div id="recaptcha-container" style="display:flex; justify-content:center; margin-top:5px;"></div>
         </div>
 
         <div id="otp-section">
             <div class="input-wrapper">
-                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 2px;">
+                <i class="fa-solid fa-unlock-keyhole country-icon"></i>
+                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 2px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
-            <button class="primary-btn" id="verify-btn" onclick="verifyOTP()">Verify OTP</button>
+            <button class="primary-btn" id="verify-otp-btn" onclick="verifyOTP()">
+                Verify OTP
+            </button>
         </div>
 
+        <!-- Profile Section for New Signups -->
         <div id="profile-section">
-            <h3 style="font-size: 16px; margin-bottom: 15px; color: #1e293b;">Complete Profile</h3>
-            <div class="input-wrapper"><input type="text" id="prof-name" placeholder="First Name"></div>
-            <div class="input-wrapper"><input type="text" id="prof-surname" placeholder="Last Name"></div>
-            <div class="input-wrapper"><input type="email" id="prof-email" placeholder="Email Address"></div>
+            <div style="font-size: 16px; font-weight: 700; color: #1a202c; margin-bottom: 15px;">Complete Your Profile</div>
+            <div class="input-wrapper">
+                <i class="fa-regular fa-user country-icon"></i>
+                <input type="text" id="prof-name" placeholder="First Name (Required)">
+            </div>
+            <div class="input-wrapper">
+                <i class="fa-regular fa-user country-icon"></i>
+                <input type="text" id="prof-surname" placeholder="Last Name (Required)">
+            </div>
+            <div class="input-wrapper">
+                <i class="fa-regular fa-envelope country-icon"></i>
+                <input type="email" id="prof-email" placeholder="Email (Optional)">
+            </div>
             <button class="primary-btn" onclick="saveProfile()">Create Account</button>
         </div>
 
         <div class="error-message" id="error-msg"></div>
+
+        <div class="features" id="features-div">
+            <div class="feature-item"><i class="fa-solid fa-shield-halved"></i><span>Safe &<br>Secure</span></div>
+            <div class="feature-item"><i class="fa-solid fa-bolt"></i><span>Fast<br>Delivery</span></div>
+            <div class="feature-item"><i class="fa-regular fa-face-smile"></i><span>Better<br>Experience</span></div>
+        </div>
     </div>
 
     <script>
+        // Updated Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -80,98 +140,159 @@
             messagingSenderId: "184676228358",
             appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
-        let coderesult, userPhoneNumber = "", authMode = 'login'; 
+        let coderesult;
+        let userPhoneNumber = ""; 
+        let authMode = 'login'; // 'login' or 'signup'
 
         window.onload = function () {
-            if (localStorage.getItem('userPhone')) { window.location.replace("home.html"); return; }
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+            if (localStorage.getItem('userPhone')) {
+                window.location.replace("home.html");
+                return;
+            }
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                'size': 'invisible',
+                'callback': (response) => {}
+            });
         };
 
-        function switchMode(mode) {
-            authMode = mode;
-            document.getElementById('tab-login').classList.remove('active');
-            document.getElementById('tab-signup').classList.remove('active');
-            document.getElementById('tab-' + mode).classList.add('active');
+        function toggleAuthMode() {
+            const toggleDiv = document.getElementById('auth-toggle');
+            const btn = document.getElementById('get-otp-btn');
+            
+            if(authMode === 'login') {
+                authMode = 'signup';
+                btn.innerText = 'Sign Up Securely';
+                toggleDiv.innerHTML = 'Already have an account? <span style="color: #ff5200; text-decoration: underline;">Login here</span>';
+            } else {
+                authMode = 'login';
+                btn.innerText = 'Login Securely';
+                toggleDiv.innerHTML = 'Don\'t have an account? <span style="color: #ff5200; text-decoration: underline;">Sign up here</span>';
+            }
             document.getElementById('error-msg').style.display = 'none';
         }
 
         function showError(msg) {
             const errorDiv = document.getElementById('error-msg');
-            errorDiv.innerText = msg; errorDiv.style.display = 'block';
+            errorDiv.innerText = msg;
+            errorDiv.style.display = 'block';
             setTimeout(() => { errorDiv.style.display = 'none'; }, 4000);
         }
 
-        function processAuth() {
-            const num = document.getElementById('mobile-number').value;
-            if(num.length !== 10) { showError("Enter a valid 10-digit number."); return; }
-            userPhoneNumber = "+91" + num;
-            const btn = document.getElementById('action-btn');
-            btn.innerText = 'Checking...';
+        function sendOTP() {
+            const number = document.getElementById('mobile-number').value;
+            if (number.length !== 10) {
+                showError("Please enter a valid 10-digit mobile number.");
+                return;
+            }
+            userPhoneNumber = "+91" + number; 
+            const btn = document.getElementById('get-otp-btn');
+            
+            btn.innerText = 'Checking Account...';
 
             database.ref('users/' + userPhoneNumber).once('value').then((snapshot) => {
                 const userExists = snapshot.exists();
                 
-                if(authMode === 'signup' && userExists) {
-                    showError("Account already exists! Please login.");
-                    btn.innerText = 'Get OTP'; return;
-                }
-                if(authMode === 'login' && !userExists) {
+                if (authMode === 'login' && !userExists) {
                     showError("Account not found! Please sign up first.");
-                    btn.innerText = 'Get OTP'; return;
+                    btn.innerText = 'Login Securely';
+                    return;
                 }
-                sendOTPFirebase();
-            }).catch(e => showError(e.message));
-        }
+                
+                if (authMode === 'signup' && userExists) {
+                    showError("Account already exists! Please login.");
+                    btn.innerText = 'Sign Up Securely';
+                    return;
+                }
 
-        function sendOTPFirebase() {
-            document.getElementById('action-btn').innerText = 'Sending OTP...';
-            firebase.auth().signInWithPhoneNumber(userPhoneNumber, window.recaptchaVerifier)
-                .then((result) => {
-                    coderesult = result;
-                    document.getElementById('mobile-section').style.display = 'none';
-                    document.getElementById('otp-section').style.display = 'block';
-                }).catch(e => {
-                    showError("OTP Error. Try again.");
-                    document.getElementById('action-btn').innerText = 'Get OTP';
-                });
+                // Proceed with OTP if conditions are met
+                btn.innerText = 'Sending OTP...';
+                firebase.auth().signInWithPhoneNumber(userPhoneNumber, window.recaptchaVerifier)
+                    .then((confirmationResult) => {
+                        window.confirmationResult = confirmationResult;
+                        coderesult = confirmationResult;
+                        
+                        document.getElementById('mobile-section').style.display = 'none';
+                        document.getElementById('otp-section').style.display = 'block';
+                        document.getElementById('error-msg').style.display = 'none';
+                    }).catch((error) => {
+                        btn.innerText = authMode === 'login' ? 'Login Securely' : 'Sign Up Securely';
+                        showError(error.message);
+                    });
+
+            }).catch(err => {
+                btn.innerText = authMode === 'login' ? 'Login Securely' : 'Sign Up Securely';
+                showError(err.message);
+            });
         }
 
         function verifyOTP() {
             const code = document.getElementById('otp-input').value;
-            if(code.length !== 6) { showError("Enter 6-digit OTP"); return; }
-            
-            document.getElementById('verify-btn').innerText = 'Verifying...';
-            coderesult.confirm(code).then(() => {
-                if(authMode === 'login') {
+            if (code.length !== 6) {
+                showError("Please enter the 6-digit OTP.");
+                return;
+            }
+            const verifyBtn = document.getElementById('verify-otp-btn');
+            verifyBtn.innerText = 'Verifying...';
+
+            coderesult.confirm(code).then((result) => {
+                if (authMode === 'login') {
+                    // Fetch existing profile and redirect
                     database.ref('users/' + userPhoneNumber + '/profile').once('value').then((snap) => {
-                        localStorage.setItem('userProfileData', JSON.stringify(snap.val()));
+                        if (snap.exists()) {
+                            localStorage.setItem('userProfileData', JSON.stringify(snap.val()));
+                        }
                         localStorage.setItem('userPhone', userPhoneNumber);
-                        window.location.replace("home.html");
+                        
+                        verifyBtn.style.background = "#10b981";
+                        verifyBtn.innerText = 'Success! Redirecting...';
+                        setTimeout(() => { window.location.replace("home.html"); }, 800);
                     });
                 } else {
+                    // Switch to profile form for signup
                     document.getElementById('otp-section').style.display = 'none';
                     document.getElementById('profile-section').style.display = 'block';
+                    document.getElementById('error-msg').style.display = 'none';
+                    document.getElementById('features-div').style.display = 'none';
                 }
-            }).catch(() => {
-                showError("Invalid OTP");
-                document.getElementById('verify-btn').innerText = 'Verify OTP';
+            }).catch((error) => {
+                verifyBtn.innerText = 'Verify OTP';
+                showError("Invalid OTP. Please try again.");
             });
         }
 
         function saveProfile() {
-            const name = document.getElementById('prof-name').value;
-            const surname = document.getElementById('prof-surname').value;
-            if(!name || !surname) { showError("Enter Name and Surname"); return; }
+            const name = document.getElementById('prof-name').value.trim();
+            const surname = document.getElementById('prof-surname').value.trim();
+            const email = document.getElementById('prof-email').value.trim();
 
-            const profileData = { firstName: name, lastName: surname, email: document.getElementById('prof-email').value, phone: userPhoneNumber };
+            if (!name || !surname) {
+                showError("First Name and Last Name are required.");
+                return;
+            }
+
+            const profileData = { 
+                firstName: name, 
+                lastName: surname, 
+                email: email,
+                phone: userPhoneNumber
+            };
+            
+            // Save locally
             localStorage.setItem('userProfileData', JSON.stringify(profileData));
             localStorage.setItem('userPhone', userPhoneNumber);
-            
-            database.ref('users/' + userPhoneNumber).set({ phone: userPhoneNumber, createdAt: Date.now(), profile: profileData });
-            window.location.replace("home.html");
+
+            // Push to Firebase and redirect
+            database.ref('users/' + userPhoneNumber).set({
+                phone: userPhoneNumber,
+                createdAt: Date.now(),
+                profile: profileData
+            }).then(() => {
+                window.location.replace("home.html"); 
+            });
         }
     </script>
 </body>
