@@ -4,66 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Cart</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #f1f5f9; color: #1a202c; padding-bottom: 90px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 120px; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
-        .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; color: #1a202c; }
-        .top-bar h2 { font-size: 18px; font-weight: 700; }
+        /* Top Bar */
+        .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
 
-        .section-box { background: #ffffff; margin: 15px 15px 0; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        /* Section Container */
+        .section-box { background: #ffffff; margin: 15px 15px 0; padding: 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;}
+        
+        /* Delivery Address */
         .delivery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .delivery-header h3 { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .delivery-header h3 { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a;}
         .delivery-header h3 i { color: #ff5200; font-size: 18px; }
         .change-btn { color: #ff5200; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; background: #fff8eb; padding: 4px 10px; border-radius: 8px; }
-        .address-text { font-size: 12px; color: #718096; line-height: 1.5; padding-left: 26px; }
-        .time-estimate { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #10b981; margin-top: 10px; padding-left: 26px; }
+        .address-text { font-size: 12px; color: #64748b; line-height: 1.5; padding-left: 26px; font-weight: 500;}
+        .time-estimate { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #10b981; margin-top: 10px; padding-left: 26px; }
 
-        .restaurant-name { font-size: 16px; font-weight: 700; margin-bottom: 15px; border-bottom: 1px dashed #edf2f7; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .restaurant-name img { width: 24px; height: 24px; border-radius: 6px; object-fit: cover; }
+        /* Cart Items */
+        .restaurant-name { font-size: 16px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #0f172a;}
+        .restaurant-name img { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; }
         
         .cart-item { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .cart-item:last-child { margin-bottom: 0; }
+        
         .item-details { flex: 1; display: flex; gap: 10px; }
-        .veg-indicator { width: 14px; height: 14px; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; border-radius: 3px; margin-top: 3px; flex-shrink: 0;}
+        .veg-indicator { width: 14px; height: 14px; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; border-radius: 4px; margin-top: 3px; flex-shrink: 0;}
         .veg-indicator::after { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
-        .nonveg-indicator { border-color: #e53e3e; }
-        .nonveg-indicator::after { background: #e53e3e; border-radius: 0; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-        .item-name { font-size: 14px; font-weight: 600; color: #1a202c; line-height: 1.3;}
-        .item-price { font-size: 13px; font-weight: 600; color: #4a5568; margin-top: 4px; }
+        .nonveg-indicator { border-color: #ef4444; }
+        .nonveg-indicator::after { background: #ef4444; border-radius: 0; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
         
-        .qty-controls { display: flex; align-items: center; background: #fff8eb; border: 1px solid #ff5200; border-radius: 8px; overflow: hidden; height: 30px; }
-        .qty-controls span { width: 28px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 600; color: #ff5200; cursor: pointer; }
-        .qty-controls .qty-val { font-size: 13px; font-weight: 700; color: #1a202c; width: 20px; text-align: center; }
+        .item-name { font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.3;}
+        .item-price { font-size: 13px; font-weight: 700; color: #475569; margin-top: 4px; }
+        
+        .qty-controls { display: flex; align-items: center; background: #fff8eb; border: 1px solid #ff5200; border-radius: 10px; overflow: hidden; height: 32px; box-shadow: 0 2px 8px rgba(255, 82, 0, 0.1);}
+        .qty-controls span { width: 30px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 700; color: #ff5200; cursor: pointer; }
+        .qty-controls .qty-val { font-size: 13px; font-weight: 800; color: #0f172a; width: 22px; text-align: center; }
 
-        .offer-box { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px dashed #cbd5e0; border-radius: 12px; background: #ffffff; cursor: pointer; margin-top: 15px;}
-        .offer-box div { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #1a202c; }
+        /* Offers */
+        .offer-box { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px dashed #cbd5e0; border-radius: 14px; background: #ffffff; cursor: pointer; margin-top: 15px; transition: 0.2s;}
+        .offer-box:active { background: #f8fafc; }
+        .offer-box div { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: #1e293b; }
         .offer-box i.fa-tag { color: #ff5200; font-size: 18px; }
+        .offer-box i.fa-chevron-right { color: #94a3b8; font-size: 14px; }
 
-        .bill-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; scroll-margin-top: 80px; }
-        .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: #4a5568; margin-bottom: 10px; }
-        .bill-row.discount { color: #10b981; }
-        .bill-row.total { font-size: 16px; font-weight: 800; color: #1a202c; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #edf2f7; margin-bottom: 0;}
+        /* Bill Details */
+        .bill-title { font-size: 15px; font-weight: 800; margin-bottom: 15px; scroll-margin-top: 80px; color: #0f172a;}
+        .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: #475569; margin-bottom: 10px; font-weight: 500;}
+        .bill-row.discount { color: #10b981; font-weight: 600;}
+        .bill-row.total { font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; margin-bottom: 0;}
         
-        .checkout-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 1000; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 20px; border-top-right-radius: 20px;}
-        .pay-details h4 { font-size: 16px; font-weight: 800; color: #1a202c; }
+        /* Instruction input */
+        .instruction-box { margin-top: 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; border: 1px solid #e2e8f0; }
+        .instruction-box i { color: #94a3b8; font-size: 16px;}
+        .instruction-box input { border: none; background: transparent; outline: none; font-size: 12px; flex: 1; color: #1e293b; font-weight: 500;}
+        .instruction-box input::placeholder { color: #94a3b8; font-weight: 400;}
+
+        /* Sticky Checkout Footer */
+        .checkout-footer { position: fixed; bottom: 70px; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 100; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 24px; border-top-right-radius: 24px;}
+        .pay-details h4 { font-size: 18px; font-weight: 800; color: #0f172a; }
         .view-bill-text { font-size: 11px; color: #10b981; font-weight: 700; margin-top: 2px; text-decoration: underline; cursor: pointer; display: inline-block; }
-        .btn-checkout { background: #ff5200; color: white; padding: 14px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 82, 0, 0.3); }
+        .btn-checkout { background: #ff5200; color: white; padding: 14px 24px; border-radius: 14px; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); text-decoration: none;}
 
-        .instruction-box { margin-top: 15px; background: #f7fafc; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; gap: 10px; border: 1px solid #edf2f7; }
-        .instruction-box i { color: #a0aec0; }
-        .instruction-box input { border: none; background: transparent; outline: none; font-size: 12px; flex: 1; }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
+        .nav-item.active { color: #ff5200; }
+        .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .nav-item:active i { transform: scale(0.85); }
+        .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
 
-        .empty-cart-state { display: none; text-align: center; padding: 60px 20px; }
-        .empty-cart-state img { width: 120px; margin-bottom: 20px; opacity: 0.8; }
-        .empty-cart-state h3 { font-size: 18px; font-weight: 700; color: #1a202c; margin-bottom: 8px; }
-        .empty-cart-state p { font-size: 13px; color: #718096; margin-bottom: 20px; }
-        .browse-btn { display: inline-block; background: #ff5200; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        /* Empty State */
+        .empty-cart-state { display: none; text-align: center; padding: 80px 20px; }
+        .empty-cart-state img { width: 140px; margin-bottom: 25px; opacity: 0.9; }
+        .empty-cart-state h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+        .empty-cart-state p { font-size: 14px; color: #64748b; margin-bottom: 25px; font-weight: 500;}
+        .browse-btn { display: inline-block; background: #ff5200; color: white; padding: 14px 28px; border-radius: 14px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
     </style>
 </head>
 <body>
@@ -73,50 +98,79 @@
         <h2>Checkout</h2>
     </div>
 
+    <!-- Empty Cart State -->
     <div class="empty-cart-state" id="emptyCartState">
         <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" alt="Empty Cart">
         <h3>Your Cart is Empty</h3>
         <p>Looks like you haven't added anything to your cart yet.</p>
-        <a href="home.html" class="browse-btn clickable">Browse Restaurants</a>
+        <a href="home.html" class="browse-btn clickable">Browse App</a>
     </div>
 
-    <div class="section-box" id="addressSection">
-        <div class="delivery-header">
-            <h3><i class="fa-solid fa-house"></i> Delivery at Home</h3>
-            <a href="location.html?from=cart" class="change-btn clickable">Change</a>
+    <div id="cartContentWrapper">
+        <!-- Delivery Address -->
+        <div class="section-box" id="addressSection">
+            <div class="delivery-header">
+                <h3><i class="fa-solid fa-house"></i> Delivery at Home</h3>
+                <a href="location.html?from=cart" class="change-btn clickable">Change</a>
+            </div>
+            <p class="address-text" id="cartAddressText">12-3, Main Road, Near Clock Tower, Tenali, Andhra Pradesh.</p>
+            <div class="time-estimate">
+                <i class="fa-solid fa-clock"></i> Delivery in 15 - 30 mins
+            </div>
         </div>
-        <p class="address-text" id="cartAddressText">12-3, Main Road, Near Clock Tower, Tenali, Andhra Pradesh.</p>
-        <div class="time-estimate"><i class="fa-solid fa-clock"></i> Delivery in 30 mins</div>
-    </div>
 
-    <div class="section-box" id="itemsSection">
-        <div class="restaurant-name">
-            <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop" alt="Logo">
-            Bawarchi Biryani
+        <!-- Cart Items Section -->
+        <div class="section-box" id="itemsSection">
+            <div class="restaurant-name" id="cartRestName">
+                <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop" alt="Logo">
+                Bawarchi Biryani
+            </div>
+
+            <div id="dynamicCartItems"></div>
+
+            <div class="instruction-box" id="instructionBox">
+                <i class="fa-regular fa-comment-dots"></i>
+                <input type="text" placeholder="Any cooking or delivery instructions?">
+            </div>
         </div>
-        <div id="dynamicCartItems"></div>
-        <div class="instruction-box" id="instructionBox">
-            <i class="fa-regular fa-comment-dots"></i>
-            <input type="text" placeholder="Any cooking instructions? (e.g. Make it spicy)">
+
+        <!-- Offers Section -->
+        <div class="section-box offer-box clickable" id="offersSection" style="padding: 0; margin-left: 15px; margin-right: 15px; border: none; background: transparent;">
+            <div class="offer-box" style="width: 100%; margin-top: 0;">
+                <div><i class="fa-solid fa-tag"></i> Apply Coupon</div>
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <!-- Bill Details -->
+        <div class="section-box" id="billSection">
+            <h3 class="bill-title">Bill Details</h3>
+            
+            <div class="bill-row">
+                <span>Item Total</span>
+                <span id="bill-item-total">₹0.00</span>
+            </div>
+            <div class="bill-row">
+                <span>Delivery Fee | 1.2 kms</span>
+                <span>₹30.00</span>
+            </div>
+            <div class="bill-row discount">
+                <span>Discount (10% OFF)</span>
+                <span id="bill-discount">- ₹0.00</span>
+            </div>
+            <div class="bill-row">
+                <span>Taxes & Charges</span>
+                <span>₹25.00</span>
+            </div>
+            
+            <div class="bill-row total">
+                <span>To Pay</span>
+                <span id="bill-to-pay">₹0.00</span>
+            </div>
         </div>
     </div>
 
-    <div class="section-box offer-box clickable" id="offersSection" style="padding: 0; margin-left: 15px; margin-right: 15px; border: none; background: transparent;">
-        <div class="offer-box" style="width: 100%; margin-top: 0;">
-            <div><i class="fa-solid fa-tag"></i> Apply Coupon</div>
-            <i class="fa-solid fa-chevron-right"></i>
-        </div>
-    </div>
-
-    <div class="section-box" id="billSection">
-        <h3 class="bill-title">Bill Details</h3>
-        <div class="bill-row"><span>Item Total</span><span id="bill-item-total">₹0.00</span></div>
-        <div class="bill-row"><span>Delivery Fee | 1.2 kms</span><span>₹30.00</span></div>
-        <div class="bill-row discount"><span>Restaurant Discount (10% OFF)</span><span id="bill-discount">- ₹0.00</span></div>
-        <div class="bill-row"><span>Taxes & Charges</span><span>₹25.00</span></div>
-        <div class="bill-row total"><span>To Pay</span><span id="bill-to-pay">₹0.00</span></div>
-    </div>
-
+    <!-- Sticky Checkout Footer -->
     <div class="checkout-footer" id="checkoutFooter">
         <div class="pay-details">
             <h4 id="footer-to-pay">₹0.00</h4>
@@ -127,38 +181,91 @@
         </a>
     </div>
 
+    <!-- 🔴 UPDATED: Bottom Nav links correctly to groceries.html and stays fixed -->
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
+        <a href="cart.html" class="nav-item active">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="cart-badge" id="bottomNavCartBadge">0</span>
+            <span>Cart</span>
+        </a>
+        <a href="orders.html" class="nav-item"><i class="fa-solid fa-clipboard-list"></i><span>Orders</span></a>
+    </div>
+
     <script>
+        // 🔴 Full Database (Food + Groceries) combined
         const menuDB = {
+            // Food Items
             '1': { name: 'Chicken Dum Biryani', price: 280, type: 'nonveg' },
             '2': { name: 'Paneer Butter Masala', price: 220, type: 'veg' },
-            '3': { name: 'Chicken 65', price: 190, type: 'nonveg' }
+            '3': { name: 'Chicken 65', price: 190, type: 'nonveg' },
+            
+            // Premium Grocery Items (A to Z)
+            'g1': { name: 'Onions (Medium)', price: 45, type: 'veg' },
+            'g2': { name: 'Fresh Tomatoes', price: 30, type: 'veg' },
+            'g3': { name: 'Amul Taaza Milk', price: 28, type: 'veg' },
+            'g4': { name: 'Farm Fresh Chicken', price: 140, type: 'nonveg' },
+            'g5': { name: 'Toor Dal (Premium)', price: 160, type: 'veg' },
+            'g6': { name: 'Sona Masoori Rice (25kg)', price: 1250, type: 'veg' },
+            'g7': { name: 'Lays Magic Masala', price: 20, type: 'veg' },
+            'g8': { name: 'Thums Up Soft Drink', price: 40, type: 'veg' },
+            'g9': { name: 'Surf Excel Powder', price: 140, type: 'veg' },
+            'g10': { name: 'Safety Pins (50 pcs)', price: 20, type: 'veg' },
+            'g11': { name: 'Matchbox Bundle', price: 15, type: 'veg' },
+            'g12': { name: 'Dolo 650 Tablets', price: 30, type: 'veg' }
         };
+
         let cartData;
 
         function initCart() {
             cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
             
             const emptyState = document.getElementById('emptyCartState');
-            const addressSection = document.getElementById('addressSection');
-            const itemsSection = document.getElementById('itemsSection');
-            const offersSection = document.getElementById('offersSection');
-            const billSection = document.getElementById('billSection');
+            const cartContentWrapper = document.getElementById('cartContentWrapper');
             const checkoutFooter = document.getElementById('checkoutFooter');
             const dynamicCartItems = document.getElementById('dynamicCartItems');
+            const bottomNavBadge = document.getElementById('bottomNavCartBadge');
+            const cartRestName = document.getElementById('cartRestName');
 
+            // Bottom Nav Badge Update
+            if (cartData.totalQty > 0) {
+                bottomNavBadge.style.display = 'flex';
+                bottomNavBadge.innerText = cartData.totalQty;
+            } else {
+                bottomNavBadge.style.display = 'none';
+            }
+
+            // 1. Check if Cart is Empty
             if (cartData.totalQty === 0 || !cartData.restId) {
-                emptyState.style.display = 'block'; addressSection.style.display = 'none'; itemsSection.style.display = 'none'; offersSection.style.display = 'none'; billSection.style.display = 'none'; checkoutFooter.style.display = 'none';
+                emptyState.style.display = 'block';
+                cartContentWrapper.style.display = 'none';
+                checkoutFooter.style.display = 'none';
+                
+                // Reset local storage to clean state
                 localStorage.setItem('localBoyCart', JSON.stringify({ restId: null, items: {}, totalQty: 0 }));
                 return;
             }
 
-            emptyState.style.display = 'none'; addressSection.style.display = 'block'; itemsSection.style.display = 'block'; offersSection.style.display = 'block'; billSection.style.display = 'block'; checkoutFooter.style.display = 'flex';
+            // 2. Render Cart if items exist
+            emptyState.style.display = 'none';
+            cartContentWrapper.style.display = 'block';
+            checkoutFooter.style.display = 'flex';
+
+            // Set Header based on Restaurant or Grocery Store
+            if (cartData.restId === 'grocery_store') {
+                cartRestName.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3194/3194591.png" style="background:#ecfdf5; padding:2px;"> Local Boy Groceries`;
+            } else {
+                cartRestName.innerHTML = `<img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop"> Bawarchi Biryani`;
+            }
+
             dynamicCartItems.innerHTML = '';
             let itemTotal = 0;
 
             for (let id in cartData.items) {
                 let qty = cartData.items[id];
                 let item = menuDB[id];
+                
                 if(!item) continue;
                 
                 itemTotal += (item.price * qty);
@@ -182,6 +289,7 @@
                 `;
             }
 
+            // Calculations
             let deliveryFee = 30;
             let discount = Math.round(itemTotal * 0.10); 
             let taxes = 25;
@@ -197,22 +305,45 @@
             let currentQty = cartData.items[id] || 0;
             let newQty = currentQty + change;
             
-            if (newQty > 0) cartData.items[id] = newQty;
-            else { if(confirm("Remove item from cart?")) delete cartData.items[id]; else return; }
+            if (newQty > 0) {
+                cartData.items[id] = newQty;
+            } else {
+                if(confirm("Remove item from cart?")) {
+                    delete cartData.items[id];
+                } else {
+                    return; 
+                }
+            }
             
             cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
-            if (cartData.totalQty === 0) cartData.restId = null;
+            if (cartData.totalQty === 0) {
+                cartData.restId = null;
+            }
             
             localStorage.setItem('localBoyCart', JSON.stringify(cartData));
             initCart();
         }
 
-        function scrollToBill() { document.getElementById('billSection').scrollIntoView({ behavior: 'smooth' }); }
+        function scrollToBill() {
+            const billSection = document.getElementById('billSection');
+            if (billSection) {
+                // Calculate correct scroll position preventing the sticky footer from hiding it
+                const y = billSection.getBoundingClientRect().top + window.scrollY - 100;
+                window.scrollTo({top: y, behavior: 'smooth'});
+            }
+        }
 
+        // Use pageshow event so cart data stays fresh when swiping back to this page
         window.addEventListener('pageshow', function() {
             initCart();
+            
             const savedLocation = localStorage.getItem("userSavedAddress");
-            if (savedLocation) document.getElementById("cartAddressText").innerText = savedLocation;
+            if (savedLocation) {
+                const addressText = document.getElementById("cartAddressText");
+                if (addressText) {
+                    addressText.innerText = savedLocation;
+                }
+            }
         });
     </script>
 </body>
