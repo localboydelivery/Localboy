@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; }
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.97); opacity: 0.9; }
+
+        .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+
+        .tabs-container { display: flex; background: #ffffff; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .tab { flex: 1; text-align: center; padding: 15px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; }
+        .tab.active { color: #ff5200; border-bottom: 3px solid #ff5200; }
+
+        .orders-container { padding: 15px; display: none; }
+        .orders-container.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .order-card { background: #ffffff; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        
+        .live-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e2e8f0; }
+        .status-text h4 { font-size: 15px; font-weight: 800; color: #ff5200; display: flex; align-items: center; gap: 8px;}
+        .status-text p { font-size: 11px; color: #64748b; margin-top: 3px; font-weight: 600;}
+        .eta-box { background: #ecfdf5; color: #10b981; padding: 8px 12px; border-radius: 12px; text-align: center; border: 1px solid #d1fae5;}
+        .eta-box strong { display: block; font-size: 14px; font-weight: 800; }
+        .eta-box span { font-size: 10px; font-weight: 700; text-transform: uppercase;}
+
+        .rest-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .rest-info img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
+        .rest-name { font-size: 15px; font-weight: 800; color: #0f172a;}
+        .order-id { font-size: 11px; color: #94a3b8; font-weight: 500; margin-top: 2px;}
+
+        .items-list { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 18px; font-weight: 500;}
+        
+        .order-actions { display: flex; gap: 10px; }
+        .btn-solid { flex: 1; padding: 12px; background: #ff5200; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 82, 0, 0.2); transition: 0.2s; display: block;}
+        .btn-solid:active { transform: scale(0.98); }
+
+        .past-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .past-date { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px;}
+        .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
+        .status-delivered { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;}
+        .status-cancelled { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2;}
+        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;}
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
+        .nav-item.active { color: #ff5200; }
+        .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
+
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state img { width: 120px; margin-bottom: 25px; opacity: 0.8;}
+        .empty-state h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
+        .empty-state p { font-size: 13px; color: #64748b; font-weight: 500;}
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="home.html" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>My Orders</h2>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab active" onclick="switchTab('active')">Active Orders</div>
+        <div class="tab" onclick="switchTab('past')">Past Orders</div>
+    </div>
+
+    <div class="orders-container active" id="activeOrders">
+        <div class="empty-state" id="noActiveOrder" style="display: none;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
+            <h3>No active orders</h3>
+            <p>You don't have any ongoing orders at the moment.</p>
+        </div>
+        <div id="activeOrdersList"></div>
+    </div>
+
+    <div class="orders-container" id="pastOrders">
+        <div class="empty-state" id="noPastOrder" style="display: none;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
+            <h3>No past orders</h3>
+            <p>Your order history is empty.</p>
+        </div>
+        <div id="pastOrdersList"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
+        <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
+        <a href="cart.html" class="nav-item">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="cart-badge" id="bottomNavCartBadge" style="display: none;">0</span>
+            <span>Cart</span>
+        </a>
+        <a href="orders.html" class="nav-item active"><i class="fa-solid fa-clipboard-list"></i><span>Orders</span></a>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const menuDB = {
+            '1': 'Chicken Dum Biryani', '2': 'Paneer Butter Masala', '3': 'Chicken 65',
+            'g1': 'Onions (Medium)', 'g2': 'Fresh Tomatoes', 'gf1': 'Bananas', 'g3': 'Amul Taaza Milk',
+            'g4': 'Farm Fresh Chicken', 'g5': 'Toor Dal', 'g6': 'Sona Masoori Rice',
+            'g7': 'Lays Magic Masala', 'g8': 'Thums Up Soft Drink', 'g9': 'Surf Excel Powder',
+            'g10': 'Safety Pins', 'g11': 'Matchbox Bundle', 'g12': 'Dolo 650 Tablets'
+        };
+
+        window.addEventListener('pageshow', function() {
+            const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+            const bottomNavBadge = document.getElementById('bottomNavCartBadge');
+            if (cartData && cartData.totalQty > 0) {
+                bottomNavBadge.style.display = 'flex';
+                bottomNavBadge.innerText = cartData.totalQty;
+            } else {
+                bottomNavBadge.style.display = 'none';
+            }
+            fetchOrders();
+        });
+
+        function fetchOrders() {
+            const userPhone = localStorage.getItem('userPhone');
+            if(!userPhone) {
+                document.getElementById('noActiveOrder').style.display = 'block';
+                document.getElementById('noPastOrder').style.display = 'block';
+                return;
+            }
+
+            database.ref('orders').orderByChild('customerId').equalTo(userPhone)
+            .on('value', (snapshot) => {
+                const activeList = document.getElementById('activeOrdersList');
+                const pastList = document.getElementById('pastOrdersList');
+                activeList.innerHTML = '';
+                pastList.innerHTML = '';
+                
+                let hasActive = false, hasPast = false;
+                let ordersArray = [];
+                snapshot.forEach(child => { ordersArray.push(child.val()); });
+                ordersArray.sort((a, b) => b.timestamp - a.timestamp);
+
+                ordersArray.forEach(order => {
+                    let itemsHtml = '';
+                    for (let id in order.items) {
+                        let itemName = menuDB[id] || 'Item';
+                        itemsHtml += `${order.items[id]} x ${itemName}<br>`;
+                    }
+
+                    const dateObj = new Date(order.timestamp);
+                    const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                    
+                    const isGrocery = order.restaurantId === 'grocery_store';
+                    const imgUrl = isGrocery ? 'https://cdn-icons-png.flaticon.com/512/3194/3194591.png' : 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop';
+                    const storeName = isGrocery ? 'Local Boy Groceries' : 'Bawarchi Biryani';
+                    const bgStyle = isGrocery ? 'style="background:#ecfdf5; padding:2px;"' : '';
+
+                    if (order.status === 'Delivered' || order.status === 'Cancelled') {
+                        hasPast = true;
+                        let badgeClass = order.status === 'Delivered' ? 'status-delivered' : 'status-cancelled';
+                        
+                        let ratingHtml = '';
+                        if (order.status === 'Delivered') {
+                            if(order.rating) {
+                                ratingHtml = `<div style="font-size:12px; color:#d97706; font-weight:700;"><i class="fa-solid fa-star"></i> You rated ${order.rating}/5</div>`;
+                            } else {
+                                ratingHtml = `<div style="font-size:12px; color:#3b82f6; font-weight:700; cursor:pointer;" onclick="rateOrder('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate this Order</div>`;
+                            }
+                        }
+                        
+                        pastList.innerHTML += `
+                            <div class="order-card">
+                                <div class="past-header">
+                                    <div class="rest-info" style="margin-bottom: 0;">
+                                        <img src="${imgUrl}" ${bgStyle}>
+                                        <div><div class="rest-name">${storeName}</div><div class="past-date">${dateStr}</div></div>
+                                    </div>
+                                    <div class="status-badge ${badgeClass}">${order.status}</div>
+                                </div>
+                                <div class="items-list" style="margin-top: 10px;">${itemsHtml}</div>
+                                <div class="total-amt">
+                                    <span>${ratingHtml}</span>
+                                    <span>₹${order.totalAmount}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        hasActive = true;
+                        let statusIcon = order.status === 'Placed' ? 'fa-clock' : (order.status === 'On the Way' ? 'fa-motorcycle fa-bounce' : 'fa-fire-burner fa-bounce');
+                        
+                        activeList.innerHTML += `
+                            <div class="order-card">
+                                <div class="live-status">
+                                    <div class="status-text"><h4><i class="fa-solid ${statusIcon}"></i> ${order.status}</h4><p>Order is currently being processed</p></div>
+                                    <div class="eta-box"><strong>15 min</strong><span>ETA</span></div>
+                                </div>
+                                <div class="rest-info">
+                                    <img src="${imgUrl}" ${bgStyle}>
+                                    <div><div class="rest-name">${storeName}</div><div class="order-id">Order ID: #${order.orderId}</div></div>
+                                </div>
+                                <div class="items-list">${itemsHtml}</div>
+                                <div class="order-actions"><a href="track.html?id=${order.orderId}" class="btn-solid clickable" style="text-decoration: none;">Track Order</a></div>
+                            </div>
+                        `;
+                    }
+                });
+
+                document.getElementById('noActiveOrder').style.display = hasActive ? 'none' : 'block';
+                document.getElementById('noPastOrder').style.display = hasPast ? 'none' : 'block';
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.orders-container').forEach(c => c.classList.remove('active'));
+            if(tabName === 'active') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('activeOrders').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('pastOrders').classList.add('active');
+            }
+        }
+
+        function rateOrder(orderId) {
+            let rating = prompt("Rate this order from 1 to 5 stars:", "5");
+            if(rating && rating >= 1 && rating <= 5) {
+                database.ref('orders/' + orderId).update({ rating: parseInt(rating) })
+                .then(() => alert("Thanks for your rating!"));
+            } else if (rating !== null) {
+                alert("Please enter a valid number between 1 and 5.");
+            }
+        }
+    </script>
+</body>
+</html>

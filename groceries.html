@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Groceries</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; overflow-x: hidden; width: 100vw;} /* Scroll Fix */
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.95); opacity: 0.9; }
+
+        .top-nav { display: flex; align-items: center; gap: 15px; padding: 15px 20px; position: sticky; top: 0; z-index: 100; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+        .icon-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer;}
+        .header-title h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .header-title p { font-size: 11px; color: #10b981; font-weight: 700; text-transform: uppercase;}
+
+        .search-container { padding: 15px 20px; background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 68px; z-index: 99;}
+        .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 18px; border: 1px solid #e2e8f0; }
+        .search-box input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; padding: 0 12px; color: #1e293b; }
+
+        .premium-categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; padding: 20px 15px; background: #ffffff; border-bottom: 1px solid #f1f5f9; }
+        .cat-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; }
+        .cat-img-wrap { width: 72px; height: 72px; border-radius: 20px; display: flex; justify-content: center; align-items: center; overflow: hidden; background: #f8fafc;}
+        .cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-box span { font-size: 12px; font-weight: 700; color: #475569; line-height: 1.2; }
+
+        .section-header { padding: 15px 20px 5px; display: flex; justify-content: space-between; align-items: center; }
+        .section-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .reset-filter { font-size: 12px; color: #ff5200; font-weight: 700; cursor: pointer; display: none;}
+
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px; }
+        .prod-card { background: #ffffff; border-radius: 20px; padding: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column;}
+        .prod-img-box { width: 100%; height: 120px; border-radius: 14px; margin-bottom: 12px; overflow: hidden;}
+        .prod-img-box img { width: 100%; height: 100%; object-fit: contain; }
+        .prod-title-en { font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 3px; }
+        .prod-weight { font-size: 11px; color: #64748b; margin-bottom: 12px; }
+        .prod-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .prod-price { font-size: 16px; font-weight: 800; }
+        
+        .add-btn-wrapper { width: 75px; height: 34px; background: #ffffff; border: 1px solid #10b981; border-radius: 10px; overflow: hidden; }
+        .btn-add { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: #10b981; font-size: 13px; font-weight: 800; cursor: pointer; background: #f0fdf4;}
+        .btn-controls { display: none; justify-content: space-between; align-items: center; width: 100%; height: 100%; background: #10b981; color: white;}
+        .btn-controls span { padding: 0 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; height: 100%;}
+        .qty-val { font-size: 14px; font-weight: 700; }
+
+        .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); transform: translateY(100%); transition: 0.3s; z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px;}
+        .cart-footer.show { transform: translateY(0); }
+        .cart-banner { background: #10b981; border-radius: 14px; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center;}
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <a href="home.html" class="icon-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="header-title"><h2>Groceries & Essentials</h2><p><i class="fa-solid fa-bolt"></i> Delivery in 15 mins</p></div>
+    </div>
+
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="grocerySearch" placeholder="Search tomatoes, milk..." onkeyup="filterBySearch()">
+        </div>
+    </div>
+
+    <div class="premium-categories">
+        <div class="cat-box" onclick="filterByCategory('vegetables')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=300&auto=format&fit=crop"></div><span>Fresh<br>Veggies</span></div>
+        <div class="cat-box" onclick="filterByCategory('fruits')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=300&auto=format&fit=crop"></div><span>Fresh<br>Fruits</span></div>
+        <div class="cat-box" onclick="filterByCategory('dairy')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=300&auto=format&fit=crop"></div><span>Dairy &<br>Milk</span></div>
+        <div class="cat-box" onclick="filterByCategory('snacks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=300&auto=format&fit=crop"></div><span>Snacks</span></div>
+    </div>
+
+    <div class="section-header">
+        <h3 id="sectionTitle">A to Z Items</h3>
+        <span class="reset-filter" id="resetFilterBtn" onclick="resetFilter()">Clear Filter <i class="fa-solid fa-xmark"></i></span>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+
+    <div class="cart-footer" id="cartFooter">
+        <a href="cart.html" class="cart-banner clickable">
+            <div><h4 id="totalItems">1 Item added</h4></div>
+            <div style="font-weight: 700;">View Cart <i class="fa-solid fa-caret-right"></i></div>
+        </a>
+    </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI", authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com", databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com", projectId: "sri-vishnu-priya-finance-c591f", storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app", messagingSenderId: "184676228358", appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        });
+        const database = firebase.database();
+        let groceryDB = [], currentCategory = 'all';
+        let cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
+
+        window.onload = function() { fetchGroceries(); updateCartUI(); };
+
+        function fetchGroceries() {
+            groceryDB = [
+                { id: 'g1', en: 'Onions (Medium)', cat: 'vegetables', weight: '1 kg', price: 45, img: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?q=80&w=300&auto=format&fit=crop' },
+                { id: 'g2', en: 'Fresh Tomatoes', cat: 'vegetables', weight: '1 kg', price: 30, img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?q=80&w=300&auto=format&fit=crop' },
+                { id: 'gf1', en: 'Bananas', cat: 'fruits', weight: '1 Dozen', price: 60, img: 'https://images.unsplash.com/photo-1571501474524-12fe46ac1499?q=80&w=300' },
+                { id: 'g3', en: 'Amul Taaza Milk', cat: 'dairy', weight: '500 ml', price: 28, img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=300&auto=format&fit=crop' },
+                { id: 'g7', en: 'Lays Magic Masala', cat: 'snacks', weight: '50 g', price: 20, img: 'https://cdn-icons-png.flaticon.com/512/2553/2553691.png' }
+            ];
+            renderProducts(groceryDB);
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+            items.forEach(item => {
+                let qty = cartData.items[item.id] || 0;
+                let btnHtml = qty > 0 ? `<div class="btn-controls" style="display:flex;"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val">${qty}</div><span onclick="updateItem('${item.id}', 1)">+</span></div>` : `<div class="btn-add" onclick="addItem('${item.id}')">ADD</div>`;
+                grid.innerHTML += `<div class="prod-card"><div class="prod-img-box"><img src="${item.img}"></div><div class="prod-title-en">${item.en}</div><div class="prod-weight">${item.weight}</div><div class="prod-bottom"><div class="prod-price">₹${item.price}</div><div class="add-btn-wrapper">${btnHtml}</div></div></div>`;
+            });
+        }
+
+        function filterByCategory(category) {
+            document.getElementById('sectionTitle').innerText = category.charAt(0).toUpperCase() + category.slice(1);
+            document.getElementById('resetFilterBtn').style.display = 'block';
+            renderProducts(groceryDB.filter(i => i.cat === category));
+        }
+
+        function filterBySearch() {
+            let q = document.getElementById('grocerySearch').value.toLowerCase();
+            renderProducts(groceryDB.filter(i => i.en.toLowerCase().includes(q)));
+        }
+
+        function resetFilter() {
+            document.getElementById('sectionTitle').innerText = 'A to Z Items';
+            document.getElementById('resetFilterBtn').style.display = 'none';
+            renderProducts(groceryDB);
+        }
+
+        function addItem(id) { cartData.restId = 'grocery_store'; cartData.items[id] = 1; saveCart(); renderProducts(groceryDB); }
+        function updateItem(id, change) { cartData.items[id] += change; if(cartData.items[id] <= 0) delete cartData.items[id]; saveCart(); renderProducts(groceryDB); }
+        function saveCart() { cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0); localStorage.setItem('localBoyCart', JSON.stringify(cartData)); updateCartUI(); }
+        function updateCartUI() { document.getElementById('cartFooter').classList.toggle('show', cartData.totalQty > 0); document.getElementById('totalItems').innerText = cartData.totalQty + " Items added"; }
+    </script>
+</body>
+</html>

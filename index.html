@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCAL BOY - Auth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #ff6a00; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 30px; padding: 30px 25px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); text-align: center; }
+        
+        .brand-container { font-size: 38px; font-weight: 800; margin-bottom: 20px; }
+        .brand-local { color: #1a202c; } .brand-boy { color: #ff5200; }
+        
+        .auth-tabs { display: flex; background: #f1f5f9; border-radius: 12px; margin-bottom: 25px; overflow: hidden;}
+        .auth-tab { flex: 1; padding: 12px; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; transition: 0.3s;}
+        .auth-tab.active { background: #ff5200; color: white; }
+
+        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 15px; margin-bottom: 15px; background: #fff; }
+        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 15px; color: #1a202c; background: transparent; }
+        .country-code { font-weight: 600; padding-right: 12px; border-right: 1px solid #d1d5db; margin-right: 12px; }
+        
+        .primary-btn { background: #ff5200; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; font-weight: 600; display: none; }
+        
+        #otp-section, #profile-section { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <div class="brand-container"><span class="brand-local">Local</span><span class="brand-boy">Boy</span></div>
+        
+        <div class="auth-tabs">
+            <div class="auth-tab active" id="tab-login" onclick="switchMode('login')">Login</div>
+            <div class="auth-tab" id="tab-signup" onclick="switchMode('signup')">Sign Up</div>
+        </div>
+
+        <div id="mobile-section">
+            <div class="input-wrapper">
+                <span class="country-code">+91</span>
+                <input type="tel" id="mobile-number" placeholder="Enter mobile number" maxlength="10">
+            </div>
+            <button class="primary-btn" id="action-btn" onclick="processAuth()">Get OTP</button>
+            <div id="recaptcha-container" style="display:flex; justify-content:center; margin-top:10px;"></div>
+        </div>
+
+        <div id="otp-section">
+            <div class="input-wrapper">
+                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 2px;">
+            </div>
+            <button class="primary-btn" id="verify-btn" onclick="verifyOTP()">Verify OTP</button>
+        </div>
+
+        <div id="profile-section">
+            <h3 style="font-size: 16px; margin-bottom: 15px; color: #1e293b;">Complete Profile</h3>
+            <div class="input-wrapper"><input type="text" id="prof-name" placeholder="First Name"></div>
+            <div class="input-wrapper"><input type="text" id="prof-surname" placeholder="Last Name"></div>
+            <div class="input-wrapper"><input type="email" id="prof-email" placeholder="Email Address"></div>
+            <button class="primary-btn" onclick="saveProfile()">Create Account</button>
+        </div>
+
+        <div class="error-message" id="error-msg"></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        let coderesult, userPhoneNumber = "", authMode = 'login'; 
+
+        window.onload = function () {
+            if (localStorage.getItem('userPhone')) { window.location.replace("home.html"); return; }
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
+        };
+
+        function switchMode(mode) {
+            authMode = mode;
+            document.getElementById('tab-login').classList.remove('active');
+            document.getElementById('tab-signup').classList.remove('active');
+            document.getElementById('tab-' + mode).classList.add('active');
+            document.getElementById('error-msg').style.display = 'none';
+        }
+
+        function showError(msg) {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.innerText = msg; errorDiv.style.display = 'block';
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 4000);
+        }
+
+        function processAuth() {
+            const num = document.getElementById('mobile-number').value;
+            if(num.length !== 10) { showError("Enter a valid 10-digit number."); return; }
+            userPhoneNumber = "+91" + num;
+            const btn = document.getElementById('action-btn');
+            btn.innerText = 'Checking...';
+
+            database.ref('users/' + userPhoneNumber).once('value').then((snapshot) => {
+                const userExists = snapshot.exists();
+                
+                if(authMode === 'signup' && userExists) {
+                    showError("Account already exists! Please login.");
+                    btn.innerText = 'Get OTP'; return;
+                }
+                if(authMode === 'login' && !userExists) {
+                    showError("Account not found! Please sign up first.");
+                    btn.innerText = 'Get OTP'; return;
+                }
+                sendOTPFirebase();
+            }).catch(e => showError(e.message));
+        }
+
+        function sendOTPFirebase() {
+            document.getElementById('action-btn').innerText = 'Sending OTP...';
+            firebase.auth().signInWithPhoneNumber(userPhoneNumber, window.recaptchaVerifier)
+                .then((result) => {
+                    coderesult = result;
+                    document.getElementById('mobile-section').style.display = 'none';
+                    document.getElementById('otp-section').style.display = 'block';
+                }).catch(e => {
+                    showError("OTP Error. Try again.");
+                    document.getElementById('action-btn').innerText = 'Get OTP';
+                });
+        }
+
+        function verifyOTP() {
+            const code = document.getElementById('otp-input').value;
+            if(code.length !== 6) { showError("Enter 6-digit OTP"); return; }
+            
+            document.getElementById('verify-btn').innerText = 'Verifying...';
+            coderesult.confirm(code).then(() => {
+                if(authMode === 'login') {
+                    database.ref('users/' + userPhoneNumber + '/profile').once('value').then((snap) => {
+                        localStorage.setItem('userProfileData', JSON.stringify(snap.val()));
+                        localStorage.setItem('userPhone', userPhoneNumber);
+                        window.location.replace("home.html");
+                    });
+                } else {
+                    document.getElementById('otp-section').style.display = 'none';
+                    document.getElementById('profile-section').style.display = 'block';
+                }
+            }).catch(() => {
+                showError("Invalid OTP");
+                document.getElementById('verify-btn').innerText = 'Verify OTP';
+            });
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('prof-name').value;
+            const surname = document.getElementById('prof-surname').value;
+            if(!name || !surname) { showError("Enter Name and Surname"); return; }
+
+            const profileData = { firstName: name, lastName: surname, email: document.getElementById('prof-email').value, phone: userPhoneNumber };
+            localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            localStorage.setItem('userPhone', userPhoneNumber);
+            
+            database.ref('users/' + userPhoneNumber).set({ phone: userPhoneNumber, createdAt: Date.now(), profile: profileData });
+            window.location.replace("home.html");
+        }
+    </script>
+</body>
+</html>
