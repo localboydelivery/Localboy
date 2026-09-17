@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - My Orders</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
@@ -16,20 +18,25 @@
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
+        /* Premium Top Bar */
         .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
         .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
         .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
 
+        /* Tabs */
         .tabs-container { display: flex; background: #ffffff; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .tab { flex: 1; text-align: center; padding: 15px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; }
         .tab.active { color: #ff5200; border-bottom: 3px solid #ff5200; }
 
+        /* Orders Container */
         .orders-container { padding: 15px; display: none; }
         .orders-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Premium Order Card */
         .order-card { background: #ffffff; border-radius: 20px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
         
+        /* Active Order Specific */
         .live-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e2e8f0; }
         .status-text h4 { font-size: 15px; font-weight: 800; color: #ff5200; display: flex; align-items: center; gap: 8px;}
         .status-text p { font-size: 11px; color: #64748b; margin-top: 3px; font-weight: 600;}
@@ -45,22 +52,28 @@
         .items-list { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 18px; font-weight: 500;}
         
         .order-actions { display: flex; gap: 10px; }
+        .btn-outline { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; color: #475569; cursor: pointer; transition: 0.2s;}
+        .btn-outline:active { background: #f8fafc; }
         .btn-solid { flex: 1; padding: 12px; background: #ff5200; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(255, 82, 0, 0.2); transition: 0.2s; display: block;}
         .btn-solid:active { transform: scale(0.98); }
 
+        /* Past Order Specific */
         .past-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
         .past-date { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px;}
         .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .status-delivered { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;}
         .status-cancelled { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2;}
-        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;}
+        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between;}
 
+        /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
         .nav-item.active { color: #ff5200; }
         .nav-item i { font-size: 22px; transition: transform 0.2s;}
+        .nav-item:active i { transform: scale(0.85); }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
 
+        /* Empty State */
         .empty-state { text-align: center; padding: 60px 20px; }
         .empty-state img { width: 120px; margin-bottom: 25px; opacity: 0.8;}
         .empty-state h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
@@ -74,11 +87,13 @@
         <h2>My Orders</h2>
     </div>
 
+    <!-- Tabs -->
     <div class="tabs-container">
         <div class="tab active" onclick="switchTab('active')">Active Orders</div>
         <div class="tab" onclick="switchTab('past')">Past Orders</div>
     </div>
 
+    <!-- Active Orders Section -->
     <div class="orders-container active" id="activeOrders">
         <div class="empty-state" id="noActiveOrder" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
@@ -88,6 +103,7 @@
         <div id="activeOrdersList"></div>
     </div>
 
+    <!-- Past Orders Section -->
     <div class="orders-container" id="pastOrders">
         <div class="empty-state" id="noPastOrder" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
@@ -97,6 +113,7 @@
         <div id="pastOrdersList"></div>
     </div>
 
+    <!-- Bottom Nav -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
@@ -109,6 +126,12 @@
     </div>
 
     <script>
+        // Security Check - Redirect to login if not logged in
+        if (!localStorage.getItem('userPhone')) {
+            window.location.replace("index.html");
+        }
+
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -118,18 +141,21 @@
             messagingSenderId: "184676228358",
             appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
         };
+        
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Menu Data reference for item names
         const menuDB = {
             '1': 'Chicken Dum Biryani', '2': 'Paneer Butter Masala', '3': 'Chicken 65',
-            'g1': 'Onions (Medium)', 'g2': 'Fresh Tomatoes', 'gf1': 'Bananas', 'g3': 'Amul Taaza Milk',
+            'g1': 'Onions (Medium)', 'g2': 'Fresh Tomatoes', 'g3': 'Amul Taaza Milk',
             'g4': 'Farm Fresh Chicken', 'g5': 'Toor Dal', 'g6': 'Sona Masoori Rice',
             'g7': 'Lays Magic Masala', 'g8': 'Thums Up Soft Drink', 'g9': 'Surf Excel Powder',
             'g10': 'Safety Pins', 'g11': 'Matchbox Bundle', 'g12': 'Dolo 650 Tablets'
         };
 
         window.addEventListener('pageshow', function() {
+            // Cart Badge Update
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
             const bottomNavBadge = document.getElementById('bottomNavCartBadge');
             if (cartData && cartData.totalQty > 0) {
@@ -138,6 +164,7 @@
             } else {
                 bottomNavBadge.style.display = 'none';
             }
+
             fetchOrders();
         });
 
@@ -149,6 +176,7 @@
                 return;
             }
 
+            // Real-time listener for orders
             database.ref('orders').orderByChild('customerId').equalTo(userPhone)
             .on('value', (snapshot) => {
                 const activeList = document.getElementById('activeOrdersList');
@@ -156,7 +184,10 @@
                 activeList.innerHTML = '';
                 pastList.innerHTML = '';
                 
-                let hasActive = false, hasPast = false;
+                let hasActive = false;
+                let hasPast = false;
+
+                // Create array to sort by timestamp descending
                 let ordersArray = [];
                 snapshot.forEach(child => { ordersArray.push(child.val()); });
                 ordersArray.sort((a, b) => b.timestamp - a.timestamp);
@@ -180,47 +211,61 @@
                         hasPast = true;
                         let badgeClass = order.status === 'Delivered' ? 'status-delivered' : 'status-cancelled';
                         
-                        let ratingHtml = '';
+                        // Rating Logic added securely
+                        let ratingHtml = `<span style="color: #64748b; font-size: 13px; font-weight: 600;">Total Amount</span>`;
                         if (order.status === 'Delivered') {
-                            if(order.rating) {
-                                ratingHtml = `<div style="font-size:12px; color:#d97706; font-weight:700;"><i class="fa-solid fa-star"></i> You rated ${order.rating}/5</div>`;
+                            if (order.rating) {
+                                ratingHtml = `<span style="color: #d97706; font-size: 13px;"><i class="fa-solid fa-star"></i> Rated ${order.rating}/5</span>`;
                             } else {
-                                ratingHtml = `<div style="font-size:12px; color:#3b82f6; font-weight:700; cursor:pointer;" onclick="rateOrder('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate this Order</div>`;
+                                ratingHtml = `<span class="clickable" style="color: #3b82f6; font-size: 13px; cursor: pointer;" onclick="rateOrder('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate Order</span>`;
                             }
                         }
-                        
+
                         pastList.innerHTML += `
                             <div class="order-card">
                                 <div class="past-header">
                                     <div class="rest-info" style="margin-bottom: 0;">
                                         <img src="${imgUrl}" ${bgStyle}>
-                                        <div><div class="rest-name">${storeName}</div><div class="past-date">${dateStr}</div></div>
+                                        <div>
+                                            <div class="rest-name">${storeName}</div>
+                                            <div class="past-date">${dateStr}</div>
+                                        </div>
                                     </div>
                                     <div class="status-badge ${badgeClass}">${order.status}</div>
                                 </div>
                                 <div class="items-list" style="margin-top: 10px;">${itemsHtml}</div>
                                 <div class="total-amt">
-                                    <span>${ratingHtml}</span>
+                                    ${ratingHtml}
                                     <span>₹${order.totalAmount}</span>
                                 </div>
                             </div>
                         `;
                     } else {
                         hasActive = true;
+                        localStorage.setItem('activeOrder', 'true'); // Ensure app knows there is an active order
+                        
                         let statusIcon = order.status === 'Placed' ? 'fa-clock' : (order.status === 'On the Way' ? 'fa-motorcycle fa-bounce' : 'fa-fire-burner fa-bounce');
                         
                         activeList.innerHTML += `
                             <div class="order-card">
                                 <div class="live-status">
-                                    <div class="status-text"><h4><i class="fa-solid ${statusIcon}"></i> ${order.status}</h4><p>Order is currently being processed</p></div>
-                                    <div class="eta-box"><strong>15 min</strong><span>ETA</span></div>
+                                    <div class="status-text">
+                                        <h4><i class="fa-solid ${statusIcon}"></i> ${order.status}</h4>
+                                        <p>Order is currently being processed</p>
+                                    </div>
+                                    <div class="eta-box"><strong>20 min</strong><span>ETA</span></div>
                                 </div>
                                 <div class="rest-info">
                                     <img src="${imgUrl}" ${bgStyle}>
-                                    <div><div class="rest-name">${storeName}</div><div class="order-id">Order ID: #${order.orderId}</div></div>
+                                    <div>
+                                        <div class="rest-name">${storeName}</div>
+                                        <div class="order-id">Order ID: #${order.orderId}</div>
+                                    </div>
                                 </div>
                                 <div class="items-list">${itemsHtml}</div>
-                                <div class="order-actions"><a href="track.html?id=${order.orderId}" class="btn-solid clickable" style="text-decoration: none;">Track Order</a></div>
+                                <div class="order-actions">
+                                    <a href="track.html?id=${order.orderId}" class="btn-solid clickable" style="text-decoration: none;">Track on Map</a>
+                                </div>
                             </div>
                         `;
                     }
@@ -228,6 +273,8 @@
 
                 document.getElementById('noActiveOrder').style.display = hasActive ? 'none' : 'block';
                 document.getElementById('noPastOrder').style.display = hasPast ? 'none' : 'block';
+                
+                if(!hasActive) { localStorage.setItem('activeOrder', 'false'); }
             });
         }
 
@@ -243,9 +290,10 @@
             }
         }
 
+        // New Rating Functionality
         function rateOrder(orderId) {
-            let rating = prompt("Rate this order from 1 to 5 stars:", "5");
-            if(rating && rating >= 1 && rating <= 5) {
+            let rating = prompt("Rate your order out of 5 (e.g. 1 to 5):", "5");
+            if (rating && !isNaN(rating) && rating >= 1 && rating <= 5) {
                 database.ref('orders/' + orderId).update({ rating: parseInt(rating) })
                 .then(() => alert("Thanks for your rating!"));
             } else if (rating !== null) {
