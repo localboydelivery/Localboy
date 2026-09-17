@@ -4,8 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Home</title>
+    
+    <!-- Security Script: Prevents accessing home page if logged out -->
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (!localStorage.getItem('userPhone')) {
+                window.location.replace("index.html");
+            }
+        });
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -97,10 +111,10 @@
             <i class="fa-solid fa-location-dot loc-icon"></i>
             <div class="loc-text">
                 <h2>Home <i class="fa-solid fa-chevron-down"></i></h2>
-                <p id="header-address">12-3, Main Road, Tenali...</p>
+                <p id="header-address">Loading location...</p>
             </div>
         </a>
-        <a href="profile.html" class="profile-icon clickable">BR</a>
+        <a href="profile.html" class="profile-icon clickable">LB</a>
     </header>
 
     <div class="search-container">
@@ -118,16 +132,21 @@
             <span style="font-size: 12px; font-weight: 700; color: #10b981;">20 min ETA</span>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p style="font-size: 12px; color: #4a5568;">Bawarchi Biryani • Order #LB-849</p>
+            <p style="font-size: 12px; color: #4a5568;" id="bannerOrderId">Order #LB-849</p>
             <div style="background: #ff5200; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700;">Track <i class="fa-solid fa-location-arrow"></i></div>
         </div>
     </a>
+
+    <div class="greeting" style="padding: 0 20px 15px;">
+        <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 5px;">Hi, <span id="userName">Guest</span>! 👋</h2>
+        <p style="font-size: 13px; color: #64748b; font-weight: 500;">What would you like to order today?</p>
+    </div>
 
     <div class="quick-filters hide-scrollbar">
         <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span></a>
         <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span></a>
         <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400&auto=format&fit=crop" alt="Veg"></div><span>Healthy</span></a>
-        <a href="groceries.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
+        <a href="categories.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
     </div>
 
     <div class="main-categories">
@@ -138,7 +157,6 @@
             <div class="cat-content"><h3>FOOD</h3><p>Restaurants & meals</p></div>
         </a>
         
-        <!-- 🔴 UPDATED: This now perfectly links to groceries.html -->
         <a href="groceries.html" class="category-card clickable">
             <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Grocery">
             <div class="overlay"></div>
@@ -158,7 +176,7 @@
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop" alt="Biryani">
                 <div class="discount-tag">20% OFF</div>
                 <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
-                <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
+                <i class="fa-regular fa-heart fav-icon" data-name="Bawarchi Biryani" onclick="toggleHomeFav(event, this, 'Bawarchi Biryani', 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=800&auto=format&fit=crop', 'restaurant-details.html?id=1')"></i>
             </div>
             <div class="rest-details">
                 <h3>Bawarchi Biryani</h3>
@@ -167,12 +185,12 @@
             </div>
         </a>
 
-        <a href="restaurant-details.html?id=2" class="rest-card clickable">
+        <a href="restaurant-details.html?id=3" class="rest-card clickable">
             <div class="rest-img-container">
                 <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop" alt="Burger">
                 <div class="discount-tag">25% OFF</div>
                 <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
-                <i class="fa-regular fa-heart fav-icon" onclick="toggleHomeFav(event, this)"></i>
+                <i class="fa-regular fa-heart fav-icon" data-name="Burger Spot" onclick="toggleHomeFav(event, this, 'Burger Spot', 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop', 'restaurant-details.html?id=3')"></i>
             </div>
             <div class="rest-details">
                 <h3>Burger Spot</h3>
@@ -182,7 +200,7 @@
         </a>
     </div>
 
-    <a href="offers.html" class="promo-banner clickable">
+    <a href="javascript:void(0)" class="promo-banner clickable">
         <div class="promo-content">
             <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
             <h3>Your Favourite Foods</h3>
@@ -201,32 +219,93 @@
         </a>
     </div>
 
-    <!-- 🔴 UPDATED: Bottom Nav links perfectly to groceries.html -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item active"><i class="fa-solid fa-house"></i><span>Home</span></a>
         <a href="groceries.html" class="nav-item"><i class="fa-solid fa-basket-shopping"></i><span>Grocery</span></a>
-        <a href="cart.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i><span class="cart-badge">0</span><span>Cart</span></a>
+        <a href="cart.html" class="nav-item"><i class="fa-solid fa-cart-shopping"></i><span class="cart-badge" id="bottomNavCartBadge">0</span><span>Cart</span></a>
         <a href="orders.html" class="nav-item"><i class="fa-solid fa-clipboard-list"></i><span>Orders</span></a>
     </div>
 
     <script>
-        // Prevent clicking the heart from opening the restaurant page
-        function toggleHomeFav(event, element) {
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function toggleHomeFav(event, element, restName, restImg, restUrl) {
             event.preventDefault(); 
+            let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+
             if (element.classList.contains('fa-regular')) {
-                element.classList.remove('fa-regular');
-                element.classList.add('fa-solid');
+                element.className = 'fa-solid fa-heart fav-icon';
                 element.style.color = '#e53e3e';
+                if(!favs.some(f => f.name === restName)) {
+                    favs.push({ name: restName, img: restImg, url: restUrl });
+                    localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
+                }
             } else {
-                element.classList.remove('fa-solid');
-                element.classList.add('fa-regular');
+                element.className = 'fa-regular fa-heart fav-icon';
                 element.style.color = '#a0aec0';
+                favs = favs.filter(f => f.name !== restName);
+                localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
+            }
+        }
+
+        function loadInitialData() {
+            // 1. Mark Favorites
+            const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+            document.querySelectorAll('.fav-icon').forEach(icon => {
+                const restName = icon.getAttribute('data-name');
+                if(favs.some(f => f.name === restName)) {
+                    icon.className = 'fa-solid fa-heart fav-icon';
+                    icon.style.color = '#e53e3e';
+                }
+            });
+
+            // 2. Fetch User Profile (Name) & Address from Firebase
+            const userPhone = localStorage.getItem('userPhone');
+            const addressTextElem = document.getElementById("header-address");
+            const userNameElem = document.getElementById("userName");
+            
+            if(userPhone) {
+                // Fetch Name
+                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
+                    const profileData = snapshot.val();
+                    if(profileData && profileData.firstName) {
+                        userNameElem.innerText = profileData.firstName;
+                    } else {
+                        const localProfile = JSON.parse(localStorage.getItem('userProfileData'));
+                        if(localProfile && localProfile.firstName) userNameElem.innerText = localProfile.firstName;
+                    }
+                    
+                    if(profileData && profileData.address) {
+                        // Display only the first part of address before the colon, e.g., "Home (Rajesh)"
+                        addressTextElem.innerText = profileData.address.split(':')[0];
+                        localStorage.setItem('userSavedAddress', profileData.address);
+                    } else {
+                        const saved = localStorage.getItem("userSavedAddress");
+                        addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
+                    }
+                }).catch(() => {
+                    const saved = localStorage.getItem("userSavedAddress");
+                    addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
+                });
+            } else {
+                const saved = localStorage.getItem("userSavedAddress");
+                addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
             }
         }
 
         function updateHomeCartUI() {
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
-            const cartBadge = document.querySelector('.cart-badge');
+            const cartBadge = document.getElementById('bottomNavCartBadge');
             const cartFooter = document.getElementById('cartFooter');
             const totalItemsText = document.getElementById('totalItems');
 
@@ -245,17 +324,19 @@
             // Show active order banner if exists
             if (localStorage.getItem('activeOrder') === 'true') {
                 document.getElementById('activeOrderBanner').style.display = 'block';
+                const lastOrderId = localStorage.getItem('lastOrderId');
+                if(lastOrderId) {
+                    document.getElementById('bannerOrderId').innerText = `Order #${lastOrderId}`;
+                }
             } else {
                 document.getElementById('activeOrderBanner').style.display = 'none';
             }
         }
 
-        // Run every time page is shown (fixes back-button caching issue)
         window.addEventListener('pageshow', function() {
-            updateHomeCartUI();
-            const savedLocation = localStorage.getItem("userSavedAddress");
-            if (savedLocation) {
-                document.getElementById("header-address").innerText = savedLocation;
+            if (localStorage.getItem('userPhone')) {
+                updateHomeCartUI();
+                loadInitialData();
             }
         });
     </script>
