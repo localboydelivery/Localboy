@@ -100,6 +100,15 @@
         .nav-item i { font-size: 22px; transition: transform 0.2s;}
         .nav-item:active i { transform: scale(0.85); }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
+
+        /* Dynamic Banner Styling */
+        #activeOrderBanner { display: none; margin: 0 20px 15px; border-radius: 16px; padding: 15px; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+        .banner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .banner-title { font-size: 14px; font-weight: 800; }
+        .banner-eta { font-size: 12px; font-weight: 700; }
+        .banner-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .banner-order-id { font-size: 12px; font-weight: 600; opacity: 0.8; }
+        .banner-btn { color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -123,15 +132,15 @@
         </a>
     </div>
 
-    <!-- Active Order Banner -->
-    <a href="track.html" class="clickable" id="activeOrderBanner" style="display: none; margin: 0 20px 15px; background: #fff8eb; border: 1px solid #ff5200; border-radius: 16px; padding: 15px; text-decoration: none; color: inherit; box-shadow: 0 4px 10px rgba(255,82,0,0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h4 style="font-size: 14px; font-weight: 800; color: #ff5200;"><i class="fa-solid fa-fire-burner fa-bounce"></i> Preparing your food</h4>
-            <span style="font-size: 12px; font-weight: 700; color: #10b981;">20 min ETA</span>
+    <!-- Live Active Order Banner -->
+    <a href="track.html" class="clickable" id="activeOrderBanner">
+        <div class="banner-header">
+            <h4 class="banner-title" id="bannerTitle"><i class="fa-solid fa-clock-rotate-left fa-spin-pulse"></i> Fetching Order...</h4>
+            <span class="banner-eta" id="bannerEta">-- ETA</span>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <p style="font-size: 12px; color: #4a5568;" id="bannerOrderId">Order #LB-849</p>
-            <div style="background: #ff5200; color: white; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700;">Track <i class="fa-solid fa-location-arrow"></i></div>
+        <div class="banner-bottom">
+            <p class="banner-order-id" id="bannerOrderId">Loading...</p>
+            <div class="banner-btn" id="bannerBtn">Track <i class="fa-solid fa-location-arrow"></i></div>
         </div>
     </a>
 
@@ -205,12 +214,9 @@
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            projectId: "sri-vishnu-priya-finance-c591f"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         function toggleHomeFav(event, element, restName, restImg, restUrl) {
@@ -342,13 +348,74 @@
                 if(cartBadge) cartBadge.style.display = 'none';
                 if(cartFooter) { cartFooter.classList.remove('show'); document.body.style.paddingBottom = "90px"; }
             }
+        }
 
-            if (localStorage.getItem('activeOrder') === 'true') {
-                document.getElementById('activeOrderBanner').style.display = 'block';
-                const lastOrderId = localStorage.getItem('lastOrderId');
-                if(lastOrderId) { document.getElementById('bannerOrderId').innerText = `Order #${lastOrderId}`; }
+        // --- LIVE ORDER BANNER LOGIC ---
+        function checkActiveOrder() {
+            const trackingId = localStorage.getItem('lastOrderId');
+            const banner = document.getElementById('activeOrderBanner');
+            
+            if (trackingId) {
+                database.ref('orders/' + trackingId).on('value', (snapshot) => {
+                    const orderData = snapshot.val();
+                    
+                    if (orderData && orderData.status !== 'Delivered' && orderData.status !== 'Cancelled') {
+                        // Order exists and is active
+                        banner.style.display = 'block';
+                        document.getElementById('bannerOrderId').innerText = `Order #${orderData.orderId}`;
+                        
+                        const titleEl = document.getElementById('bannerTitle');
+                        const etaEl = document.getElementById('bannerEta');
+                        const btnEl = document.getElementById('bannerBtn');
+                        
+                        // Dynamic calculation based on Distance calculated in Cart
+                        // Fallback to 15 if not available
+                        let calculatedMins = 15; 
+                        if(orderData.distance) {
+                            // Example: 3 mins per km
+                            calculatedMins = Math.ceil(orderData.distance * 3); 
+                        }
+
+                        if(orderData.status === 'Placed') {
+                            banner.style.background = '#fffbeb'; banner.style.borderColor = '#f59e0b';
+                            titleEl.innerHTML = '<i class="fa-solid fa-clock-rotate-left fa-spin-pulse"></i> Waiting for confirmation';
+                            titleEl.style.color = '#d97706';
+                            etaEl.innerText = 'Confirming...'; etaEl.style.color = '#d97706';
+                            btnEl.style.background = '#f59e0b';
+                        } 
+                        else if (orderData.status === 'Preparing') {
+                            banner.style.background = '#eff6ff'; banner.style.borderColor = '#3b82f6';
+                            titleEl.innerHTML = '<i class="fa-solid fa-fire-burner fa-bounce"></i> Preparing your food';
+                            titleEl.style.color = '#2563eb';
+                            // Show initial ETA
+                            etaEl.innerText = `${calculatedMins + 10} min ETA`; etaEl.style.color = '#3b82f6';
+                            btnEl.style.background = '#3b82f6';
+                        }
+                        else if (orderData.status === 'Ready') {
+                            banner.style.background = '#ecfdf5'; banner.style.borderColor = '#10b981';
+                            titleEl.innerHTML = '<i class="fa-solid fa-bag-shopping fa-bounce"></i> Food is Ready';
+                            titleEl.style.color = '#059669';
+                            etaEl.innerText = 'Waiting for partner'; etaEl.style.color = '#10b981';
+                            btnEl.style.background = '#10b981';
+                        }
+                        else if (orderData.status === 'On the Way') {
+                            banner.style.background = '#ecfdf5'; banner.style.borderColor = '#10b981';
+                            titleEl.innerHTML = '<i class="fa-solid fa-motorcycle fa-bounce"></i> Out for Delivery';
+                            titleEl.style.color = '#059669';
+                            // Show actual travel ETA based on distance
+                            etaEl.innerText = `${calculatedMins} min ETA`; etaEl.style.color = '#10b981';
+                            btnEl.style.background = '#10b981';
+                        }
+                    } else {
+                        // Order delivered or cancelled
+                        banner.style.display = 'none';
+                        if(orderData && (orderData.status === 'Delivered' || orderData.status === 'Cancelled')) {
+                            localStorage.removeItem('lastOrderId'); // Clean up
+                        }
+                    }
+                });
             } else {
-                document.getElementById('activeOrderBanner').style.display = 'none';
+                banner.style.display = 'none';
             }
         }
 
@@ -356,7 +423,8 @@
             if (localStorage.getItem('userPhone')) {
                 updateHomeCartUI();
                 loadInitialData();
-                loadLiveRestaurants(); // Fetch Real Restaurants!
+                loadLiveRestaurants(); 
+                checkActiveOrder(); // Check & Update the Banner
             }
         });
     </script>
