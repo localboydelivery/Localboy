@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; }
@@ -37,6 +41,7 @@
 
         .pay-btn-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px;}
         .btn-pay { width: 100%; background: #ff5200; color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
+        .btn-pay:disabled { opacity: 0.7; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -48,7 +53,7 @@
 
     <div class="amount-card">
         <p>Amount to Pay</p>
-        <h1 id="payAmount">₹0.00</h1>
+        <h1 id="payAmount"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px;"></i></h1>
     </div>
 
     <div class="payment-section">
@@ -59,7 +64,7 @@
                 <div class="pay-icon" style="background: #ecfdf5; color: #10b981;"><i class="fa-brands fa-google-pay"></i></div>
                 <h4>Google Pay</h4>
             </div>
-            <div class="radio-circle active"></div>
+            <div class="radio-circle"></div>
         </div>
 
         <div class="pay-option clickable" onclick="selectPayment(this)">
@@ -77,52 +82,64 @@
                 <div class="pay-icon" style="background: #fff8eb; color: #ff5200;"><i class="fa-solid fa-money-bill-wave"></i></div>
                 <h4>Cash on Delivery (COD)</h4>
             </div>
-            <div class="radio-circle"></div>
+            <div class="radio-circle active"></div>
         </div>
     </div>
 
     <div class="pay-btn-container">
-        <button class="btn-pay clickable" onclick="processPayment()">Pay Now</button>
+        <button class="btn-pay clickable" id="payBtn" onclick="processPayment()">Pay Now</button>
     </div>
 
     <script>
-        // 🔴 SIMPLE & BULLETPROOF CALCULATION
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+        };
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        const database = firebase.database();
+
+        let finalAmountToPay = 0;
+        let cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+
         window.onload = function() {
-            const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
-            
-            // కార్ట్‌లో ఐటెమ్స్ లేకపోతేనే వెనక్కి పంపుతుంది
             if(!cartData || cartData.totalQty === 0) {
-                window.location.href = "home.html";
+                window.location.replace("home.html");
                 return;
             }
 
-            const menuDB = {
-                // Food
-                '1': 280, '2': 220, '3': 190,
-                // Groceries
-                'g1': 45, 'g2': 30, 'g3': 28, 'g4': 140, 'g5': 160, 'g6': 1250,
-                'g7': 20, 'g8': 40, 'g9': 140, 'g10': 20, 'g11': 15, 'g12': 30
-            };
+            document.getElementById('payBtn').disabled = true;
 
-            let itemTotal = 0;
-            
-            if(cartData.items) { 
+            // Fetch live menu to calculate accurate total
+            let dbRefPath = cartData.restId === 'grocery_store' ? 'groceries' : 'restaurant_menus/' + cartData.restId;
+
+            database.ref(dbRefPath).once('value').then((snapshot) => {
+                let menuDB = snapshot.val() || {};
+                let itemTotal = 0;
+                
                 for (let id in cartData.items) { 
-                    // ఐడీ దొరికితే ఆ రేటు తీసుకుంటుంది, లేదంటే డిఫాల్ట్ గా 0
-                    let price = menuDB[id] || 0; 
-                    itemTotal += (price * cartData.items[id]); 
+                    let item = menuDB[id];
+                    if(item) {
+                        itemTotal += (item.price * cartData.items[id]); 
+                    }
                 } 
-            }
-            
-            let deliveryFee = 30; 
-            let discount = Math.round(itemTotal * 0.10); 
-            let taxes = 25;
-            
-            // ఫైనల్ అమౌంట్
-            let toPay = itemTotal + deliveryFee - discount + taxes;
-            
-            // అమౌంట్ ఎంత వచ్చినా సరే.. ఇక్కడే ఉండి చూపిస్తుంది
-            document.getElementById('payAmount').innerText = `₹${toPay.toFixed(2)}`;
+                
+                let deliveryFee = 30; 
+                let taxes = 25;
+                
+                finalAmountToPay = itemTotal + deliveryFee + taxes;
+                
+                document.getElementById('payAmount').innerText = `₹${finalAmountToPay.toFixed(2)}`;
+                document.getElementById('payBtn').disabled = false;
+            }).catch(err => {
+                alert("Network error. Please try again.");
+                window.location.replace("cart.html");
+            });
         };
 
         function selectPayment(element) { 
@@ -131,13 +148,50 @@
         }
 
         function processPayment() { 
-            const btn = document.querySelector('.btn-pay');
-            btn.innerText = "Processing..."; 
-            btn.style.opacity = "0.8";
-            
-            setTimeout(() => { 
-                window.location.href = "success.html"; 
-            }, 1500); 
+            const btn = document.getElementById('payBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...'; 
+            btn.disabled = true;
+
+            const userPhone = localStorage.getItem('userPhone');
+            const profileData = JSON.parse(localStorage.getItem('userProfileData')) || {};
+            const savedAddress = localStorage.getItem('userSavedAddress') || "Address not specified";
+
+            // Extract Name safely
+            let cName = "Guest";
+            if(profileData.firstName) {
+                cName = profileData.firstName + (profileData.lastName ? " " + profileData.lastName : "");
+            }
+
+            // Generate unique Order ID (e.g., LB849302)
+            const generatedOrderId = "LB" + Math.floor(100000 + Math.random() * 900000);
+
+            const orderData = {
+                orderId: generatedOrderId,
+                customerId: userPhone || "Unknown",
+                customerName: cName,
+                customerPhone: userPhone || "Unknown",
+                deliveryAddress: savedAddress,
+                restaurantId: cartData.restId,
+                items: cartData.items,
+                totalAmount: finalAmountToPay,
+                status: 'Placed',
+                timestamp: Date.now(),
+                paymentMethod: 'Cash on Delivery' // Defaulting to COD for now
+            };
+
+            // Push to Firebase Realtime Database
+            database.ref('orders/' + generatedOrderId).set(orderData).then(() => {
+                // Save Order ID locally so success/track page knows what to track
+                localStorage.setItem('lastOrderId', generatedOrderId);
+                localStorage.setItem('activeOrder', 'true');
+                
+                // Redirect to success page
+                window.location.replace("success.html"); 
+            }).catch((error) => {
+                alert("Failed to place order: " + error.message);
+                btn.innerHTML = 'Pay Now'; 
+                btn.disabled = false;
+            });
         }
     </script>
 </body>
