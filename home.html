@@ -31,12 +31,13 @@
         .clickable:active { transform: scale(0.96); }
 
         .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #fafafa; position: sticky; top: 0; z-index: 100; }
-        .location-container { display: flex; align-items: flex-start; gap: 10px; }
+        .location-container { display: flex; align-items: flex-start; gap: 10px; flex: 1; overflow: hidden;}
         .loc-icon { color: #ff5200; font-size: 24px; margin-top: 2px; }
-        .loc-text h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+        .loc-text { flex: 1; overflow: hidden; }
+        .loc-text h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 5px; margin-bottom: 2px;}
         .loc-text h2 i { font-size: 12px; color: #ff5200; }
-        .loc-text p { font-size: 12px; color: #718096; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
-        .profile-icon { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 700; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); }
+        .loc-text p { font-size: 12px; color: #718096; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90%; }
+        .profile-icon { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: 700; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); flex-shrink: 0;}
 
         .search-container { padding: 0 20px 15px; }
         .search-box { display: flex; align-items: center; background: #ffffff; border-radius: 14px; padding: 12px 15px; border: 1px solid #edf2f7; box-shadow: 0 4px 12px rgba(0,0,0,0.03); width: 100%; }
@@ -110,11 +111,11 @@
         <a href="location.html" class="location-container clickable">
             <i class="fa-solid fa-location-dot loc-icon"></i>
             <div class="loc-text">
-                <h2>Home <i class="fa-solid fa-chevron-down"></i></h2>
+                <h2 id="header-loc-type">Location <i class="fa-solid fa-chevron-down"></i></h2>
                 <p id="header-address">Loading location...</p>
             </div>
         </a>
-        <a href="profile.html" class="profile-icon clickable">LB</a>
+        <a href="profile.html" class="profile-icon clickable" id="headerProfileIcon">LB</a>
     </header>
 
     <div class="search-container">
@@ -258,6 +259,34 @@
             }
         }
 
+        // Parse Address Function for Home Page Header
+        function displayAddressOnHeader(fullStr) {
+            const typeElem = document.getElementById("header-loc-type");
+            const addressTextElem = document.getElementById("header-address");
+            
+            if (!fullStr) {
+                typeElem.innerHTML = 'Location <i class="fa-solid fa-chevron-down"></i>';
+                addressTextElem.innerText = "Please select location";
+                return;
+            }
+
+            // New format: Type|FirstName LastName|FullAddress
+            if (fullStr.includes('|')) {
+                let parts = fullStr.split('|');
+                typeElem.innerHTML = parts[0] + ' <i class="fa-solid fa-chevron-down"></i>';
+                addressTextElem.innerText = parts[2]; // Full address goes below
+            } 
+            // Old format fallback: Home (Rajesh): 12-3...
+            else if (fullStr.includes(':')) {
+                let parts = fullStr.split(':');
+                typeElem.innerHTML = parts[0].split(' ')[0] + ' <i class="fa-solid fa-chevron-down"></i>';
+                addressTextElem.innerText = parts[1].trim();
+            } else {
+                typeElem.innerHTML = 'Location <i class="fa-solid fa-chevron-down"></i>';
+                addressTextElem.innerText = fullStr;
+            }
+        }
+
         function loadInitialData() {
             // 1. Mark Favorites
             const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
@@ -271,41 +300,38 @@
 
             // 2. Fetch User Profile (Name) & Address from Firebase
             const userPhone = localStorage.getItem('userPhone');
-            const addressTextElem = document.getElementById("header-address");
             const userNameElem = document.getElementById("userName");
+            const headerProfileIcon = document.getElementById("headerProfileIcon");
             
             if(userPhone) {
-                // Fetch Name
                 database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
                     const profileData = snapshot.val();
                     if(profileData && profileData.firstName) {
                         userNameElem.innerText = profileData.firstName;
-                    } else {
-                        const localProfile = JSON.parse(localStorage.getItem('userProfileData'));
-                        if(localProfile && localProfile.firstName) userNameElem.innerText = localProfile.firstName;
-                    }
+                        let initial = profileData.firstName.charAt(0).toUpperCase();
+                        if(profileData.lastName) {
+                            initial += profileData.lastName.charAt(0).toUpperCase();
+                        }
+                        headerProfileIcon.innerText = initial;
+                    } 
                     
                     if(profileData && profileData.address) {
-                        // Display only the first part of address before the colon, e.g., "Home (Rajesh)"
-                        addressTextElem.innerText = profileData.address.split(':')[0];
+                        displayAddressOnHeader(profileData.address);
                         localStorage.setItem('userSavedAddress', profileData.address);
                     } else {
-                        const saved = localStorage.getItem("userSavedAddress");
-                        addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
+                        displayAddressOnHeader(localStorage.getItem("userSavedAddress"));
                     }
                 }).catch(() => {
-                    const saved = localStorage.getItem("userSavedAddress");
-                    addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
+                    displayAddressOnHeader(localStorage.getItem("userSavedAddress"));
                 });
             } else {
-                const saved = localStorage.getItem("userSavedAddress");
-                addressTextElem.innerText = saved ? saved.split(':')[0] : "Please select location";
+                displayAddressOnHeader(localStorage.getItem("userSavedAddress"));
             }
         }
 
         function updateHomeCartUI() {
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
-            const cartBadge = document.getElementById('bottomNavCartBadge');
+            const cartBadge = document.querySelector('.cart-badge');
             const cartFooter = document.getElementById('cartFooter');
             const totalItemsText = document.getElementById('totalItems');
 
