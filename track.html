@@ -21,7 +21,7 @@
         .track-details { padding: 90px 20px 20px; min-height: 100vh; background: #ffffff; }
         .eta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #edf2f7;}
         .eta-header h2 { font-size: 22px; font-weight: 800; color: #10b981; }
-        .eta-header p { font-size: 13px; color: #718096; font-weight: 600;}
+        .eta-header p { font-size: 13px; color: #718096; font-weight: 600; margin-top: 4px;}
         
         .timeline { padding-left: 10px; margin-top: 10px;}
         .timeline-item { display: flex; gap: 15px; margin-bottom: 35px; position: relative; }
@@ -29,7 +29,7 @@
         .timeline-item:last-child::before { display: none; }
         .timeline-icon { width: 24px; height: 24px; border-radius: 50%; background: #edf2f7; display: flex; align-items: center; justify-content: center; z-index: 1; color: #a0aec0; font-size: 10px; }
         .timeline-content h4 { font-size: 15px; font-weight: 700; color: #a0aec0; }
-        .timeline-content p { font-size: 12px; color: #cbd5e0; margin-top: 3px; }
+        .timeline-content p { font-size: 12px; color: #cbd5e0; margin-top: 3px; line-height: 1.4;}
 
         .timeline-item.completed .timeline-icon { background: #10b981; color: white; }
         .timeline-item.completed .timeline-content h4 { color: #1a202c; }
@@ -53,7 +53,7 @@
                 <h2 id="eta-text">Locating Order...</h2>
                 <p id="order-id-display">Fetching Details...</p>
             </div>
-            <i class="fa-solid fa-fire-burner" style="font-size: 30px; color: #ff5200;"></i>
+            <i class="fa-solid fa-fire-burner" id="header-icon" style="font-size: 30px; color: #ff5200;"></i>
         </div>
 
         <div class="timeline">
@@ -65,13 +65,17 @@
                 <div class="timeline-icon"><i class="fa-solid fa-fire-burner"></i></div>
                 <div class="timeline-content"><h4>Preparing</h4><p>Restaurant is preparing your items.</p></div>
             </div>
+            <div class="timeline-item" id="step-ready">
+                <div class="timeline-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                <div class="timeline-content"><h4>Food Ready</h4><p>Order is packed and ready.</p></div>
+            </div>
             <div class="timeline-item" id="step-ontheway">
                 <div class="timeline-icon"><i class="fa-solid fa-motorcycle"></i></div>
                 <div class="timeline-content"><h4>On the Way</h4><p>Your order is out for delivery.</p></div>
             </div>
             <div class="timeline-item" id="step-delivered">
                 <div class="timeline-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your meal!</p></div>
+                <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your order!</p></div>
             </div>
         </div>
     </div>
@@ -83,12 +87,10 @@
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app"
         };
         
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -99,8 +101,18 @@
                 const orderData = snapshot.val();
                 
                 if (orderData) {
-                    const storeName = orderData.restaurantId === 'grocery_store' ? 'Local Boy Groceries' : 'Bawarchi Biryani';
-                    document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • ${storeName}`;
+                    // Dynamically fetch actual restaurant/store name
+                    if(orderData.restaurantId === 'grocery_store') {
+                        document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • Local Boy Groceries`;
+                    } else {
+                        database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(resSnap => {
+                            if(resSnap.exists()) {
+                                document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • ${resSnap.val().name}`;
+                            } else {
+                                document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • Restaurant`;
+                            }
+                        });
+                    }
                     
                     updateTimeline(orderData.status);
                     
@@ -108,35 +120,51 @@
                         localStorage.setItem('activeOrder', 'false');
                         document.getElementById('eta-text').innerText = "Delivered!";
                         document.getElementById('eta-text').style.color = "#10b981";
+                        document.getElementById('header-icon').className = "fa-solid fa-face-smile-beam fa-bounce";
+                        document.getElementById('header-icon').style.color = "#10b981";
                     } else if (orderData.status === 'Cancelled') {
                         localStorage.setItem('activeOrder', 'false');
-                        document.getElementById('eta-text').innerText = "Cancelled";
+                        document.getElementById('eta-text').innerText = "Order Cancelled";
                         document.getElementById('eta-text').style.color = "#ef4444";
+                        document.getElementById('header-icon').className = "fa-solid fa-circle-xmark";
+                        document.getElementById('header-icon').style.color = "#ef4444";
                     }
                 }
             });
         } else {
             document.getElementById('eta-text').innerText = "No Active Order";
             document.getElementById('order-id-display').innerText = "Redirecting...";
-            setTimeout(() => { window.location.href = "home.html"; }, 2000);
+            setTimeout(() => { window.location.replace("home.html"); }, 2000);
         }
 
         function updateTimeline(status) {
-            const steps = ['placed', 'preparing', 'ontheway', 'delivered'];
+            const steps = ['placed', 'preparing', 'ready', 'ontheway', 'delivered'];
             
             let currentStepIndex = 0;
-            if (status === 'Placed') currentStepIndex = 0;
-            else if (status === 'Preparing') currentStepIndex = 1;
-            else if (status === 'On the Way') {
-                currentStepIndex = 2;
-                document.getElementById('eta-text').innerText = "Arriving in 15 mins";
+            if (status === 'Placed') {
+                currentStepIndex = 0;
+                document.getElementById('eta-text').innerText = "Waiting for confirmation";
+                document.getElementById('header-icon').className = "fa-solid fa-clock-rotate-left fa-spin-pulse";
             }
-            else if (status === 'Delivered') currentStepIndex = 3;
-            else if (status === 'Cancelled') return;
-
-            if(status !== 'Delivered' && status !== 'On the Way') {
+            else if (status === 'Preparing') {
+                currentStepIndex = 1;
                 document.getElementById('eta-text').innerText = "Preparing Order...";
+                document.getElementById('header-icon').className = "fa-solid fa-fire-burner fa-bounce";
             }
+            else if (status === 'Ready') {
+                currentStepIndex = 2;
+                document.getElementById('eta-text').innerText = "Order is Ready!";
+                document.getElementById('header-icon').className = "fa-solid fa-bag-shopping fa-bounce";
+            }
+            else if (status === 'On the Way') {
+                currentStepIndex = 3;
+                document.getElementById('eta-text').innerText = "Arriving in 15 mins";
+                document.getElementById('header-icon').className = "fa-solid fa-motorcycle fa-bounce";
+            }
+            else if (status === 'Delivered') {
+                currentStepIndex = 4;
+            }
+            else if (status === 'Cancelled') return;
 
             steps.forEach(s => {
                 document.getElementById(`step-${s}`).classList.remove('completed', 'current');
