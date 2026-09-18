@@ -97,49 +97,26 @@
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
-        let finalAmountToPay = 0;
         let cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+        let checkoutData = JSON.parse(localStorage.getItem('localBoyCheckoutData'));
+        let finalAmountToPay = 0;
 
         window.onload = function() {
-            if(!cartData || cartData.totalQty === 0) {
+            // కార్ట్ డేటా లేదా చెకౌట్ డేటా లేకపోతే హోమ్ పేజీకి పంపించేస్తాం
+            if(!cartData || cartData.totalQty === 0 || !checkoutData) {
                 window.location.replace("home.html");
                 return;
             }
 
-            document.getElementById('payBtn').disabled = true;
-
-            // Fetch live menu to calculate accurate total
-            let dbRefPath = cartData.restId === 'grocery_store' ? 'groceries' : 'restaurant_menus/' + cartData.restId;
-
-            database.ref(dbRefPath).once('value').then((snapshot) => {
-                let menuDB = snapshot.val() || {};
-                let itemTotal = 0;
-                
-                for (let id in cartData.items) { 
-                    let item = menuDB[id];
-                    if(item) {
-                        itemTotal += (item.price * cartData.items[id]); 
-                    }
-                } 
-                
-                let deliveryFee = 30; 
-                let taxes = 25;
-                
-                finalAmountToPay = itemTotal + deliveryFee + taxes;
-                
-                document.getElementById('payAmount').innerText = `₹${finalAmountToPay.toFixed(2)}`;
-                document.getElementById('payBtn').disabled = false;
-            }).catch(err => {
-                alert("Network error. Please try again.");
-                window.location.replace("cart.html");
-            });
+            // కార్ట్ నుంచి వచ్చిన ఫైనల్ అమౌంట్ ని డైరెక్ట్ గా వాడుకుంటాం
+            finalAmountToPay = checkoutData.toPay;
+            document.getElementById('payAmount').innerText = `₹${finalAmountToPay.toFixed(2)}`;
+            document.getElementById('payBtn').disabled = false;
         };
 
         function selectPayment(element) { 
@@ -165,6 +142,7 @@
             // Generate unique Order ID (e.g., LB849302)
             const generatedOrderId = "LB" + Math.floor(100000 + Math.random() * 900000);
 
+            // ఆర్డర్ డేటాబేస్ లో సేవ్ చేయాల్సిన పూర్తి వివరాలు
             const orderData = {
                 orderId: generatedOrderId,
                 customerId: userPhone || "Unknown",
@@ -174,18 +152,29 @@
                 restaurantId: cartData.restId,
                 items: cartData.items,
                 totalAmount: finalAmountToPay,
+                itemTotal: checkoutData.itemTotal,
+                deliveryFee: checkoutData.deliveryFee,
+                taxes: checkoutData.taxes,
+                restaurantEarnings: checkoutData.restaurantEarnings, // ఓనర్‌కి ఇచ్చే అమౌంట్ 
+                commissionPercent: checkoutData.commissionPercent,
+                distance: checkoutData.distance,
+                instructions: checkoutData.instructions || "",
                 status: 'Placed',
                 timestamp: Date.now(),
-                paymentMethod: 'Cash on Delivery' // Defaulting to COD for now
+                paymentMethod: 'Cash on Delivery' // ప్రస్తుతానికి COD
             };
 
             // Push to Firebase Realtime Database
             database.ref('orders/' + generatedOrderId).set(orderData).then(() => {
-                // Save Order ID locally so success/track page knows what to track
+                // Tracking కోసం ఆర్డర్ ఐడీ సేవ్ చేసుకుంటాం
                 localStorage.setItem('lastOrderId', generatedOrderId);
                 localStorage.setItem('activeOrder', 'true');
                 
-                // Redirect to success page
+                // ఆర్డర్ అయిపోయాక కార్ట్ ఖాళీ చేసేస్తాం (దీనివల్ల కింద బ్యాడ్జ్ వెళ్లిపోతుంది)
+                localStorage.removeItem('localBoyCart');
+                localStorage.removeItem('localBoyCheckoutData');
+                
+                // సక్సెస్ పేజీకి పంపిస్తాం
                 window.location.replace("success.html"); 
             }).catch((error) => {
                 alert("Failed to place order: " + error.message);
