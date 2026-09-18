@@ -114,7 +114,7 @@
         <!-- Delivery Address -->
         <div class="section-box" id="addressSection">
             <div class="delivery-header">
-                <h3><i class="fa-solid fa-house"></i> Delivery Location</h3>
+                <h3 id="cartAddressTitle"><i class="fa-solid fa-location-dot"></i> Delivery Location</h3>
                 <a href="location.html?from=cart" class="change-btn clickable">Change</a>
             </div>
             <p class="address-text" id="cartAddressText">Loading address...</p>
@@ -344,12 +344,37 @@
             }
         }
 
-        function displayAddress(addressStr) {
+        function displayAddress(fullStr) {
             const addressTextElem = document.getElementById("cartAddressText");
-            if(addressStr) {
-                addressTextElem.innerText = addressStr;
+            const addressTitleElem = document.getElementById("cartAddressTitle");
+            
+            if(fullStr) {
+                // Parse "Home|Basava Rajesh|12-3, Main Road..."
+                if (fullStr.includes('|')) {
+                    let parts = fullStr.split('|');
+                    let type = parts[0];
+                    let address = parts[2];
+                    
+                    let iconClass = "fa-location-dot";
+                    if(type.toLowerCase() === 'home') iconClass = "fa-house";
+                    else if(type.toLowerCase() === 'work') iconClass = "fa-briefcase";
+
+                    addressTitleElem.innerHTML = `<i class="fa-solid ${iconClass}"></i> Delivery to ${type}`;
+                    addressTextElem.innerText = address;
+                } 
+                // Fallback for old format
+                else if (fullStr.includes(':')) {
+                    let parts = fullStr.split(':');
+                    let type = parts[0].split(' ')[0];
+                    addressTitleElem.innerHTML = `<i class="fa-solid fa-location-dot"></i> Delivery to ${type}`;
+                    addressTextElem.innerText = parts[1].trim();
+                } else {
+                    addressTitleElem.innerHTML = `<i class="fa-solid fa-location-dot"></i> Delivery Location`;
+                    addressTextElem.innerText = fullStr;
+                }
                 addressTextElem.style.color = "#64748b";
             } else {
+                addressTitleElem.innerHTML = `<i class="fa-solid fa-location-dot"></i> Delivery Location`;
                 addressTextElem.innerText = "Please add your delivery address";
                 addressTextElem.style.color = "#ef4444";
             }
