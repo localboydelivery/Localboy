@@ -6,6 +6,11 @@
     <title>LOCAL BOY - Menu</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #f1f5f9; color: #1a202c; padding-bottom: 80px; }
@@ -16,15 +21,17 @@
         .icon-btn { width: 40px; height: 40px; border-radius: 50%; background: #ffffff; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); cursor: pointer; color: #1a202c;}
         .nav-actions { display: flex; gap: 10px; }
 
-        .restaurant-header { background: #ffffff; margin: 0 15px 20px; padding: 20px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); text-align: center; margin-top: 10px;}
-        .rest-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; }
-        .rest-tags { font-size: 12px; color: #718096; margin-bottom: 15px; }
+        .restaurant-header { background: #ffffff; margin: 0 15px 20px; padding: 20px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); text-align: center; margin-top: 10px; position: relative; overflow: hidden;}
+        .rest-bg-blur { position: absolute; top: 0; left: 0; width: 100%; height: 60px; background-size: cover; background-position: center; opacity: 0.2; filter: blur(10px); z-index: 0;}
+        .header-content { position: relative; z-index: 1; }
+        .rest-title { font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #0f172a;}
+        .rest-tags { font-size: 12px; color: #64748b; margin-bottom: 15px; font-weight: 500;}
         .rest-stats { display: flex; justify-content: center; gap: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; margin-top: 5px;}
         .stat-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .stat-box strong { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px;}
-        .stat-box span { font-size: 11px; color: #a0aec0; font-weight: 500;}
+        .stat-box strong { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 4px; color: #1e293b;}
+        .stat-box span { font-size: 11px; color: #94a3b8; font-weight: 600;}
 
-        .offers-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 15px 20px; }
+        .offers-container { display: flex; overflow-x: auto; gap: 12px; padding: 0 15px 20px; scrollbar-width: none;}
         .offers-container::-webkit-scrollbar { display: none; }
         .offer-card { min-width: 150px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: #fff; display: flex; align-items: center; gap: 10px; }
         .offer-icon { width: 30px; height: 30px; background: #fff8eb; color: #ff5200; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; flex-shrink: 0;}
@@ -32,7 +39,7 @@
         .offer-details p { font-size: 10px; color: #718096; margin-top: 2px;}
 
         .menu-section { background: #ffffff; padding: 20px 15px; border-top-left-radius: 24px; border-top-right-radius: 24px; min-height: 50vh; }
-        .category-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .category-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #0f172a;}
         
         .menu-item { display: flex; justify-content: space-between; gap: 15px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #edf2f7; }
         .item-info { flex: 1; }
@@ -40,12 +47,12 @@
         .veg-indicator::after { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
         .nonveg-indicator { border-color: #e53e3e; }
         .nonveg-indicator::after { background: #e53e3e; border-radius: 0; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-        .item-name { font-size: 16px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
-        .item-price { font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
+        .item-name { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px; line-height: 1.3;}
+        .item-price { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 6px; }
         .item-rating { font-size: 11px; color: #d97706; font-weight: 600; display: flex; align-items: center; gap: 3px; margin-bottom: 8px;}
-        .item-desc { font-size: 11px; color: #718096; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .item-desc { font-size: 11px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        .item-image-box { position: relative; width: 110px; height: 110px; flex-shrink: 0;}
+        .item-image-box { position: relative; width: 110px; height: 110px; flex-shrink: 0; border-radius: 16px; background: #f8fafc;}
         .item-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
         
         .add-btn-container { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 85%; background: #ffffff; border: 1px solid #ff5200; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;}
@@ -57,9 +64,13 @@
         .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); transform: translateY(100%); transition: transform 0.3s ease; z-index: 1000; }
         .cart-footer.show { transform: translateY(0); }
         .cart-banner { background: #ff5200; border-radius: 12px; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); cursor: pointer;}
-        .cart-info h4 { font-size: 13px; font-weight: 700; }
+        .cart-info h4 { font-size: 14px; font-weight: 800; }
         .cart-info p { font-size: 11px; font-weight: 500; opacity: 0.9; margin-top: 2px;}
-        .view-cart-text { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .view-cart-text { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+
+        .empty-menu { text-align: center; padding: 40px 20px; color: #64748b; }
+        .empty-menu i { font-size: 40px; color: #cbd5e0; margin-bottom: 15px; }
+        .empty-menu h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 5px;}
     </style>
 </head>
 <body>
@@ -72,57 +83,30 @@
         </div>
     </div>
 
-    <div class="restaurant-header">
-        <h1 class="rest-title">Bawarchi Biryani</h1>
-        <p class="rest-tags">Biryani, Indian, Mughlai • Kothapet</p>
-        <div class="rest-stats">
-            <div class="stat-box"><strong><i class="fa-solid fa-star" style="color: #10b981;"></i> 4.5</strong><span>10K+ Ratings</span></div>
-            <div class="stat-box"><strong><i class="fa-regular fa-clock"></i> 30 Mins</strong><span>Delivery Time</span></div>
-            <div class="stat-box"><strong><i class="fa-solid fa-indian-rupee-sign"></i> 200</strong><span>Cost for two</span></div>
+    <div class="restaurant-header" id="restHeaderBlock">
+        <div class="rest-bg-blur" id="restBgImage"></div>
+        <div class="header-content">
+            <h1 class="rest-title" id="restTitle">Loading...</h1>
+            <p class="rest-tags" id="restTags">Fetching details...</p>
+            <div class="rest-stats">
+                <div class="stat-box"><strong><i class="fa-solid fa-star" style="color: #10b981;"></i> 4.5</strong><span>10K+ Ratings</span></div>
+                <div class="stat-box"><strong><i class="fa-regular fa-clock"></i> 30 Mins</strong><span>Delivery Time</span></div>
+                <div class="stat-box"><strong><i class="fa-solid fa-indian-rupee-sign"></i> 200</strong><span>Cost for two</span></div>
+            </div>
         </div>
     </div>
 
     <div class="offers-container">
-        <div class="offer-card"><div class="offer-icon"><i class="fa-solid fa-percent"></i></div><div class="offer-details"><h4>20% OFF</h4><p>Up to ₹50 | Use TRYNEW</p></div></div>
-        <div class="offer-card"><div class="offer-icon"><i class="fa-solid fa-truck"></i></div><div class="offer-details"><h4>Free Delivery</h4><p>On orders above ₹199</p></div></div>
+        <div class="offer-card"><div class="offer-icon"><i class="fa-solid fa-percent"></i></div><div class="offer-details"><h4>Up to 20% OFF</h4><p>Use code LOCALBOY</p></div></div>
+        <div class="offer-card"><div class="offer-icon"><i class="fa-solid fa-truck"></i></div><div class="offer-details"><h4>Fast Delivery</h4><p>Hot & Fresh</p></div></div>
     </div>
 
     <div class="menu-section">
-        <h3 class="category-title" id="catTitle">Recommended <i class="fa-solid fa-chevron-up" style="font-size: 14px; color: #a0aec0;"></i></h3>
+        <h3 class="category-title" id="catTitle">Full Menu <i class="fa-solid fa-utensils" style="font-size: 16px; color: #ff5200;"></i></h3>
 
         <div id="menuItemsContainer">
-            <div class="menu-item">
-                <div class="item-info">
-                    <div class="veg-indicator nonveg-indicator"></div>
-                    <h3 class="item-name">Chicken Dum Biryani</h3>
-                    <p class="item-price">₹280</p>
-                    <div class="item-rating"><i class="fa-solid fa-star"></i> 4.6 (1.5k)</div>
-                    <p class="item-desc">Aromatic basmati rice layered with marinated chicken, cooked in traditional dum style with exotic spices.</p>
-                </div>
-                <div class="item-image-box">
-                    <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop" class="item-img" alt="Biryani">
-                    <div class="add-btn-container" id="add-box-1">
-                        <div class="btn-add" onclick="addItem(1, 280)">ADD</div>
-                        <div class="btn-controls"><span onclick="updateItem(1, -1, 280)">−</span><div class="qty-val" id="qty-1">1</div><span onclick="updateItem(1, 1, 280)">+</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="menu-item">
-                <div class="item-info">
-                    <div class="veg-indicator"></div>
-                    <h3 class="item-name">Paneer Butter Masala</h3>
-                    <p class="item-price">₹220</p>
-                    <div class="item-rating"><i class="fa-solid fa-star"></i> 4.3 (850)</div>
-                    <p class="item-desc">Soft paneer cubes cooked in a rich, creamy, and mildly spiced tomato gravy.</p>
-                </div>
-                <div class="item-image-box">
-                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=300&auto=format&fit=crop" class="item-img" alt="Paneer">
-                    <div class="add-btn-container" id="add-box-2">
-                        <div class="btn-add" onclick="addItem(2, 220)">ADD</div>
-                        <div class="btn-controls"><span onclick="updateItem(2, -1, 220)">−</span><div class="qty-val" id="qty-2">1</div><span onclick="updateItem(2, 1, 220)">+</span></div>
-                    </div>
-                </div>
+            <div style="text-align: center; padding: 30px; color: #94a3b8;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px;"></i> Loading Menu...
             </div>
         </div>
     </div>
@@ -138,65 +122,143 @@
     </div>
 
     <script>
-        function toggleFavorite() {
-            const favIcon = document.getElementById('favIcon');
-            if (favIcon.classList.contains('fa-regular')) {
-                favIcon.classList.remove('fa-regular'); favIcon.classList.add('fa-solid'); favIcon.style.color = '#e53e3e'; 
-            } else {
-                favIcon.classList.remove('fa-solid'); favIcon.classList.add('fa-regular'); favIcon.style.color = 'inherit'; 
-            }
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+        const database = firebase.database();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const currentRestId = urlParams.get('id') || '1';
+        const currentRestId = urlParams.get('id');
         let cartData, itemQuantities;
+        let menuItemsData = {}; // Store fetched menu globally
+        let currentRestDetails = {};
 
         window.addEventListener('pageshow', function() {
+            if(!currentRestId) {
+                window.location.replace("home.html");
+                return;
+            }
+
             cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
             itemQuantities = cartData.items;
 
-            document.querySelectorAll('.btn-controls').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.btn-add').forEach(el => el.style.display = 'block');
-
-            if (cartData.restId === currentRestId) {
-                for (let id in itemQuantities) {
-                    const addBox = document.getElementById(`add-box-${id}`);
-                    if (addBox) {
-                        addBox.querySelector('.btn-add').style.display = 'none';
-                        addBox.querySelector('.btn-controls').style.display = 'flex';
-                        document.getElementById(`qty-${id}`).innerText = itemQuantities[id];
-                    }
-                }
-            }
-            updateCartUI(); 
+            loadRestaurantDetails();
+            loadMenuItems();
+            checkFavoriteStatus();
         });
 
+        function loadRestaurantDetails() {
+            database.ref('restaurant_profiles/' + currentRestId).once('value').then(snapshot => {
+                if(snapshot.exists()) {
+                    currentRestDetails = snapshot.val();
+                    document.getElementById('restTitle').innerText = currentRestDetails.name;
+                    document.getElementById('restTags').innerText = "Delivery Available • Local Boy Partner";
+                    document.getElementById('restBgImage').style.backgroundImage = `url('${currentRestDetails.image}')`;
+                } else {
+                    document.getElementById('restTitle').innerText = "Restaurant Not Found";
+                    document.getElementById('restTags').innerText = "It may have been removed.";
+                }
+            });
+        }
+
+        function loadMenuItems() {
+            const container = document.getElementById('menuItemsContainer');
+            
+            // Fetch live menu items for this specific restaurant from Firebase
+            database.ref('restaurant_menus/' + currentRestId).once('value').then(snapshot => {
+                container.innerHTML = '';
+                
+                if(!snapshot.exists()) {
+                    container.innerHTML = `
+                        <div class="empty-menu">
+                            <i class="fa-solid fa-book-open"></i>
+                            <h3>Menu Updating</h3>
+                            <p>Restaurant hasn't added any items yet.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                menuItemsData = snapshot.val();
+                
+                for(let id in menuItemsData) {
+                    let item = menuItemsData[id];
+                    let isVeg = item.type === 'veg';
+                    let vegClass = isVeg ? '' : 'nonveg-indicator';
+                    let itemImg = item.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop";
+
+                    let qty = 0;
+                    if(cartData.restId === currentRestId && itemQuantities[id]) {
+                        qty = itemQuantities[id];
+                    }
+
+                    let btnHtml = qty > 0 
+                        ? `<div class="btn-add" id="btn-add-${id}" style="display:none;" onclick="addItem('${id}', ${item.price})">ADD</div>
+                           <div class="btn-controls" id="btn-controls-${id}" style="display:flex;"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">${qty}</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`
+                        : `<div class="btn-add" id="btn-add-${id}" onclick="addItem('${id}', ${item.price})">ADD</div>
+                           <div class="btn-controls" id="btn-controls-${id}"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">0</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`;
+
+                    container.innerHTML += `
+                        <div class="menu-item">
+                            <div class="item-info">
+                                <div class="veg-indicator ${vegClass}"></div>
+                                <h3 class="item-name">${item.name}</h3>
+                                <p class="item-price">₹${item.price}</p>
+                                <div class="item-rating"><i class="fa-solid fa-star"></i> 4.0</div>
+                                <p class="item-desc">${item.desc || 'Fresh and delicious.'}</p>
+                            </div>
+                            <div class="item-image-box">
+                                <img src="${itemImg}" class="item-img" alt="${item.name}">
+                                <div class="add-btn-container" id="add-box-${id}">
+                                    ${btnHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                updateCartUI();
+            });
+        }
+
+        // --- CART LOGIC ---
         function addItem(id, price) {
             if (cartData.restId !== null && cartData.restId !== currentRestId) {
                 if (confirm("Your cart has items from another restaurant. Do you want to clear it and add this item?")) {
                     cartData = { restId: currentRestId, items: {}, totalQty: 0 };
                     itemQuantities = cartData.items;
+                    
+                    // Reset all other buttons visually
                     document.querySelectorAll('.btn-controls').forEach(el => el.style.display = 'none');
                     document.querySelectorAll('.btn-add').forEach(el => el.style.display = 'block');
                 } else { return; }
             }
             
             cartData.restId = currentRestId;
-            document.getElementById(`add-box-${id}`).querySelector('.btn-add').style.display = 'none';
-            document.getElementById(`add-box-${id}`).querySelector('.btn-controls').style.display = 'flex';
+            document.getElementById(`btn-add-${id}`).style.display = 'none';
+            document.getElementById(`btn-controls-${id}`).style.display = 'flex';
             itemQuantities[id] = 1;
+            document.getElementById(`qty-${id}`).innerText = 1;
             saveCart();
         }
 
         function updateItem(id, change, price) {
-            let qty = itemQuantities[id] + change;
+            let currentQty = itemQuantities[id] || 0;
+            let qty = currentQty + change;
+            
             if (qty > 0) {
                 itemQuantities[id] = qty;
                 document.getElementById(`qty-${id}`).innerText = qty;
             } else {
                 delete itemQuantities[id];
-                document.getElementById(`add-box-${id}`).querySelector('.btn-controls').style.display = 'none';
-                document.getElementById(`add-box-${id}`).querySelector('.btn-add').style.display = 'block';
+                document.getElementById(`btn-controls-${id}`).style.display = 'none';
+                document.getElementById(`btn-add-${id}`).style.display = 'block';
                 if (Object.keys(itemQuantities).length === 0) { cartData.restId = null; }
             }
             saveCart();
@@ -210,13 +272,51 @@
 
         function updateCartUI() {
             const cartFooter = document.getElementById('cartFooter');
-            if (cartData.totalQty > 0) {
+            if (cartData.totalQty > 0 && cartData.restId === currentRestId) {
                 cartFooter.classList.add('show');
                 document.getElementById('totalItems').innerText = cartData.totalQty === 1 ? "1 Item added" : `${cartData.totalQty} Items added`;
-                document.body.style.paddingBottom = "100px"; 
             } else {
                 cartFooter.classList.remove('show');
-                document.body.style.paddingBottom = "80px";
+            }
+        }
+
+        // --- FAVORITE LOGIC ---
+        function checkFavoriteStatus() {
+            let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+            const favIcon = document.getElementById('favIcon');
+            // We need to wait for restDetails to load, so we use a small delay or check name
+            setTimeout(() => {
+                if(currentRestDetails.name && favs.some(f => f.name === currentRestDetails.name)) {
+                    favIcon.classList.remove('fa-regular'); 
+                    favIcon.classList.add('fa-solid'); 
+                    favIcon.style.color = '#e53e3e'; 
+                }
+            }, 500);
+        }
+
+        function toggleFavorite() {
+            if(!currentRestDetails.name) return;
+            const favIcon = document.getElementById('favIcon');
+            let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+            
+            if (favIcon.classList.contains('fa-regular')) {
+                favIcon.classList.remove('fa-regular'); 
+                favIcon.classList.add('fa-solid'); 
+                favIcon.style.color = '#e53e3e'; 
+                if(!favs.some(f => f.name === currentRestDetails.name)) {
+                    favs.push({ 
+                        name: currentRestDetails.name, 
+                        img: currentRestDetails.image || '', 
+                        url: `restaurant-details.html?id=${currentRestId}` 
+                    });
+                    localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
+                }
+            } else {
+                favIcon.classList.remove('fa-solid'); 
+                favIcon.classList.add('fa-regular'); 
+                favIcon.style.color = 'inherit'; 
+                favs = favs.filter(f => f.name !== currentRestDetails.name);
+                localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
             }
         }
     </script>
