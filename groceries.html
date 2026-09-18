@@ -15,7 +15,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Fixed Page Horizontal Scroll Issue */
         body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; overflow-x: hidden; width: 100vw; }
         
         a { text-decoration: none; color: inherit; }
@@ -36,7 +35,7 @@
         .search-box input::placeholder { color: #94a3b8; font-weight: 400; }
         .search-icon { color: #10b981; font-size: 18px; }
 
-        /* Premium Categories Grid -> Changed to Horizontal Scroll & Round shape */
+        /* Premium Categories Grid */
         .premium-categories { 
             display: flex; 
             overflow-x: auto; 
@@ -45,10 +44,10 @@
             background: #ffffff; 
             margin-bottom: 10px; 
             border-bottom: 1px solid #f1f5f9; 
-            scrollbar-width: none; /* Hide scrollbar Firefox */
-            -ms-overflow-style: none; /* Hide scrollbar IE/Edge */
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
         }
-        .premium-categories::-webkit-scrollbar { display: none; /* Hide scrollbar Chrome/Safari */ }
+        .premium-categories::-webkit-scrollbar { display: none; }
         
         .cat-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; flex-shrink: 0; width: 72px; }
         .cat-img-wrap { width: 72px; height: 72px; border-radius: 50%; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.2s;}
@@ -68,14 +67,16 @@
         .discount-badge { position: absolute; top: 10px; left: 10px; background: #3b82f6; color: #ffffff; font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 2; }
         .prod-img-box { width: 100%; height: 120px; background: #ffffff; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 5px; position: relative;}
         .prod-img-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s;}
-        .prod-title-en { font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .prod-title-te { font-size: 11px; font-weight: 600; color: #10b981; margin-bottom: 6px; }
-        .prod-weight { font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 500;}
-        .prod-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .prod-price { font-size: 16px; font-weight: 800; color: #0f172a; }
-        .prod-price strike { font-size: 11px; color: #94a3b8; font-weight: 500; margin-left: 4px; }
         
-        .add-btn-wrapper { width: 75px; height: 34px; background: #ffffff; border: 1px solid #10b981; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);}
+        .prod-title-en { font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-weight { font-size: 11px; font-weight: 700; color: #3b82f6; margin-bottom: 8px; }
+        
+        .prod-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+        .price-box { display: flex; flex-direction: column; }
+        .prod-price { font-size: 16px; font-weight: 800; color: #0f172a; }
+        .prod-strike { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;}
+        
+        .add-btn-wrapper { width: 75px; height: 34px; background: #ffffff; border: 1px solid #10b981; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1); margin-bottom: 2px;}
         .btn-add { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: #10b981; font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; background: #f0fdf4;}
         .btn-controls { display: none; justify-content: space-between; align-items: center; width: 100%; height: 100%; background: #10b981; color: white;}
         .btn-controls span { padding: 0 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; height: 100%;}
@@ -129,7 +130,6 @@
             <h3>A to Z Items</h3>
             <i class="fa-solid fa-star"></i>
         </div>
-        <!-- Clear Filter logic added dynamically here -->
     </div>
 
     <!-- Products Grid -->
@@ -157,10 +157,7 @@
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            projectId: "sri-vishnu-priya-finance-c591f"
         };
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -178,6 +175,7 @@
             updateCartUI();
         });
 
+        // 🔴 FETCH LIVE DATA FROM FIREBASE 
         function fetchGroceries() {
             database.ref('groceries').once('value').then((snapshot) => {
                 if (snapshot.exists()) {
@@ -186,32 +184,17 @@
                         id: key,
                         ...data[key]
                     }));
+                    renderProducts(groceryDB);
                 } else {
-                    useFallbackGroceries();
+                    productGrid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <p>No groceries available at the moment.</p>
+                    </div>`;
                 }
-                renderProducts(groceryDB);
             }).catch((error) => {
                 console.error("Error fetching groceries:", error);
-                useFallbackGroceries();
-                renderProducts(groceryDB);
             });
-        }
-
-        function useFallbackGroceries() {
-            groceryDB = [
-                { id: 'g1', en: 'Onions (Medium)', te: 'ఉల్లిపాయలు', weight: '1 kg', price: 45, mrp: 60, tag: '25% OFF', img: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?q=80&w=300&auto=format&fit=crop', cat: 'vegetables' },
-                { id: 'g2', en: 'Fresh Tomatoes', te: 'టమాటాలు', weight: '1 kg', price: 30, mrp: 40, tag: '', img: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?q=80&w=300&auto=format&fit=crop', cat: 'vegetables' },
-                { id: 'g3', en: 'Amul Taaza Milk', te: 'అముల్ పాలు', weight: '500 ml', price: 28, mrp: 28, tag: '', img: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=300&auto=format&fit=crop', cat: 'dairy' },
-                { id: 'g4', en: 'Farm Fresh Chicken', te: 'చికెన్ (స్కిన్ లెస్)', weight: '500 g', price: 140, mrp: 160, tag: 'BESTSELLER', img: 'https://images.unsplash.com/photo-1604503468306-202f77813caa?q=80&w=300&auto=format&fit=crop', cat: 'meat' },
-                { id: 'g5', en: 'Toor Dal (Premium)', te: 'కంది పప్పు', weight: '1 kg', price: 160, mrp: 180, tag: '', img: 'https://images.unsplash.com/photo-1585942414169-23190b21aae1?q=80&w=300&auto=format&fit=crop', cat: 'essentials' },
-                { id: 'g6', en: 'Sona Masoori Rice', te: 'సోనా మసూరి బియ్యం', weight: '25 kg Bag', price: 1250, mrp: 1400, tag: '₹150 OFF', img: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=300&auto=format&fit=crop', cat: 'essentials' },
-                { id: 'g7', en: 'Lays Magic Masala', te: 'లేస్ చిప్స్', weight: '50 g', price: 20, mrp: 20, tag: '', img: 'https://cdn-icons-png.flaticon.com/512/2553/2553691.png', cat: 'snacks' },
-                { id: 'g8', en: 'Thums Up Soft Drink', te: 'థమ్స్ అప్', weight: '750 ml', price: 40, mrp: 40, tag: '', img: 'https://cdn-icons-png.flaticon.com/512/3050/3050114.png', cat: 'drinks' },
-                { id: 'g9', en: 'Surf Excel Powder', te: 'బట్టల సర్ఫ్', weight: '1 kg', price: 140, mrp: 155, tag: '10% OFF', img: 'https://cdn-icons-png.flaticon.com/512/2822/2822189.png', cat: 'essentials' },
-                { id: 'g10', en: 'Safety Pins Pack', te: 'పిన్నీసుల ప్యాకెట్', weight: '1 Pack (50 pcs)', price: 20, mrp: 25, tag: '', img: 'https://cdn-icons-png.flaticon.com/512/3034/3034114.png', cat: 'essentials' },
-                { id: 'g11', en: 'Matchbox Bundle', te: 'అగ్గిపెట్టెలు', weight: '10 pcs', price: 15, mrp: 15, tag: '', img: 'https://cdn-icons-png.flaticon.com/512/3426/3426549.png', cat: 'essentials' },
-                { id: 'g12', en: 'Dolo 650 Tablets', te: 'డోలో 650', weight: '1 Strip (15 Tab)', price: 30, mrp: 32, tag: 'Pharmacy', img: 'https://cdn-icons-png.flaticon.com/512/2966/2966327.png', cat: 'pharmacy' }
-            ];
         }
 
         function renderProducts(items) {
@@ -232,18 +215,36 @@
                     : `<div class="btn-add" id="add-btn-${item.id}" onclick="addItem('${item.id}')">ADD</div>
                        <div class="btn-controls" id="controls-${item.id}"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val" id="qty-${item.id}">1</div><span onclick="updateItem('${item.id}', 1)">+</span></div>`;
 
-                let tagHtml = item.tag ? `<div class="discount-badge">${item.tag}</div>` : '';
-                let priceHtml = (item.mrp && item.mrp > item.price) ? `₹${item.price} <strike>₹${item.mrp}</strike>` : `₹${item.price}`;
+                // Tag & Discount logic
+                let tagHtml = '';
+                if(item.discount && item.discount > 0) {
+                    tagHtml = `<div class="discount-badge">${item.discount}% OFF</div>`;
+                }
+
+                // Price display logic
+                let priceHtml = '';
+                if(item.discount && item.discount > 0) {
+                    priceHtml = `
+                        <div class="prod-strike"><strike>₹${item.originalPrice}</strike></div>
+                        <div class="prod-price">₹${item.price}</div>
+                    `;
+                } else {
+                    priceHtml = `<div class="prod-price">₹${item.price}</div>`;
+                }
+
+                let itemName = item.name || item.en; 
+                let itemWeight = item.weight ? item.weight : '';
 
                 productGrid.innerHTML += `
                     <div class="prod-card">
                         ${tagHtml}
-                        <div class="prod-img-box"><img src="${item.img}" alt="${item.en}"></div>
-                        <div class="prod-title-en">${item.en}</div>
-                        <div class="prod-title-te">${item.te || ''}</div>
-                        <div class="prod-weight">${item.weight}</div>
+                        <div class="prod-img-box"><img src="${item.image}" alt="${itemName}"></div>
+                        <div class="prod-title-en">${itemName}</div>
+                        <div class="prod-weight">${itemWeight}</div>
                         <div class="prod-bottom">
-                            <div class="prod-price">${priceHtml}</div>
+                            <div class="price-box">
+                                ${priceHtml}
+                            </div>
                             <div class="add-btn-wrapper" id="wrapper-${item.id}">
                                 ${btnHtml}
                             </div>
@@ -275,17 +276,17 @@
             `;
 
             const filtered = groceryDB.filter(item => {
-                if (item.cat) return item.cat === category;
+                let name = (item.name || item.en || "").toLowerCase();
                 
-                // Fallback filtering if DB doesn't have 'cat' key
-                let name = (item.en || "").toLowerCase();
-                if(category === 'vegetables') return name.includes('onion') || name.includes('tomato') || name.includes('potato');
-                if(category === 'fruits') return name.includes('apple') || name.includes('banana') || name.includes('mango');
+                if(category === 'vegetables') return name.includes('onion') || name.includes('tomato') || name.includes('potato') || name.includes('veg');
+                if(category === 'fruits') return name.includes('apple') || name.includes('banana') || name.includes('mango') || name.includes('fruit');
                 if(category === 'dairy') return name.includes('milk') || name.includes('paneer') || name.includes('curd');
-                if(category === 'meat') return name.includes('chicken') || name.includes('fish') || name.includes('mutton');
-                if(category === 'snacks') return name.includes('lays') || name.includes('chips') || name.includes('biscuit');
-                if(category === 'drinks') return name.includes('thums up') || name.includes('drink');
-                if(category === 'pharmacy') return name.includes('dolo') || name.includes('tablet');
+                if(category === 'meat') return name.includes('chicken') || name.includes('fish') || name.includes('mutton') || name.includes('egg');
+                if(category === 'snacks') return name.includes('lays') || name.includes('chips') || name.includes('biscuit') || name.includes('snack');
+                if(category === 'drinks') return name.includes('thums up') || name.includes('drink') || name.includes('water');
+                if(category === 'pharmacy') return name.includes('dolo') || name.includes('tablet') || name.includes('pill');
+                if(category === 'petcare') return name.includes('dog') || name.includes('cat') || name.includes('pet');
+                
                 return false;
             });
 
@@ -303,12 +304,13 @@
             }
 
             const filtered = groceryDB.filter(item => 
-                (item.en && item.en.toLowerCase().includes(query)) || 
-                (item.te && item.te.includes(query))
+                (item.name && item.name.toLowerCase().includes(query)) || 
+                (item.en && item.en.toLowerCase().includes(query))
             );
             renderProducts(filtered);
         }
 
+        // --- CART LOGIC ---
         function addItem(id) {
             if (cartData.restId !== null && cartData.restId !== currentRestId) {
                 if (confirm("Your cart contains food items from a restaurant. Clear cart to add groceries?")) {
