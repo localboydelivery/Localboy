@@ -121,7 +121,7 @@
                 <a href="location.html?from=cart" class="change-btn clickable">Change</a>
             </div>
             <p class="address-text" id="cartAddressText">Loading address...</p>
-            <div class="time-estimate">
+            <div class="time-estimate" id="eta-display">
                 <i class="fa-solid fa-clock"></i> Delivery in 15 - 30 mins
             </div>
         </div>
@@ -130,18 +130,18 @@
         <div class="section-box" id="itemsSection">
             <div class="restaurant-name" id="cartRestName">
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop" alt="Logo">
-                Bawarchi Biryani
+                Loading Restaurant...
             </div>
 
             <div id="dynamicCartItems">
                 <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px;"></i> Calculating Bill...
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px;"></i> Calculating Bill & Distance...
                 </div>
             </div>
 
             <div class="instruction-box" id="instructionBox">
                 <i class="fa-regular fa-comment-dots"></i>
-                <input type="text" placeholder="Any cooking or delivery instructions?">
+                <input type="text" id="orderInstructions" placeholder="Any cooking or delivery instructions?">
             </div>
         </div>
 
@@ -161,8 +161,8 @@
                 <span>Item Total</span>
                 <span id="bill-item-total">₹0.00</span>
             </div>
-            <div class="bill-row">
-                <span>Delivery Fee | 1.2 kms</span>
+            <div class="bill-row" id="delivery-fee-row">
+                <span id="delivery-fee-text">Delivery Fee | Calculating...</span>
                 <span id="bill-delivery-fee">₹30.00</span>
             </div>
             <div class="bill-row discount" id="bill-discount-row" style="display: none;">
@@ -205,21 +205,38 @@
     </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            projectId: "sri-vishnu-priya-finance-c591f"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         let cartData;
         let menuDB = {}; 
+        let checkoutData = {}; // Will hold the final numbers
+
+        // Location Variables
+        let restLat = null, restLng = null;
+        let customerLat = null, customerLng = null;
+        let restCommission = 0;
+        let distanceInKm = 0;
+        let deliveryFee = 30; // Default base fee
+        let itemTotal = 0;
+        let taxes = 25;
+
+        // Haversine formula to calculate straight-line distance
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; 
+            var dLat = deg2rad(lat2-lat1);
+            var dLon = deg2rad(lon2-lon1);
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c; 
+        }
+        function deg2rad(deg) { return deg * (Math.PI/180); }
 
         function fetchLiveMenuAndInitCart() {
             cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
@@ -248,48 +265,86 @@
             emptyState.style.display = 'none';
             cartContentWrapper.style.display = 'block';
             checkoutFooter.style.display = 'flex';
-
-            // Determine if grocery or restaurant and fetch corresponding live data
-            let dbRefPath = cartData.restId === 'grocery_store' ? 'groceries' : 'restaurant_menus/' + cartData.restId;
-            
-            // Set Header Name
-            if (cartData.restId === 'grocery_store') {
-                cartRestName.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3194/3194591.png" style="background:#ecfdf5; padding:2px;"> Local Boy Groceries`;
-            } else {
-                // Fetch rest name dynamically if needed, keeping simple for now
-                cartRestName.innerHTML = `<img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop"> Restaurant Order`;
-            }
-
             document.getElementById('proceedBtn').innerText = 'Calculating...';
             document.getElementById('proceedBtn').disabled = true;
 
+            // 1. Fetch Restaurant Data (Commission & Location)
+            if (cartData.restId !== 'grocery_store') {
+                database.ref('restaurant_profiles/' + cartData.restId).once('value').then(snap => {
+                    if(snap.exists()) {
+                        let profile = snap.val();
+                        restLat = profile.latitude;
+                        restLng = profile.longitude;
+                        restCommission = profile.commission || 0;
+                        cartRestName.innerHTML = `<img src="${profile.image || 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100'}"> ${profile.name}`;
+                    }
+                    fetchMenuAndLocation('restaurant_menus/' + cartData.restId);
+                });
+            } else {
+                cartRestName.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3194/3194591.png" style="background:#ecfdf5; padding:2px;"> Local Boy Groceries`;
+                restCommission = 0; // Groceries internal, 0 commission
+                fetchMenuAndLocation('groceries');
+            }
+        }
+
+        function fetchMenuAndLocation(dbRefPath) {
             database.ref(dbRefPath).once('value').then((snapshot) => {
-                if(snapshot.exists()) {
-                    menuDB = snapshot.val();
+                menuDB = snapshot.val() || {};
+                
+                // Attempt to get Customer GPS
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            customerLat = position.coords.latitude;
+                            customerLng = position.coords.longitude;
+                            calculateDistanceAndRender();
+                        },
+                        (error) => {
+                            console.log("GPS denied or failed. Using default delivery fee.");
+                            calculateDistanceAndRender();
+                        }
+                    );
                 } else {
-                    menuDB = {}; // Safety fallback
+                    calculateDistanceAndRender();
                 }
-                renderCartItemsAndBill();
-            }).catch(err => {
-                console.error("Error fetching live menu:", err);
-                alert("Failed to load live prices. Please check your internet.");
             });
+        }
+
+        function calculateDistanceAndRender() {
+            if(restLat && restLng && customerLat && customerLng) {
+                distanceInKm = getDistanceFromLatLonInKm(restLat, restLng, customerLat, customerLng);
+                distanceInKm = parseFloat(distanceInKm.toFixed(1));
+
+                // Delivery Logic: Base ₹30 for 2KM. Extra ₹10 per KM
+                if(distanceInKm <= 2) {
+                    deliveryFee = 30;
+                } else {
+                    let extraKm = Math.ceil(distanceInKm - 2);
+                    deliveryFee = 30 + (extraKm * 10);
+                }
+                document.getElementById('delivery-fee-text').innerText = `Delivery Fee | ${distanceInKm} kms`;
+            } else {
+                deliveryFee = 30; // Fallback
+                document.getElementById('delivery-fee-text').innerText = `Delivery Fee (Standard)`;
+            }
+            
+            document.getElementById('bill-delivery-fee').innerText = `₹${deliveryFee.toFixed(2)}`;
+            renderCartItemsAndBill();
         }
 
         function renderCartItemsAndBill() {
             const dynamicCartItems = document.getElementById('dynamicCartItems');
             dynamicCartItems.innerHTML = '';
             
-            let itemTotal = 0;
-            let originalTotal = 0; // To calculate total discount saved
+            itemTotal = 0;
+            let originalTotal = 0; 
 
             for (let id in cartData.items) {
                 let qty = cartData.items[id];
                 let item = menuDB[id];
                 
-                if(!item) continue; // Item might have been deleted from DB
+                if(!item) continue; 
                 
-                // Real-time price calculation using FINAL price from DB
                 itemTotal += (item.price * qty);
                 originalTotal += ((item.originalPrice || item.price) * qty);
 
@@ -319,23 +374,28 @@
                 `;
             }
 
-            // If cart ends up empty because items were deleted from DB
             if(dynamicCartItems.innerHTML === '') {
                 localStorage.setItem('localBoyCart', JSON.stringify({ restId: null, items: {}, totalQty: 0 }));
                 window.location.reload();
                 return;
             }
 
-            // Fixed Standard Charges
-            let deliveryFee = 30;
-            let taxes = 25;
-            
-            // Note: Individual item discounts are already applied to item.price in DB
             let toPay = itemTotal + deliveryFee + taxes;
-
-            // Extra Logic: If they want an extra cart-level discount in future, do it here. 
-            // For now, we show how much they saved based on item original prices.
             let totalSaved = originalTotal - itemTotal;
+
+            // Restaurant Earnings Calculation (Item Total minus Commission)
+            let restaurantEarnings = itemTotal - (itemTotal * (restCommission / 100));
+
+            // Save final data for payment page
+            checkoutData = {
+                itemTotal: itemTotal,
+                deliveryFee: deliveryFee,
+                taxes: taxes,
+                toPay: toPay,
+                restaurantEarnings: restaurantEarnings, // This will be sent to DB
+                commissionPercent: restCommission,
+                distance: distanceInKm
+            };
 
             document.getElementById('bill-item-total').innerText = `₹${itemTotal.toFixed(2)}`;
             
@@ -369,7 +429,7 @@
             if (cartData.totalQty === 0) { cartData.restId = null; }
             
             localStorage.setItem('localBoyCart', JSON.stringify(cartData));
-            fetchLiveMenuAndInitCart(); // Re-fetch to calculate new totals securely
+            fetchLiveMenuAndInitCart(); 
         }
 
         function scrollToBill() {
@@ -386,11 +446,14 @@
                 alert("Please add a delivery address before proceeding to pay.");
                 window.location.href = "location.html?from=cart";
             } else {
-                // Generate a unique order tracking ID and move to payment
+                // Save checkout calculations and instructions to pass to Payment
+                checkoutData.instructions = document.getElementById('orderInstructions').value.trim();
+                localStorage.setItem('localBoyCheckoutData', JSON.stringify(checkoutData));
                 window.location.href = "payment.html";
             }
         }
 
+        // --- Address Fetch Logic ---
         function displayAddress(fullStr) {
             const addressTextElem = document.getElementById("cartAddressText");
             const addressTitleElem = document.getElementById("cartAddressTitle");
@@ -400,18 +463,10 @@
                     let parts = fullStr.split('|');
                     let type = parts[0];
                     let address = parts[2];
-                    
-                    let iconClass = "fa-location-dot";
-                    if(type.toLowerCase() === 'home') iconClass = "fa-house";
-                    else if(type.toLowerCase() === 'work') iconClass = "fa-briefcase";
+                    let iconClass = type.toLowerCase() === 'home' ? "fa-house" : (type.toLowerCase() === 'work' ? "fa-briefcase" : "fa-location-dot");
 
                     addressTitleElem.innerHTML = `<i class="fa-solid ${iconClass}"></i> Delivery to ${type}`;
                     addressTextElem.innerText = address;
-                } else if (fullStr.includes(':')) {
-                    let parts = fullStr.split(':');
-                    let type = parts[0].split(' ')[0];
-                    addressTitleElem.innerHTML = `<i class="fa-solid fa-location-dot"></i> Delivery to ${type}`;
-                    addressTextElem.innerText = parts[1].trim();
                 } else {
                     addressTitleElem.innerHTML = `<i class="fa-solid fa-location-dot"></i> Delivery Location`;
                     addressTextElem.innerText = fullStr;
@@ -435,16 +490,11 @@
                         displayAddress(fbAddress);
                         localStorage.setItem('userSavedAddress', fbAddress);
                     } else {
-                        const savedLocation = localStorage.getItem("userSavedAddress");
-                        displayAddress(savedLocation);
+                        displayAddress(localStorage.getItem("userSavedAddress"));
                     }
-                }).catch(() => {
-                    const savedLocation = localStorage.getItem("userSavedAddress");
-                    displayAddress(savedLocation);
-                });
+                }).catch(() => { displayAddress(localStorage.getItem("userSavedAddress")); });
             } else {
-                const savedLocation = localStorage.getItem("userSavedAddress");
-                displayAddress(savedLocation);
+                displayAddress(localStorage.getItem("userSavedAddress"));
             }
         });
     </script>
