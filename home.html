@@ -50,7 +50,7 @@
         .filter-circle img { width: 100%; height: 100%; object-fit: cover; }
         .filter-item span { font-size: 11px; font-weight: 600; color: #2d3748; white-space: nowrap; }
 
-        .main-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 25px; }
+        .main-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
         .category-card { position: relative; height: 150px; border-radius: 22px; overflow: hidden; color: white; padding: 15px; display: flex; flex-direction: column; justify-content: flex-end; box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
         .category-card img.bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
         .category-card .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.1)); z-index: 2; }
@@ -61,31 +61,43 @@
         .cat-content h3 { font-size: 22px; font-weight: 800; }
         .cat-content p { font-size: 11px; font-weight: 500; opacity: 0.9; }
 
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 15px; }
-        .section-header h2 { font-size: 20px; font-weight: 700; }
-        .section-header a { color: #ff5200; font-size: 13px; font-weight: 600; }
-
-        .restaurant-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 20px; }
-        .rest-card { min-width: 280px; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: relative; border: 1px solid #f7fafc; display: block;}
-        .rest-img-container { position: relative; height: 160px; }
-        .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
-        .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
-        .open-tag i { color: #10b981; font-size: 8px;}
-        .rest-details { padding: 15px; position: relative; }
-        .rest-details h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        
-        .fav-icon { position: absolute; top: 15px; left: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.9); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer;}
-        
-        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 10px; }
-        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
-        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; }
-
-        .promo-banner { margin: 0 20px 20px; background: linear-gradient(135deg, #fff8eb 0%, #ffedd5 100%); border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+        /* Promo Banner (Moved above restaurant list) */
+        .promo-banner { margin: 0 20px 25px; background: linear-gradient(135deg, #fff8eb 0%, #ffedd5 100%); border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         .promo-content { z-index: 2; max-width: 60%; }
         .promo-tag { display: inline-block; background: white; color: #ff5200; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; }
         .promo-content h3 { font-size: 18px; font-weight: 800; margin-bottom: 5px;}
         .promo-content p { font-size: 11px; color: #718096; }
         .promo-img { position: absolute; right: -20px; bottom: -20px; width: 150px; z-index: 1; border-radius: 50%;}
+
+        .section-header { padding: 0 20px 15px; }
+        .section-header h2 { font-size: 20px; font-weight: 800; color: #1e293b;}
+
+        /* Vertical Restaurant List */
+        .restaurant-list { display: flex; flex-direction: column; gap: 20px; padding: 0 20px 20px; }
+        .rest-card { width: 100%; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); position: relative; border: 1px solid #f7fafc; display: block;}
+        
+        .rest-img-container { position: relative; height: 180px; }
+        .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Status Tags */
+        .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; z-index: 6;}
+        .open-tag i { color: #10b981; font-size: 8px;}
+        
+        /* Closed UI styling */
+        .closed { opacity: 0.85; filter: grayscale(30%); cursor: not-allowed; }
+        .closed-overlay-tag { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.4); z-index: 5; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);}
+        .closed-text { background: rgba(0,0,0,0.75); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; max-width: 80%; line-height: 1.4;}
+        .closed-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; z-index: 6;}
+        .closed-tag i { color: #ef4444; font-size: 8px;}
+
+        .rest-details { padding: 15px; position: relative; }
+        .rest-details h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: #0f172a;}
+        
+        .fav-icon { position: absolute; top: 15px; left: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.9); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer;}
+        
+        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 600; margin-bottom: 10px; }
+        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
+        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; font-weight: 500;}
 
         .cart-footer { position: fixed; bottom: 70px; left: 0; width: 100%; padding: 0 15px 15px; transform: translateY(200%); transition: transform 0.3s ease; z-index: 99; }
         .cart-footer.show { transform: translateY(0); }
@@ -172,17 +184,7 @@
         </a>
     </div>
 
-    <div class="section-header">
-        <h2>Top Restaurants</h2>
-        <a href="restaurants.html" class="clickable">See All <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i></a>
-    </div>
-
-    <!-- Live Restaurants Container -->
-    <div class="restaurant-scroll hide-scrollbar" id="topRestaurantsContainer">
-        <!-- Live Data Will Be Injected Here -->
-        <p style="padding: 0 20px; font-size: 13px; color: #a0aec0;"><i class="fa-solid fa-spinner fa-spin"></i> Finding nearby restaurants...</p>
-    </div>
-
+    <!-- Promo Banner placed above Restaurants List for better visibility -->
     <a href="javascript:void(0)" class="promo-banner clickable">
         <div class="promo-content">
             <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
@@ -191,6 +193,15 @@
         </div>
         <img src="https://images.unsplash.com/photo-1617470702892-e01504297e84?q=80&w=400&auto=format&fit=crop" alt="Promo" class="promo-img">
     </a>
+
+    <div class="section-header">
+        <h2>All Restaurants</h2>
+    </div>
+
+    <!-- Live Restaurants Vertical List Container -->
+    <div class="restaurant-list" id="topRestaurantsContainer">
+        <p style="text-align: center; color: #a0aec0; font-size: 13px;"><i class="fa-solid fa-spinner fa-spin"></i> Finding nearby restaurants...</p>
+    </div>
 
     <div class="cart-footer" id="cartFooter">
         <a href="cart.html" class="cart-banner clickable">
@@ -289,36 +300,56 @@
             } else { displayAddressOnHeader(localStorage.getItem("userSavedAddress")); }
         }
 
-        // Fetch Live Restaurants from Firebase
+        // Fetch Live Restaurants with Closed Status
         function loadLiveRestaurants() {
             database.ref('restaurant_profiles').on('value', (snapshot) => {
                 const container = document.getElementById('topRestaurantsContainer');
                 container.innerHTML = '';
                 
                 if (!snapshot.exists()) {
-                    container.innerHTML = '<div style="padding:0 20px; color:#a0aec0; font-size:13px;">No restaurants open right now.</div>';
+                    container.innerHTML = '<div style="text-align: center; color:#a0aec0; font-size:13px; padding: 20px;">No restaurants available right now.</div>';
                     return;
                 }
 
                 const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+                let restaurantsArray = [];
 
                 snapshot.forEach(child => {
                     let res = child.val();
-                    let rId = child.key;
-                    
-                    // Show only Open restaurants
-                    if(res.status !== 'Open') return;
+                    res.key = child.key;
+                    restaurantsArray.push(res);
+                });
 
+                // Sort: Show Open restaurants first, Closed ones at the bottom
+                restaurantsArray.sort((a, b) => {
+                    if (a.status === 'Open' && b.status !== 'Open') return -1;
+                    if (a.status !== 'Open' && b.status === 'Open') return 1;
+                    return 0;
+                });
+
+                restaurantsArray.forEach(res => {
+                    let rId = res.key;
                     let isFav = favs.some(f => f.name === res.name);
                     let heartClass = isFav ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon';
                     let heartColor = isFav ? '#e53e3e' : '#a0aec0';
 
+                    let isOpen = res.status === 'Open';
+                    let statusTag = isOpen 
+                        ? `<div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>` 
+                        : `<div class="closed-tag"><i class="fa-solid fa-circle"></i> Closed</div>`;
+                    
+                    // Added Overlay UI for closed restaurants
+                    let closedOverlay = isOpen ? '' : `<div class="closed-overlay-tag"><div class="closed-text">Currently unavailable for delivery</div></div>`;
+                    let cardClass = isOpen ? 'rest-card clickable' : 'rest-card closed';
+                    let linkHref = isOpen ? `restaurant-details.html?id=${rId}` : `javascript:void(0)`;
+
                     let html = `
-                    <a href="restaurant-details.html?id=${rId}" class="rest-card clickable">
+                    <a href="${linkHref}" class="${cardClass}">
                         <div class="rest-img-container">
                             <img src="${res.image}" alt="${res.name}">
-                            <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
-                            <i class="${heartClass}" style="color:${heartColor}" data-name="${res.name}" onclick="toggleHomeFav(event, this, '${res.name}', '${res.image}', 'restaurant-details.html?id=${rId}')"></i>
+                            ${closedOverlay}
+                            ${statusTag}
+                            <i class="${heartClass}" style="color:${heartColor}; z-index: 10;" data-name="${res.name}" onclick="toggleHomeFav(event, this, '${res.name}', '${res.image}', 'restaurant-details.html?id=${rId}')"></i>
                         </div>
                         <div class="rest-details">
                             <h3>${res.name}</h3>
