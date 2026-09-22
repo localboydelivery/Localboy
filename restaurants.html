@@ -18,32 +18,29 @@
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.8; }
 
-        /* Top Bar */
         .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; }
         .top-bar h2 { font-size: 18px; font-weight: 700; text-transform: capitalize;}
 
-        /* Restaurant List */
         .restaurant-list { padding: 15px; display: flex; flex-direction: column; gap: 20px; }
 
         .rest-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: relative; border: 1px solid #f7fafc; display: block; }
-        .rest-img-container { position: relative; height: 180px; }
+        .rest-img-container { position: relative; height: 180px; background: #edf2f7;}
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        .discount-tag { position: absolute; top: 15px; left: 15px; background: #ff5200; color: white; font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 6px; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); }
-        .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; }
+        .discount-tag { position: absolute; bottom: 15px; left: 15px; background: #ff5200; color: white; font-size: 12px; font-weight: 800; padding: 6px 10px; border-radius: 8px; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); z-index: 6;}
+        .open-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); color: white; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 12px; display: flex; align-items: center; gap: 5px; z-index: 6;}
         .open-tag i { color: #10b981; font-size: 8px;}
 
         .rest-details { padding: 15px; position: relative; }
-        .rest-details h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; z-index: 10; cursor: pointer;}
+        .rest-details h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; color: #000; text-transform: uppercase; letter-spacing: 0.5px;}
+        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.95); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
         
-        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 500; margin-bottom: 10px; }
-        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
+        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 600; margin-bottom: 10px; }
+        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
         
-        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; }
+        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; font-weight: 500;}
 
-        /* Loader & Empty State */
         .loader-state { text-align: center; padding: 50px 20px; color: #a0aec0;}
         .empty-state { text-align: center; padding: 50px 20px; display: none; }
         .empty-state i { font-size: 50px; color: #cbd5e0; margin-bottom: 15px;}
@@ -63,17 +60,15 @@
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom: 15px; color: #ff5200;"></i>
             <p>Loading restaurants...</p>
         </div>
-        <!-- Restaurants will be loaded here by JavaScript -->
     </div>
 
     <div class="empty-state" id="emptyState">
         <i class="fa-solid fa-store-slash"></i>
         <h3>No Restaurants Found</h3>
-        <p>Sorry, we couldn't find any active restaurants matching your criteria.</p>
+        <p>Sorry, we couldn't find any active restaurants right now.</p>
     </div>
 
     <script>
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -104,7 +99,6 @@
             }
         }
 
-        // Get Category from URL
         const urlParams = new URLSearchParams(window.location.search);
         const selectedCategory = urlParams.get('category'); 
 
@@ -114,75 +108,69 @@
         const loaderState = document.getElementById('loaderState');
 
         if (selectedCategory) {
-            pageTitle.innerText = selectedCategory + " Restaurants";
+            pageTitle.innerText = "Top for " + selectedCategory;
         }
 
-        // Fetch Live Data from Firebase
         window.addEventListener('pageshow', function() {
-            database.ref('restaurant_profiles').once('value').then((snapshot) => {
-                loaderState.style.display = 'none';
-                
-                if (!snapshot.exists()) {
-                    emptyState.style.display = 'block';
-                    return;
-                }
-
-                let foundCount = 0;
-                const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
-
-                snapshot.forEach(child => {
-                    let res = child.val();
-                    let rId = child.key;
-
-                    // Only show open restaurants
-                    if(res.status !== 'Open') return;
-
-                    // Simple filtering logic if category is selected
-                    let isMatch = true;
-                    if(selectedCategory) {
-                        let nameStr = (res.name || "").toLowerCase();
-                        isMatch = nameStr.includes(selectedCategory.toLowerCase());
+            database.ref('restaurant_profiles').orderByChild('status').equalTo('Open').once('value')
+                .then((snapshot) => {
+                    loaderState.style.display = 'none';
+                    
+                    if (!snapshot.exists()) {
+                        emptyState.style.display = 'block';
+                        return;
                     }
 
-                    if(isMatch || !selectedCategory) {
+                    let foundCount = 0;
+                    const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+
+                    snapshot.forEach(child => {
+                        let res = child.val();
+                        let rId = child.key;
+
+                        // ఇప్పుడు ఏ కేటగిరీ నొక్కినా ఎంటీ రాకుండా అన్నీ చూపిస్తుంది
                         foundCount++;
                         let isFav = favs.some(f => f.name === res.name);
                         let heartClass = isFav ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon';
                         let heartColor = isFav ? '#e53e3e' : '#a0aec0';
 
                         let discountText = res.commission ? `Up to ${res.commission}% OFF` : 'Best Offers';
+                        
+                        // Direct HD Image 
+                        let imgUrl = res.image && typeof res.image === 'string' && res.image.startsWith('http') 
+                                     ? res.image 
+                                     : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400';
 
                         restaurantList.innerHTML += `
                             <a href="restaurant-details.html?id=${rId}" class="rest-card clickable">
                                 <div class="rest-img-container">
-                                    <img src="${res.image}" alt="${res.name}">
+                                    <img src="${imgUrl}" alt="Restaurant" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400';">
                                     <div class="discount-tag">${discountText}</div>
                                     <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
+                                    <i class="${heartClass}" style="color:${heartColor}" onclick="toggleFav(event, this, '${res.name}', '${imgUrl}', 'restaurant-details.html?id=${rId}')"></i>
                                 </div>
                                 <div class="rest-details">
                                     <h3>${res.name}</h3>
-                                    <i class="${heartClass}" style="color:${heartColor}" onclick="toggleFav(event, this, '${res.name}', '${res.image}', 'restaurant-details.html?id=${rId}')"></i>
                                     <div class="rest-stats">
-                                        <span class="rating"><i class="fa-solid fa-star"></i> 4.2</span>
+                                        <span class="rating"><i class="fa-solid fa-star"></i> 4.0</span>
                                         <span><i class="fa-regular fa-clock"></i> 30 mins</span>
                                     </div>
                                     <div class="rest-desc">
-                                        <span><i class="fa-solid fa-location-dot" style="width: 15px;"></i> Delivery Available</span>
+                                        <span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Delivery Available</span>
                                     </div>
                                 </div>
                             </a>
                         `;
-                    }
-                });
+                    });
 
-                if(foundCount === 0) {
+                    if(foundCount === 0) {
+                        emptyState.style.display = 'block';
+                    }
+                }).catch(error => {
+                    loaderState.style.display = 'none';
                     emptyState.style.display = 'block';
-                }
-            }).catch(error => {
-                loaderState.style.display = 'none';
-                emptyState.style.display = 'block';
-                console.error("Error fetching restaurants:", error);
-            });
+                    console.error("Error:", error);
+                });
         });
     </script>
 </body>
