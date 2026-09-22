@@ -61,7 +61,6 @@
         .cat-content h3 { font-size: 22px; font-weight: 800; }
         .cat-content p { font-size: 11px; font-weight: 500; opacity: 0.9; }
 
-        /* Promo Banner (Moved above restaurant list) */
         .promo-banner { margin: 0 20px 25px; background: linear-gradient(135deg, #fff8eb 0%, #ffedd5 100%); border-radius: 20px; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         .promo-content { z-index: 2; max-width: 60%; }
         .promo-tag { display: inline-block; background: white; color: #ff5200; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; }
@@ -72,18 +71,17 @@
         .section-header { padding: 0 20px 15px; }
         .section-header h2 { font-size: 20px; font-weight: 800; color: #1e293b;}
 
-        /* Vertical Restaurant List */
         .restaurant-list { display: flex; flex-direction: column; gap: 20px; padding: 0 20px 20px; }
         .rest-card { width: 100%; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); position: relative; border: 1px solid #f7fafc; display: block;}
         
         .rest-img-container { position: relative; height: 180px; }
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Status Tags */
+        .discount-tag { position: absolute; top: 15px; left: 15px; background: #ff5200; color: white; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); z-index: 6;}
+        
         .open-tag { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 12px; display: flex; align-items: center; gap: 4px; z-index: 6;}
         .open-tag i { color: #10b981; font-size: 8px;}
         
-        /* Closed UI styling */
         .closed { opacity: 0.85; filter: grayscale(30%); cursor: not-allowed; }
         .closed-overlay-tag { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.4); z-index: 5; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);}
         .closed-text { background: rgba(0,0,0,0.75); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; max-width: 80%; line-height: 1.4;}
@@ -113,7 +111,6 @@
         .nav-item:active i { transform: scale(0.85); }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
 
-        /* Dynamic Banner Styling */
         #activeOrderBanner { display: none; margin: 0 20px 15px; border-radius: 16px; padding: 15px; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s; }
         .banner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .banner-title { font-size: 14px; font-weight: 800; }
@@ -162,15 +159,15 @@
     </div>
 
     <div class="quick-filters hide-scrollbar">
-        <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span></a>
-        <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=400&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span></a>
-        <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=400&auto=format&fit=crop" alt="Veg"></div><span>Healthy</span></a>
+        <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339?q=80&w=400&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span></a>
+        <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138?q=80&w=400&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span></a>
+        <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://images.unsplash.com/photo-1540420773420?q=80&w=400&auto=format&fit=crop" alt="Veg"></div><span>Healthy</span></a>
         <a href="categories.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right"></i></div><span>More</span></a>
     </div>
 
     <div class="main-categories">
         <a href="restaurants.html" class="category-card clickable">
-            <img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Food">
+            <img src="https://images.unsplash.com/photo-1631515243349?q=80&w=800&auto=format&fit=crop" class="bg-img" alt="Food">
             <div class="overlay"></div>
             <div class="cat-icon-badge cat-food-badge"><i class="fa-solid fa-utensils"></i></div>
             <div class="cat-content"><h3>FOOD</h3><p>Restaurants & meals</p></div>
@@ -184,21 +181,19 @@
         </a>
     </div>
 
-    <!-- Promo Banner placed above Restaurants List for better visibility -->
     <a href="javascript:void(0)" class="promo-banner clickable">
         <div class="promo-content">
             <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
             <h3>Your Favourite Foods</h3>
             <p>From top restaurants near you</p>
         </div>
-        <img src="https://images.unsplash.com/photo-1617470702892-e01504297e84?q=80&w=400&auto=format&fit=crop" alt="Promo" class="promo-img">
+        <img src="https://images.unsplash.com/photo-1617470702892?q=80&w=400&auto=format&fit=crop" alt="Promo" class="promo-img">
     </a>
 
     <div class="section-header">
         <h2>All Restaurants</h2>
     </div>
 
-    <!-- Live Restaurants Vertical List Container -->
     <div class="restaurant-list" id="topRestaurantsContainer">
         <p style="text-align: center; color: #a0aec0; font-size: 13px;"><i class="fa-solid fa-spinner fa-spin"></i> Finding nearby restaurants...</p>
     </div>
@@ -300,7 +295,6 @@
             } else { displayAddressOnHeader(localStorage.getItem("userSavedAddress")); }
         }
 
-        // Fetch Live Restaurants with Closed Status
         function loadLiveRestaurants() {
             database.ref('restaurant_profiles').on('value', (snapshot) => {
                 const container = document.getElementById('topRestaurantsContainer');
@@ -320,7 +314,6 @@
                     restaurantsArray.push(res);
                 });
 
-                // Sort: Show Open restaurants first, Closed ones at the bottom
                 restaurantsArray.sort((a, b) => {
                     if (a.status === 'Open' && b.status !== 'Open') return -1;
                     if (a.status !== 'Open' && b.status === 'Open') return 1;
@@ -338,23 +331,27 @@
                         ? `<div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>` 
                         : `<div class="closed-tag"><i class="fa-solid fa-circle"></i> Closed</div>`;
                     
-                    // Added Overlay UI for closed restaurants
                     let closedOverlay = isOpen ? '' : `<div class="closed-overlay-tag"><div class="closed-text">Currently unavailable for delivery</div></div>`;
                     let cardClass = isOpen ? 'rest-card clickable' : 'rest-card closed';
                     let linkHref = isOpen ? `restaurant-details.html?id=${rId}` : `javascript:void(0)`;
+                    
+                    let imgUrl = (res.image && res.image.includes('http')) ? res.image : 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400';
+                    let discountText = res.commission ? `Up to ${res.commission}% OFF` : 'Best Offers';
+                    let discountHtml = isOpen ? `<div class="discount-tag">${discountText}</div>` : '';
 
                     let html = `
                     <a href="${linkHref}" class="${cardClass}">
                         <div class="rest-img-container">
-                            <img src="${res.image}" alt="${res.name}">
+                            <img src="${imgUrl}" alt="Restaurant">
                             ${closedOverlay}
+                            ${discountHtml}
                             ${statusTag}
                             <i class="${heartClass}" style="color:${heartColor}; z-index: 10;" data-name="${res.name}" onclick="toggleHomeFav(event, this, '${res.name}', '${res.image}', 'restaurant-details.html?id=${rId}')"></i>
                         </div>
                         <div class="rest-details">
                             <h3>${res.name}</h3>
                             <div class="rest-stats"><span class="rating"><i class="fa-solid fa-star"></i> 4.0</span><span><i class="fa-regular fa-clock"></i> 30 mins</span></div>
-                            <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Fast Food, Meals</span></div>
+                            <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Delivery Available</span></div>
                         </div>
                     </a>`;
                     container.innerHTML += html;
@@ -381,7 +378,6 @@
             }
         }
 
-        // --- LIVE ORDER BANNER LOGIC ---
         function checkActiveOrder() {
             const trackingId = localStorage.getItem('lastOrderId');
             const banner = document.getElementById('activeOrderBanner');
@@ -391,7 +387,6 @@
                     const orderData = snapshot.val();
                     
                     if (orderData && orderData.status !== 'Delivered' && orderData.status !== 'Cancelled') {
-                        // Order exists and is active
                         banner.style.display = 'block';
                         document.getElementById('bannerOrderId').innerText = `Order #${orderData.orderId}`;
                         
@@ -399,11 +394,8 @@
                         const etaEl = document.getElementById('bannerEta');
                         const btnEl = document.getElementById('bannerBtn');
                         
-                        // Dynamic calculation based on Distance calculated in Cart
-                        // Fallback to 15 if not available
                         let calculatedMins = 15; 
                         if(orderData.distance) {
-                            // Example: 3 mins per km
                             calculatedMins = Math.ceil(orderData.distance * 3); 
                         }
 
@@ -418,7 +410,6 @@
                             banner.style.background = '#eff6ff'; banner.style.borderColor = '#3b82f6';
                             titleEl.innerHTML = '<i class="fa-solid fa-fire-burner fa-bounce"></i> Preparing your food';
                             titleEl.style.color = '#2563eb';
-                            // Show initial ETA
                             etaEl.innerText = `${calculatedMins + 10} min ETA`; etaEl.style.color = '#3b82f6';
                             btnEl.style.background = '#3b82f6';
                         }
@@ -433,15 +424,13 @@
                             banner.style.background = '#ecfdf5'; banner.style.borderColor = '#10b981';
                             titleEl.innerHTML = '<i class="fa-solid fa-motorcycle fa-bounce"></i> Out for Delivery';
                             titleEl.style.color = '#059669';
-                            // Show actual travel ETA based on distance
                             etaEl.innerText = `${calculatedMins} min ETA`; etaEl.style.color = '#10b981';
                             btnEl.style.background = '#10b981';
                         }
                     } else {
-                        // Order delivered or cancelled
                         banner.style.display = 'none';
                         if(orderData && (orderData.status === 'Delivered' || orderData.status === 'Cancelled')) {
-                            localStorage.removeItem('lastOrderId'); // Clean up
+                            localStorage.removeItem('lastOrderId'); 
                         }
                     }
                 });
@@ -455,7 +444,7 @@
                 updateHomeCartUI();
                 loadInitialData();
                 loadLiveRestaurants(); 
-                checkActiveOrder(); // Check & Update the Banner
+                checkActiveOrder();
             }
         });
     </script>
