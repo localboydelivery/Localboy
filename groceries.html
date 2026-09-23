@@ -20,14 +20,12 @@
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.95); opacity: 0.9; }
 
-        /* Premium Top Bar */
         .top-nav { display: flex; align-items: center; gap: 15px; padding: 15px 20px; position: sticky; top: 0; z-index: 100; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
         .icon-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; color: #1e293b; transition: 0.2s;}
         .header-title { display: flex; flex-direction: column; }
         .header-title h2 { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;}
         .header-title p { font-size: 11px; color: #10b981; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
 
-        /* Modern Search Bar */
         .search-container { padding: 15px 20px; background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 68px; z-index: 99;}
         .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 18px; border: 1px solid #e2e8f0; transition: box-shadow 0.3s;}
         .search-box:focus-within { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); border-color: #10b981; }
@@ -35,18 +33,7 @@
         .search-box input::placeholder { color: #94a3b8; font-weight: 400; }
         .search-icon { color: #10b981; font-size: 18px; }
 
-        /* Premium Categories Grid */
-        .premium-categories { 
-            display: flex; 
-            overflow-x: auto; 
-            gap: 15px; 
-            padding: 20px 15px; 
-            background: #ffffff; 
-            margin-bottom: 10px; 
-            border-bottom: 1px solid #f1f5f9; 
-            scrollbar-width: none; 
-            -ms-overflow-style: none; 
-        }
+        .premium-categories { display: flex; overflow-x: auto; gap: 15px; padding: 20px 15px; background: #ffffff; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; scrollbar-width: none; -ms-overflow-style: none; }
         .premium-categories::-webkit-scrollbar { display: none; }
         
         .cat-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; flex-shrink: 0; width: 72px; }
@@ -55,13 +42,11 @@
         .cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
         .cat-box span { font-size: 12px; font-weight: 700; color: #475569; line-height: 1.2; }
 
-        /* A to Z Items Header */
         .section-header { padding: 15px 20px 5px; display: flex; align-items: center; justify-content: space-between; }
         .section-header-left { display: flex; align-items: center; gap: 8px; }
         .section-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
         .section-header i.fa-star { color: #f59e0b; font-size: 18px; }
 
-        /* Premium Products Grid */
         .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px; }
         .prod-card { background: #ffffff; border-radius: 20px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; display: flex; flex-direction: column; position: relative; transition: box-shadow 0.2s;}
         .discount-badge { position: absolute; top: 10px; left: 10px; background: #3b82f6; color: #ffffff; font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 2; }
@@ -82,7 +67,6 @@
         .btn-controls span { padding: 0 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; height: 100%;}
         .qty-val { font-size: 14px; font-weight: 700; }
 
-        /* Cart Footer */
         .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px;}
         .cart-footer.show { transform: translateY(0); }
         .cart-banner { background: #10b981; border-radius: 14px; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); cursor: pointer;}
@@ -114,13 +98,14 @@
         </div>
     </div>
 
+    <!-- Direct Fast Images replacing Cloudinary links -->
     <div class="premium-categories">
-        <div class="cat-box" onclick="filterByCategory('vegetables')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=300&auto=format&fit=crop" alt="Veggies"></div><span>Fresh<br>Veggies</span></div>
-        <div class="cat-box" onclick="filterByCategory('fruits')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=300&auto=format&fit=crop" alt="Fruits"></div><span>Fresh<br>Fruits</span></div>
-        <div class="cat-box" onclick="filterByCategory('dairy')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=300&auto=format&fit=crop" alt="Dairy"></div><span>Dairy &<br>Milk</span></div>
-        <div class="cat-box" onclick="filterByCategory('meat')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=300&auto=format&fit=crop" alt="Meat"></div><span>Meat &<br>Fish</span></div>
-        <div class="cat-box" onclick="filterByCategory('snacks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=300&auto=format&fit=crop" alt="Snacks"></div><span>Snacks</span></div>
-        <div class="cat-box" onclick="filterByCategory('drinks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=300&auto=format&fit=crop" alt="Drinks"></div><span>Cold<br>Drinks</span></div>
+        <div class="cat-box" onclick="filterByCategory('vegetables')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=300" alt="Veggies"></div><span>Fresh<br>Veggies</span></div>
+        <div class="cat-box" onclick="filterByCategory('fruits')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=300" alt="Fruits"></div><span>Fresh<br>Fruits</span></div>
+        <div class="cat-box" onclick="filterByCategory('dairy')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=300" alt="Dairy"></div><span>Dairy &<br>Milk</span></div>
+        <div class="cat-box" onclick="filterByCategory('meat')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=300" alt="Meat"></div><span>Meat &<br>Fish</span></div>
+        <div class="cat-box" onclick="filterByCategory('snacks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=300" alt="Snacks"></div><span>Snacks</span></div>
+        <div class="cat-box" onclick="filterByCategory('drinks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=300" alt="Drinks"></div><span>Cold<br>Drinks</span></div>
         <div class="cat-box" onclick="filterByCategory('pharmacy')"><div class="cat-img-wrap" style="background: #fff3e0; box-shadow: none;"><img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" style="width: 50%; height: 50%; object-fit: contain;" alt="Pharmacy"></div><span>Pharmacy</span></div>
         <div class="cat-box" onclick="filterByCategory('petcare')"><div class="cat-img-wrap" style="background: #e6f8f1; box-shadow: none;"><i class="fa-solid fa-paw" style="font-size: 32px; color: #10b981;"></i></div><span>Pet Care</span></div>
     </div>
@@ -128,7 +113,7 @@
     <div class="section-header" id="dynamicHeader">
         <div class="section-header-left">
             <h3>A to Z Items</h3>
-            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
         </div>
     </div>
 
@@ -152,9 +137,9 @@
     </div>
 
     <script>
-        // Firebase Config
+        // Exact Firebase Config
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f"
@@ -175,8 +160,13 @@
             updateCartUI();
         });
 
-        // 🔴 FETCH LIVE DATA FROM FIREBASE 
         function fetchGroceries() {
+            productGrid.innerHTML = `
+                <div class="loader">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading Groceries...
+                </div>`;
+                
             database.ref('groceries').once('value').then((snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -203,7 +193,7 @@
                 productGrid.innerHTML = `
                     <div class="no-results">
                         <i class="fa-solid fa-basket-shopping"></i>
-                        <p>No items found matching your search.</p>
+                        <p>No items found matching your filter.</p>
                     </div>`;
                 return;
             }
@@ -215,13 +205,11 @@
                     : `<div class="btn-add" id="add-btn-${item.id}" onclick="addItem('${item.id}')">ADD</div>
                        <div class="btn-controls" id="controls-${item.id}"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val" id="qty-${item.id}">1</div><span onclick="updateItem('${item.id}', 1)">+</span></div>`;
 
-                // Tag & Discount logic
                 let tagHtml = '';
                 if(item.discount && item.discount > 0) {
                     tagHtml = `<div class="discount-badge">${item.discount}% OFF</div>`;
                 }
 
-                // Price display logic
                 let priceHtml = '';
                 if(item.discount && item.discount > 0) {
                     priceHtml = `
@@ -234,11 +222,16 @@
 
                 let itemName = item.name || item.en; 
                 let itemWeight = item.weight ? item.weight : '';
+                
+                // Original image logic with strong onerror fallback
+                let imgUrl = item.image && item.image.startsWith('http') ? item.image : 'https://cdn-icons-png.flaticon.com/512/3194/3194591.png';
 
                 productGrid.innerHTML += `
                     <div class="prod-card">
                         ${tagHtml}
-                        <div class="prod-img-box"><img src="${item.image}" alt="${itemName}"></div>
+                        <div class="prod-img-box">
+                            <img src="${imgUrl}" alt="${itemName}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3194/3194591.png'; this.style.padding='10px';">
+                        </div>
                         <div class="prod-title-en">${itemName}</div>
                         <div class="prod-weight">${itemWeight}</div>
                         <div class="prod-bottom">
@@ -254,19 +247,22 @@
             });
         }
 
+        // --- FILTER LOGIC FIXED (Case Insensitive + Client Side) ---
         function filterByCategory(category) {
             if (category === 'all') {
                 document.getElementById('dynamicHeader').innerHTML = `
                     <div class="section-header-left">
                         <h3>A to Z Items</h3>
-                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
                     </div>`;
-                renderProducts(groceryDB);
+                renderProducts(groceryDB); // Show all loaded groceries
                 return;
             }
 
             let title = category.charAt(0).toUpperCase() + category.slice(1);
             if(category === 'petcare') title = 'Pet Care';
+            if(category === 'vegetables') title = 'Fresh Veggies';
+            if(category === 'fruits') title = 'Fresh Fruits';
             
             document.getElementById('dynamicHeader').innerHTML = `
                 <div class="section-header-left">
@@ -275,22 +271,19 @@
                 <span style="font-size:12px; color:#ff5200; cursor:pointer; font-weight:700;" onclick="filterByCategory('all')">Clear Filter <i class="fa-solid fa-xmark"></i></span>
             `;
 
-            const filtered = groceryDB.filter(item => {
-                let name = (item.name || item.en || "").toLowerCase();
-                
-                if(category === 'vegetables') return name.includes('onion') || name.includes('tomato') || name.includes('potato') || name.includes('veg');
-                if(category === 'fruits') return name.includes('apple') || name.includes('banana') || name.includes('mango') || name.includes('fruit');
-                if(category === 'dairy') return name.includes('milk') || name.includes('paneer') || name.includes('curd');
-                if(category === 'meat') return name.includes('chicken') || name.includes('fish') || name.includes('mutton') || name.includes('egg');
-                if(category === 'snacks') return name.includes('lays') || name.includes('chips') || name.includes('biscuit') || name.includes('snack');
-                if(category === 'drinks') return name.includes('thums up') || name.includes('drink') || name.includes('water');
-                if(category === 'pharmacy') return name.includes('dolo') || name.includes('tablet') || name.includes('pill');
-                if(category === 'petcare') return name.includes('dog') || name.includes('cat') || name.includes('pet');
-                
-                return false;
-            });
+            productGrid.innerHTML = `
+                <div class="loader">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                    Loading ${title}...
+                </div>`;
 
-            renderProducts(filtered);
+            // Filter locally to avoid case sensitive 'Not Found' issues
+            setTimeout(() => {
+                const filteredItems = groceryDB.filter(item => 
+                    item.category && item.category.toLowerCase() === category.toLowerCase()
+                );
+                renderProducts(filteredItems);
+            }, 300); // Tiny delay for smooth UI transition
         }
 
         function filterGroceries() {
@@ -298,16 +291,15 @@
             
             if (query.length > 0) {
                 document.getElementById('dynamicHeader').innerHTML = `<div class="section-header-left"><h3>Search Results</h3></div>`;
+                
+                const filtered = groceryDB.filter(item => 
+                    (item.name && item.name.toLowerCase().includes(query)) || 
+                    (item.en && item.en.toLowerCase().includes(query))
+                );
+                renderProducts(filtered);
             } else {
                 filterByCategory('all');
-                return;
             }
-
-            const filtered = groceryDB.filter(item => 
-                (item.name && item.name.toLowerCase().includes(query)) || 
-                (item.en && item.en.toLowerCase().includes(query))
-            );
-            renderProducts(filtered);
         }
 
         // --- CART LOGIC ---
@@ -320,7 +312,14 @@
             cartData.restId = currentRestId;
             cartData.items[id] = 1;
             saveCart();
-            renderProducts(groceryDB); 
+            
+            // Re-render currently viewed list
+            const currentCatHeader = document.getElementById('dynamicHeader').innerText;
+            if(currentCatHeader.includes('A to Z')) {
+                renderProducts(groceryDB);
+            } else {
+                filterGroceries(); // Re-trigger filter to keep state
+            }
         }
 
         function updateItem(id, change) {
@@ -332,7 +331,13 @@
                 if (Object.keys(cartData.items).length === 0) cartData.restId = null;
             }
             saveCart();
-            renderProducts(groceryDB);
+            
+            const currentCatHeader = document.getElementById('dynamicHeader').innerText;
+            if(currentCatHeader.includes('A to Z')) {
+                renderProducts(groceryDB);
+            } else {
+                filterGroceries();
+            }
         }
 
         function saveCart() {
