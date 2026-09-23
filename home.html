@@ -44,10 +44,11 @@
         .search-icon { color: #ff5200; font-size: 18px; }
         .mic-icon { color: #4a5568; font-size: 18px; }
 
+        /* REAL HD IMAGE ICONS CSS */
         .quick-filters { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 20px; }
         .filter-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 70px; }
-        .filter-circle { width: 70px; height: 70px; border-radius: 50%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; justify-content: center; align-items: center; overflow: hidden; border: 2px solid #edf2f7; padding: 12px;}
-        .filter-circle img { width: 100%; height: 100%; object-fit: contain; }
+        .filter-circle { width: 70px; height: 70px; border-radius: 50%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; justify-content: center; align-items: center; overflow: hidden; border: 2px solid #edf2f7; padding: 0; /* Padding removed for full image fill */}
+        .filter-circle img { width: 100%; height: 100%; object-fit: cover; } /* Cover applied for perfect circle */
         .filter-item span { font-size: 12px; font-weight: 700; color: #2d3748; white-space: nowrap; }
 
         .main-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
@@ -61,12 +62,18 @@
         .cat-content h3 { font-size: 22px; font-weight: 800; }
         .cat-content p { font-size: 11px; font-weight: 600; opacity: 0.9; }
 
+        /* ADMIN DYNAMIC BANNER CSS */
+        .dynamic-banner-container { margin: 0 20px 25px; display: flex; overflow-x: auto; gap: 15px; scrollbar-width: none; }
+        .dynamic-banner-container::-webkit-scrollbar { display: none; }
+        .dyn-banner { min-width: 100%; height: 160px; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+        .dyn-banner img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Fallback Default Promo Banner Style */
         .promo-banner { margin: 0 20px 25px; background: linear-gradient(135deg, #fff8eb 0%, #ffedd5 100%); border-radius: 24px; padding: 25px 20px; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
         .promo-content { z-index: 2; max-width: 65%; }
         .promo-tag { display: inline-block; background: white; color: #ff5200; font-size: 11px; font-weight: 800; padding: 6px 10px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
         .promo-content h3 { font-size: 18px; font-weight: 800; margin-bottom: 5px; color: #1a202c;}
         .promo-content p { font-size: 12px; color: #718096; font-weight: 500;}
-        .promo-img { position: absolute; right: -20px; bottom: -20px; width: 150px; z-index: 1; opacity: 0.9;}
 
         .section-header { padding: 0 20px 15px; }
         .section-header h2 { font-size: 22px; font-weight: 900; color: #1e293b; letter-spacing: -0.5px;}
@@ -79,7 +86,7 @@
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
         .img-gradient { position: absolute; bottom: 0; left: 0; width: 100%; height: 80px; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); z-index: 1;}
         
-        /* Tag Placements (No Overlap) */
+        /* Tag Placements */
         .open-tag { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.95); color: #10b981; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 12px; display: flex; align-items: center; gap: 5px; z-index: 2; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
         .closed-tag { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.95); color: #ef4444; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 12px; display: flex; align-items: center; gap: 5px; z-index: 2; box-shadow: 0 4px 15px rgba(0,0,0,0.1);}
         
@@ -163,11 +170,20 @@
         <p style="font-size: 14px; color: #64748b; font-weight: 600;">What would you like to order today?</p>
     </div>
 
+    <!-- 🔴 PERFECT HD FOOD IMAGES FOR ICONS -->
     <div class="quick-filters hide-scrollbar">
-        <a href="restaurants.html?category=biryani" class="filter-item clickable"><div class="filter-circle"><img src="https://cdn-icons-png.flaticon.com/512/6557/6557346.png" alt="Biryani"></div><span>Biryani</span></a>
-        <a href="restaurants.html?category=pizza" class="filter-item clickable"><div class="filter-circle"><img src="https://cdn-icons-png.flaticon.com/512/3132/3132693.png" alt="Pizza"></div><span>Pizza</span></a>
-        <a href="restaurants.html?category=veg" class="filter-item clickable"><div class="filter-circle"><img src="https://cdn-icons-png.flaticon.com/512/2917/2917906.png" alt="Veg"></div><span>Healthy</span></a>
-        <a href="categories.html" class="filter-item clickable"><div class="filter-circle" style="background: #f7fafc;"><i class="fa-solid fa-arrow-right" style="font-size: 26px; color: #a0aec0;"></i></div><span>More</span></a>
+        <a href="restaurants.html?category=biryani" class="filter-item clickable">
+            <div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop" alt="Biryani"></div><span>Biryani</span>
+        </a>
+        <a href="restaurants.html?category=pizza" class="filter-item clickable">
+            <div class="filter-circle"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=300&auto=format&fit=crop" alt="Pizza"></div><span>Pizza</span>
+        </a>
+        <a href="restaurants.html?category=healthy" class="filter-item clickable">
+            <div class="filter-circle"><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=300&auto=format&fit=crop" alt="Healthy"></div><span>Healthy</span>
+        </a>
+        <a href="categories.html" class="filter-item clickable">
+            <div class="filter-circle" style="background: #f7fafc; padding: 15px;"><i class="fa-solid fa-arrow-right" style="font-size: 26px; color: #a0aec0;"></i></div><span>More</span>
+        </a>
     </div>
 
     <div class="main-categories">
@@ -186,14 +202,15 @@
         </a>
     </div>
 
-    <a href="javascript:void(0)" class="promo-banner clickable">
-        <div class="promo-content">
-            <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
-            <h3>Your Favourite Foods</h3>
-            <p>From top restaurants near you</p>
+    <!-- 🔴 DYNAMIC BANNERS FROM FIREBASE ADMIN -->
+    <div id="promoBannerContainer">
+        <!-- Default Banner (Shows while loading or if no banners exist) -->
+        <div class="promo-banner" id="defaultBannerPlaceholder">
+            <div class="promo-content">
+                <div class="promo-tag"><i class="fa-solid fa-spinner fa-spin"></i> Loading Offers...</div>
+            </div>
         </div>
-        <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Promo" class="promo-img" style="opacity: 0.2; transform: scale(1.5);">
-    </a>
+    </div>
 
     <div class="section-header">
         <h2>All Restaurants</h2>
@@ -221,16 +238,15 @@
     </div>
 
     <script>
-        // EXACT CONFIG PROVIDED BY YOU
+        // EXACT CONFIG 
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            storageBucket: "sri-vishnu-priya-finance-c591f.appspot.com",
             messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
-            measurementId: "G-E3TT96ZH1T"
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
@@ -305,6 +321,44 @@
             } else { displayAddressOnHeader(localStorage.getItem("userSavedAddress")); }
         }
 
+        // 🔴 DYNAMIC BANNERS FETCHING FUNCTION
+        function loadBanners() {
+            database.ref('banners').on('value', (snapshot) => {
+                const container = document.getElementById('promoBannerContainer');
+                
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    container.innerHTML = ''; // Clear placeholder
+                    container.className = 'dynamic-banner-container'; // Apply slider CSS
+                    
+                    snapshot.forEach(child => {
+                        let data = child.val();
+                        let imgUrl = typeof data === 'string' ? data : (data.image || data.url || data.bannerUrl);
+                        
+                        if (imgUrl) {
+                            container.innerHTML += `
+                                <div class="dyn-banner">
+                                    <img src="${imgUrl}" alt="Promo Banner" onerror="this.onerror=null; this.parentElement.style.display='none';">
+                                </div>
+                            `;
+                        }
+                    });
+                } else {
+                    // Fallback visually appealing banner if database is empty
+                    container.className = '';
+                    container.innerHTML = `
+                        <a href="javascript:void(0)" class="promo-banner clickable">
+                            <div class="promo-content">
+                                <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT 30% OFF</div>
+                                <h3>Your Favourite Foods</h3>
+                                <p>From top restaurants near you</p>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200" alt="Promo" class="promo-img" style="border-radius: 50%;">
+                        </a>
+                    `;
+                }
+            });
+        }
+
         function loadLiveRestaurants() {
             database.ref('restaurant_profiles').on('value', (snapshot) => {
                 const container = document.getElementById('topRestaurantsContainer');
@@ -353,7 +407,6 @@
                     let discountText = res.commission ? `UP TO ${res.commission}% OFF` : 'BEST OFFERS';
                     let discountHtml = isOpen ? `<div class="discount-tag">${discountText}</div>` : '';
 
-                    // The gradient overlay is added so the white text of the discount is always readable
                     let html = `
                     <a href="${linkHref}" class="${cardClass}">
                         <div class="rest-img-container">
@@ -459,6 +512,7 @@
             if (localStorage.getItem('userPhone')) {
                 updateHomeCartUI();
                 loadInitialData();
+                loadBanners(); // Load banners from admin dynamically
                 loadLiveRestaurants(); 
                 checkActiveOrder();
             }
