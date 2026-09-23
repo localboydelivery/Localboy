@@ -33,7 +33,7 @@
         .orders-container.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Premium Order Card (Exact Match to Screenshot) */
+        /* Premium Order Card */
         .order-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
         
         /* Active Order Specific */
@@ -61,7 +61,7 @@
         .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
         .status-delivered { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;}
         .status-cancelled { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2;}
-        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between;}
+        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;}
 
         /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
@@ -76,6 +76,12 @@
         .empty-state img { width: 120px; margin-bottom: 25px; opacity: 0.8;}
         .empty-state h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
         .empty-state p { font-size: 13px; color: #64748b; font-weight: 500;}
+        
+        /* Modal for Rating */
+        .modal-btn-cancel { flex: 1; padding: 14px; border-radius: 12px; background: #f1f5f9; color: #475569; font-weight: 700; border: none; font-size: 14px; cursor: pointer; transition: 0.2s;}
+        .modal-btn-cancel:active { transform: scale(0.95); }
+        .modal-btn-submit { flex: 1; padding: 14px; border-radius: 12px; background: #ff5200; color: white; font-weight: 700; border: none; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(255,82,0,0.3);}
+        .modal-btn-submit:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -111,6 +117,41 @@
         <div id="pastOrdersList"></div>
     </div>
 
+    <!-- Beautiful Star Rating Modal (No More github.io Alerts!) -->
+    <div id="ratingModalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); z-index:1000; justify-content:center; align-items:center; backdrop-filter:blur(3px);">
+        <div id="modalBox" style="background:#fff; width:85%; max-width:340px; border-radius:24px; padding:25px; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+            
+            <div id="ratingContent">
+                <h3 style="font-size:20px; font-weight:800; color:#0f172a; margin-bottom:5px;">Rate your Order</h3>
+                <p style="font-size:12px; color:#64748b; margin-bottom:20px; font-weight:500;">How was your food and delivery experience?</p>
+                
+                <div id="starContainer" style="display:flex; justify-content:center; gap:12px; font-size:35px; color:#e2e8f0; margin-bottom:25px;">
+                    <i class="fa-solid fa-star star-btn" data-val="1"></i>
+                    <i class="fa-solid fa-star star-btn" data-val="2"></i>
+                    <i class="fa-solid fa-star star-btn" data-val="3"></i>
+                    <i class="fa-solid fa-star star-btn" data-val="4"></i>
+                    <i class="fa-solid fa-star star-btn" data-val="5"></i>
+                </div>
+                
+                <input type="hidden" id="selectedRating" value="0">
+                <input type="hidden" id="ratingOrderId" value="">
+                
+                <div style="display:flex; gap:12px;">
+                    <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button class="modal-btn-submit" onclick="submitRating()">Submit</button>
+                </div>
+            </div>
+
+            <!-- Success Message Box -->
+            <div id="successContent" style="display: none; padding: 20px 0;">
+                <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #10b981; margin-bottom: 15px;"></i>
+                <h3 style="font-size:20px; font-weight:800; color:#0f172a;">Thank You!</h3>
+                <p style="font-size:13px; color:#64748b; margin-top: 5px;">Your feedback has been submitted.</p>
+            </div>
+
+        </div>
+    </div>
+
     <!-- Bottom Nav -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
@@ -128,11 +169,16 @@
             window.location.replace("index.html");
         }
 
+        // EXACT CORRECT FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.appspot.com",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -190,9 +236,8 @@
                     const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
                     
                     const isGrocery = order.restaurantId === 'grocery_store';
-                    const imgUrl = isGrocery ? 'https://cdn-icons-png.flaticon.com/512/3194/3194591.png' : 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop';
-                    const storeName = isGrocery ? 'Local Boy Groceries' : 'Bawarchi Biryani';
-                    const bgStyle = isGrocery ? 'style="background:#ecfdf5; padding:2px;"' : '';
+                    const imgUrl = isGrocery ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200' : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=200';
+                    const storeName = isGrocery ? 'Local Boy Groceries' : 'Restaurant Partner';
 
                     if (order.status === 'Delivered' || order.status === 'Cancelled') {
                         hasPast = true;
@@ -201,9 +246,9 @@
                         let ratingHtml = `<span style="color: #64748b; font-size: 13px; font-weight: 600;">Total Amount</span>`;
                         if (order.status === 'Delivered') {
                             if (order.rating) {
-                                ratingHtml = `<span style="color: #d97706; font-size: 13px;"><i class="fa-solid fa-star"></i> Rated ${order.rating}/5</span>`;
+                                ratingHtml = `<span style="color: #f59e0b; font-size: 13px; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 8px;"><i class="fa-solid fa-star"></i> Rated ${order.rating}/5</span>`;
                             } else {
-                                ratingHtml = `<span class="clickable" style="color: #3b82f6; font-size: 13px; cursor: pointer;" onclick="rateOrder('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate Order</span>`;
+                                ratingHtml = `<span class="clickable" style="color: #ff5200; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid #ff5200; padding: 4px 10px; border-radius: 8px;" onclick="openRatingModal('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate Order</span>`;
                             }
                         }
 
@@ -211,9 +256,9 @@
                             <div class="order-card">
                                 <div class="past-header">
                                     <div class="rest-info" style="margin-bottom: 0;">
-                                        <img src="${imgUrl}" ${bgStyle}>
+                                        <img src="${imgUrl}">
                                         <div>
-                                            <div class="rest-name">${storeName}</div>
+                                            <div class="rest-name">${order.customerName ? (isGrocery ? storeName : 'Food Order') : storeName}</div>
                                             <div class="past-date">${dateStr}</div>
                                         </div>
                                     </div>
@@ -273,9 +318,9 @@
                                     </div>
                                 </div>
                                 <div class="rest-info">
-                                    <img src="${imgUrl}" ${bgStyle}>
+                                    <img src="${imgUrl}">
                                     <div>
-                                        <div class="rest-name">${storeName}</div>
+                                        <div class="rest-name">${order.customerName ? (isGrocery ? storeName : 'Food Order') : storeName}</div>
                                         <div class="order-id">Order ID: #${order.orderId}</div>
                                     </div>
                                 </div>
@@ -305,13 +350,61 @@
             }
         }
 
-        function rateOrder(orderId) {
-            let rating = prompt("Rate your order out of 5 (e.g. 1 to 5):", "5");
-            if (rating && !isNaN(rating) && rating >= 1 && rating <= 5) {
-                database.ref('orders/' + orderId).update({ rating: parseInt(rating) })
-                .then(() => alert("Thanks for your rating!"));
-            } else if (rating !== null) {
-                alert("Please enter a valid number between 1 and 5.");
+        // --- Custom Star Rating Logic ---
+        function openRatingModal(orderId) {
+            document.getElementById('ratingOrderId').value = orderId;
+            document.getElementById('selectedRating').value = "0";
+            document.querySelectorAll('.star-btn').forEach(s => s.style.color = '#e2e8f0');
+            
+            document.getElementById('ratingContent').style.display = 'block';
+            document.getElementById('successContent').style.display = 'none';
+            document.getElementById('ratingModalOverlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('ratingModalOverlay').style.display = 'none';
+        }
+
+        document.querySelectorAll('.star-btn').forEach(star => {
+            star.addEventListener('click', function() {
+                let ratingVal = this.getAttribute('data-val');
+                document.getElementById('selectedRating').value = ratingVal;
+                
+                document.querySelectorAll('.star-btn').forEach(s => {
+                    if(s.getAttribute('data-val') <= ratingVal) {
+                        s.style.color = '#f59e0b'; // Gold color
+                    } else {
+                        s.style.color = '#e2e8f0'; // Gray color
+                    }
+                });
+            });
+        });
+
+        function submitRating() {
+            let orderId = document.getElementById('ratingOrderId').value;
+            let rating = parseInt(document.getElementById('selectedRating').value);
+            
+            if(rating > 0) {
+                database.ref('orders/' + orderId).update({ rating: rating })
+                .then(() => {
+                    // Show success checkmark nicely without browser alert
+                    document.getElementById('ratingContent').style.display = 'none';
+                    document.getElementById('successContent').style.display = 'block';
+                    
+                    setTimeout(() => {
+                        closeModal();
+                    }, 1500); // closes modal smoothly after 1.5 seconds
+                });
+            } else {
+                // If 0 stars selected, animate shaking or red border (No alerts)
+                const starBox = document.getElementById('starContainer');
+                starBox.style.border = "1px solid #ef4444";
+                starBox.style.padding = "5px";
+                starBox.style.borderRadius = "12px";
+                setTimeout(() => {
+                    starBox.style.border = "none";
+                    starBox.style.padding = "0";
+                }, 1500);
             }
         }
     </script>
