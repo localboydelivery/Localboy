@@ -14,104 +14,102 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 100px; overflow-x: hidden;}
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 100px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.97); opacity: 0.8; }
+        .clickable:active { transform: scale(0.97); opacity: 0.85; }
 
-        .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
 
-        /* Profile Header Layout Fix */
-        .profile-header { background: #ffffff; margin: 20px; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
-        .avatar { width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 700; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); flex-shrink: 0; }
-        .user-info { flex: 1; min-width: 0; /* Allows text truncation */ }
-        .user-info h2 { font-size: 18px; font-weight: 800; margin-bottom: 2px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .user-info p { font-size: 12px; color: #64748b; margin-bottom: 2px; font-weight: 500;}
-        .user-info .email { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .edit-btn { color: #ff5200; font-size: 13px; font-weight: 700; background: #fff8eb; padding: 6px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0; }
+        /* Profile Header */
+        .profile-header { background: #ffffff; margin: 18px 20px; padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        .avatar { width: 62px; height: 62px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: 800; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); flex-shrink: 0; }
+        .user-info { flex: 1; min-width: 0; }
+        .user-info h2 { font-size: 17.5px; font-weight: 800; margin-bottom: 2px; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-info p { font-size: 12px; color: #64748b; margin-bottom: 2px; font-weight: 600; }
+        .user-info .email { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .edit-btn { color: #ff5200; font-size: 12.5px; font-weight: 800; background: #fff8eb; padding: 7px 14px; border-radius: 12px; cursor: pointer; flex-shrink: 0; }
 
         /* Menus */
-        .menu-container { background: #ffffff; margin: 0 20px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; overflow: hidden; }
-        .menu-item { display: flex; align-items: center; padding: 18px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
+        .menu-container { background: #ffffff; margin: 0 20px 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; overflow: hidden; }
+        .menu-item { display: flex; align-items: center; padding: 17px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; }
         .menu-item:last-child { border-bottom: none; }
         .menu-item:active { background: #f8fafc; }
-        .menu-icon { width: 38px; height: 38px; border-radius: 12px; background: #f1f5f9; color: #475569; display: flex; justify-content: center; align-items: center; font-size: 16px; margin-right: 15px; }
+        .menu-icon { width: 38px; height: 38px; border-radius: 12px; background: #f1f5f9; color: #475569; display: flex; justify-content: center; align-items: center; font-size: 16px; margin-right: 15px; flex-shrink: 0; }
         .menu-item.highlight .menu-icon { background: #fff8eb; color: #ff5200; }
-        .menu-text { flex: 1; }
+        .menu-text { flex: 1; min-width: 0; }
         .menu-text h3 { font-size: 14px; font-weight: 700; color: #1e293b; }
-        .menu-text p { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;}
-        .menu-arrow { color: #cbd5e0; font-size: 14px; }
+        .menu-text p { font-size: 11.5px; color: #94a3b8; margin-top: 2px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .menu-arrow { color: #cbd5e0; font-size: 14px; margin-left: 8px; }
 
         /* Logout & App Version */
-        .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 20px 20px; padding: 16px; border-radius: 16px; background: #fef2f2; color: #ef4444; font-size: 15px; font-weight: 800; cursor: pointer; border: 1px solid #fee2e2; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.05); }
+        .logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 20px 20px; padding: 16px; border-radius: 16px; background: #fef2f2; color: #ef4444; font-size: 15px; font-weight: 800; cursor: pointer; border: 1px solid #fee2e2; }
         .app-version { text-align: center; font-size: 11px; color: #cbd5e0; font-weight: 600; margin-top: 10px; }
 
         /* Bottom Sheets UI */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px);}
-        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; max-height: 85vh; overflow-y: auto; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 24px 20px; max-height: 85vh; overflow-y: auto; }
         .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .sheet-header h3 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .sheet-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
         .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
 
         /* Inputs & Buttons */
         .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .input-group { flex: 1; }
-        .input-group input { width: 100%; padding: 14px 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 14px; outline: none; color: #1e293b; font-weight: 500;}
-        .input-group input:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1);}
-        .primary-btn { width: 100%; background: #ff5200; color: white; padding: 16px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 10px; text-align: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
+        .input-group input { width: 100%; padding: 14px 15px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 14px; outline: none; color: #1e293b; font-weight: 600; }
+        .input-group input:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
+        .primary-btn { width: 100%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 16px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 10px; text-align: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); }
 
         /* Inner Sheet Styles */
-        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);}
-        .wallet-card h4 { font-size: 13px; color: #94a3b8; font-weight: 600;}
-        .wallet-card h2 { font-size: 28px; font-weight: 800; margin-top: 5px;}
-        .add-money-btn { background: #ff5200; color: white; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;}
+        .wallet-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 22px 20px; border-radius: 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2); }
+        .wallet-card h4 { font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wallet-card h2 { font-size: 28px; font-weight: 800; margin-top: 4px; color: #10b981; }
         
         .action-list { display: flex; flex-direction: column; gap: 12px; }
-        .action-item { display: flex; align-items: center; gap: 15px; padding: 16px; background: #f8fafc; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: #1e293b; border: 1px solid #f1f5f9;}
-        .action-item i { font-size: 18px; color: #ff5200; width: 20px; text-align: center;}
+        .action-item { display: flex; align-items: center; gap: 15px; padding: 16px; background: #f8fafc; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: #1e293b; border: 1px solid #f1f5f9; }
+        .action-item i { font-size: 18px; color: #ff5200; width: 20px; text-align: center; }
         
-        .empty-state { text-align: center; padding: 40px 10px; }
-        .empty-state img { width: 120px; margin-bottom: 20px; opacity: 0.9;}
-        .empty-state h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: #0f172a;}
-        .empty-state p { font-size: 13px; color: #64748b; margin-bottom: 25px; font-weight: 500;}
+        .empty-state { text-align: center; padding: 35px 10px; }
+        .empty-state img { width: 110px; margin-bottom: 18px; opacity: 0.9; }
+        .empty-state h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
+        .empty-state p { font-size: 12.5px; color: #64748b; margin-bottom: 22px; font-weight: 500; }
         
         .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
         .setting-row:last-child { border-bottom: none; }
-        .setting-row h4 { font-size: 14px; font-weight: 700; color: #1e293b;}
-        .setting-row p { font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500;}
+        .setting-row h4 { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .setting-row p { font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 500; }
         
         /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e0; transition: .4s; border-radius: 26px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(20px); }
 
         /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 4px; cursor: pointer; }
         .nav-item.active { color: #ff5200; }
-        .nav-item i { font-size: 22px; transition: transform 0.2s;}
-        .nav-item:active i { transform: scale(0.85); }
+        .nav-item i { font-size: 21px; }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
-        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="home.html" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <h2>My Profile</h2>
     </div>
 
-    <!-- Profile Header (Layout Fixed) -->
+    <!-- Profile Header -->
     <div class="profile-header">
         <div class="avatar" id="displayInitials">LB</div>
         <div class="user-info">
             <h2 id="displayFullName">Loading...</h2>
             <p id="displayPhone">Loading...</p>
-            <p class="email" id="displayEmail">Loading...</p>
+            <p class="email" id="displayEmail">Add email</p>
         </div>
         <div class="edit-btn clickable" onclick="openSheet('editProfileSheet')">Edit</div>
     </div>
@@ -122,7 +120,7 @@
             <div class="menu-icon"><i class="fa-solid fa-clipboard-list"></i></div>
             <div class="menu-text">
                 <h3>My Orders</h3>
-                <p>Track, return, or buy things again</p>
+                <p>Track live orders & view history</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </a>
@@ -131,7 +129,7 @@
             <div class="menu-icon"><i class="fa-solid fa-location-dot"></i></div>
             <div class="menu-text">
                 <h3>Saved Addresses</h3>
-                <p id="profileSavedAddress" style="color: #64748b;">Home, Work, and other locations</p>
+                <p id="profileSavedAddress" style="color: #64748b;">Tap to manage your delivery address</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </a>
@@ -139,8 +137,8 @@
         <div class="menu-item clickable" onclick="openSheet('paymentsSheet')">
             <div class="menu-icon"><i class="fa-solid fa-wallet"></i></div>
             <div class="menu-text">
-                <h3>Payments & Wallets</h3>
-                <p>Cards, UPI, and Local Boy Cash</p>
+                <h3>Local Boy Wallet & Payments</h3>
+                <p id="walletPreviewText">Balance: ₹0.00 • UPI & Cards</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </div>
@@ -152,7 +150,7 @@
             <div class="menu-icon"><i class="fa-solid fa-heart"></i></div>
             <div class="menu-text">
                 <h3>Favorites</h3>
-                <p>Your saved restaurants and items</p>
+                <p>Your saved restaurants</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </div>
@@ -161,7 +159,7 @@
             <div class="menu-icon"><i class="fa-solid fa-headset"></i></div>
             <div class="menu-text">
                 <h3>Help & Support</h3>
-                <p>FAQs and customer care</p>
+                <p>Customer care & WhatsApp support</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </div>
@@ -170,7 +168,7 @@
             <div class="menu-icon"><i class="fa-solid fa-gear"></i></div>
             <div class="menu-text">
                 <h3>Settings</h3>
-                <p>Notifications, permissions, etc.</p>
+                <p>Notifications & app preferences</p>
             </div>
             <i class="fa-solid fa-chevron-right menu-arrow"></i>
         </div>
@@ -182,7 +180,7 @@
     </div>
 
     <div class="app-version">
-        LOCAL BOY App v1.0.0
+        LOCAL BOY App v2.0
     </div>
 
     <!-- ================= BOTTOM SHEETS ================= -->
@@ -208,41 +206,39 @@
         <button class="primary-btn clickable" onclick="saveProfile()">Save Changes</button>
     </div>
 
-    <!-- 2. Payments Sheet -->
+    <!-- 2. Wallet & Payments Sheet -->
     <div class="bottom-sheet" id="paymentsSheet">
         <div class="sheet-header">
-            <h3>Payments</h3>
+            <h3>Wallet & Payments</h3>
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
         <div class="wallet-card">
             <div>
-                <h4>Local Boy Cash</h4>
-                <h2><i class="fa-solid fa-indian-rupee-sign"></i> 0.00</h2>
+                <h4>Local Boy Wallet Balance</h4>
+                <h2 id="sheetWalletBalance">₹0.00</h2>
             </div>
-            <div class="add-money-btn clickable">Add Money</div>
+            <i class="fa-solid fa-coins" style="font-size: 32px; color: #f59e0b; opacity: 0.85;"></i>
         </div>
         <div class="action-list">
-            <div class="action-item clickable"><i class="fa-brands fa-google-pay" style="color: #10b981;"></i> Add UPI ID</div>
-            <div class="action-item clickable"><i class="fa-regular fa-credit-card" style="color: #3b82f6;"></i> Add Credit/Debit Card</div>
-            <div class="action-item clickable"><i class="fa-solid fa-building-columns" style="color: #6366f1;"></i> Net Banking</div>
+            <div class="action-item"><i class="fa-brands fa-google-pay" style="color: #10b981;"></i> Google Pay / PhonePe Supported at Checkout</div>
+            <div class="action-item"><i class="fa-regular fa-credit-card" style="color: #3b82f6;"></i> Credit / Debit Cards via Razorpay</div>
+            <div class="action-item"><i class="fa-solid fa-money-bill-wave" style="color: #ff5200;"></i> Cash on Delivery Available</div>
         </div>
     </div>
 
     <!-- 3. Favorites Sheet -->
     <div class="bottom-sheet" id="favoritesSheet">
         <div class="sheet-header">
-            <h3>Favorites</h3>
+            <h3>Your Favorites</h3>
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
         
-        <div id="favoritesList" style="display: flex; flex-direction: column; gap: 15px; max-height: 50vh; overflow-y: auto;">
-            <!-- Rendered by JS -->
-        </div>
+        <div id="favoritesList" style="display: flex; flex-direction: column; gap: 15px; max-height: 50vh; overflow-y: auto;"></div>
 
         <div class="empty-state" id="emptyFavorites" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/869/869022.png" alt="Empty Heart">
             <h3>No favorites yet!</h3>
-            <p>Save your favorite restaurants and items to find them quickly here.</p>
+            <p>Tap the heart icon on any restaurant to save it here.</p>
             <div class="primary-btn clickable" onclick="window.location.href='home.html'">Explore Restaurants</div>
         </div>
     </div>
@@ -254,10 +250,9 @@
             <i class="fa-solid fa-xmark close-sheet" onclick="closeAllSheets()"></i>
         </div>
         <div class="action-list">
-            <a href="tel:+919876543210" class="action-item clickable"><i class="fa-solid fa-phone" style="color: #10b981;"></i> Call Us (+91 98765 43210)</a>
-            <a href="https://wa.me/919876543210" class="action-item clickable"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> WhatsApp Support</a>
-            <a href="mailto:support@localboy.com" class="action-item clickable"><i class="fa-regular fa-envelope" style="color: #3b82f6;"></i> Email Support</a>
-            <div class="action-item clickable"><i class="fa-regular fa-circle-question" style="color: #64748b;"></i> Browse FAQs</div>
+            <a href="tel:+919876543210" id="supportCallLink" class="action-item clickable"><i class="fa-solid fa-phone" style="color: #10b981;"></i> Call Customer Care</a>
+            <a href="https://wa.me/919876543210" id="supportWaLink" target="_blank" class="action-item clickable"><i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Chat on WhatsApp</a>
+            <a href="mailto:support@localboy.in" class="action-item clickable"><i class="fa-regular fa-envelope" style="color: #3b82f6;"></i> Email Support</a>
         </div>
     </div>
 
@@ -269,8 +264,8 @@
         </div>
         <div class="setting-row">
             <div>
-                <h4>Push Notifications</h4>
-                <p>Order updates & delivery status</p>
+                <h4>Order Status Alerts</h4>
+                <p>Live updates on order & rider movement</p>
             </div>
             <label class="switch">
                 <input type="checkbox" checked>
@@ -280,20 +275,10 @@
         <div class="setting-row">
             <div>
                 <h4>Promotional Offers</h4>
-                <p>Discounts, coupons & deals</p>
+                <p>Discounts, coupons & new restaurant deals</p>
             </div>
             <label class="switch">
                 <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="setting-row">
-            <div>
-                <h4>Dark Mode</h4>
-                <p>Switch to dark theme</p>
-            </div>
-            <label class="switch">
-                <input type="checkbox">
                 <span class="slider"></span>
             </label>
         </div>
@@ -311,24 +296,41 @@
     </div>
 
     <script>
-        // Firebase Config
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
             storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
             messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const database = firebase.database();
 
         const overlay = document.getElementById('overlay');
         const sheets = document.querySelectorAll('.bottom-sheet');
         const userPhone = localStorage.getItem('userPhone');
 
+        function formatCleanAddress(rawAddr) {
+            if (!rawAddr) return "Tap to set delivery location";
+            if (rawAddr.includes('|')) {
+                const parts = rawAddr.split('|');
+                return `${parts[0]}: ${parts[2]}`;
+            }
+            return rawAddr;
+        }
+
         window.addEventListener('pageshow', function() {
+            if (!userPhone) {
+                window.location.replace("index.html");
+                return;
+            }
+
             // Cart Badge Check
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
             const bottomNavBadge = document.getElementById('bottomNavCartBadge');
@@ -339,51 +341,80 @@
                 bottomNavBadge.style.display = 'none';
             }
 
-            // Load Saved Location to Profile 
+            // Format Saved Location cleanly
             const savedAddr = localStorage.getItem("userSavedAddress");
-            if(savedAddr) {
+            if (savedAddr) {
                 const addressElement = document.getElementById('profileSavedAddress');
-                addressElement.innerText = savedAddr;
+                addressElement.innerText = formatCleanAddress(savedAddr);
                 addressElement.style.color = '#10b981';
             }
 
-            // Fetch Firebase Profile Details
-            if (userPhone) {
-                document.getElementById('displayPhone').innerText = userPhone;
-                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
-                    const profileData = snapshot.val();
-                    if (profileData) {
-                        const fName = profileData.firstName || "Local";
-                        const lName = profileData.lastName || "Boy";
-                        document.getElementById('displayFullName').innerText = fName + " " + lName;
-                        document.getElementById('displayEmail').innerText = profileData.email || "Add email";
-                        document.getElementById('displayInitials').innerText = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
-
-                        document.getElementById('editName').value = fName;
-                        document.getElementById('editSurname').value = lName;
-                        document.getElementById('editEmail').value = profileData.email || "";
-                    }
-                });
+            // Instant render from localStorage cache
+            const localProf = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            if (localProf.firstName) {
+                renderProfileUI(localProf);
             }
 
-            // Load Favorites from LocalStorage
+            // Live Firebase Profile & Wallet Sync
+            document.getElementById('displayPhone').innerText = userPhone;
+            database.ref('users/' + userPhone).on('value', (snapshot) => {
+                const userObj = snapshot.val() || {};
+                const profileData = userObj.profile || {};
+                if (profileData.firstName) {
+                    localStorage.setItem('userProfileData', JSON.stringify(profileData));
+                    renderProfileUI(profileData);
+                }
+                if (profileData.address) {
+                    localStorage.setItem('userSavedAddress', profileData.address);
+                    const addressElement = document.getElementById('profileSavedAddress');
+                    addressElement.innerText = formatCleanAddress(profileData.address);
+                    addressElement.style.color = '#10b981';
+                }
+
+                const walletBal = parseFloat(userObj.walletBalance || userObj.wallet || 0);
+                document.getElementById('walletPreviewText').innerText = `Balance: ₹${walletBal.toFixed(2)} • UPI & Cards`;
+                document.getElementById('sheetWalletBalance').innerText = `₹${walletBal.toFixed(2)}`;
+            });
+
+            // Sync Admin Support Helpline if configured
+            database.ref('settings/dp_settings/supportPhone').once('value').then(snap => {
+                if (snap.exists() && snap.val()) {
+                    const ph = snap.val().trim();
+                    document.getElementById('supportCallLink').href = `tel:${ph}`;
+                    document.getElementById('supportWaLink').href = `https://wa.me/${ph.replace(/[^0-9]/g, '')}`;
+                }
+            });
+
             loadFavorites();
         });
 
+        function renderProfileUI(profileData) {
+            const fName = profileData.firstName || "Local";
+            const lName = profileData.lastName || "Boy";
+            document.getElementById('displayFullName').innerText = (fName + " " + lName).trim();
+            document.getElementById('displayEmail').innerText = profileData.email || "Tap Edit to add email";
+            document.getElementById('displayInitials').innerText = (fName.charAt(0) + (lName ? lName.charAt(0) : '')).toUpperCase();
+
+            document.getElementById('editName').value = fName;
+            document.getElementById('editSurname').value = lName;
+            document.getElementById('editEmail').value = profileData.email || "";
+        }
+
         function loadFavorites() {
             const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
-            if(favs.length > 0) {
+            if (favs.length > 0) {
                 document.getElementById('emptyFavorites').style.display = 'none';
                 let html = '';
                 favs.forEach(f => {
+                    const fallbackImg = "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=150&auto=format&fit=crop";
                     html += `
-                    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
-                        <img src="${f.img}" style="width: 50px; height: 50px; border-radius: 12px; object-fit: cover;">
+                    <div style="display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+                        <img src="${f.img || fallbackImg}" style="width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background:#f1f5f9;">
                         <div style="flex: 1;">
-                            <h4 style="font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 3px;">${f.name}</h4>
-                            <a href="${f.url}" style="font-size: 11px; color: #10b981; font-weight: 700;">Order Now <i class="fa-solid fa-caret-right"></i></a>
+                            <h4 style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">${f.name}</h4>
+                            <a href="${f.url}" style="font-size: 11.5px; color: #ff5200; font-weight: 700;">View Menu <i class="fa-solid fa-caret-right"></i></a>
                         </div>
-                        <i class="fa-solid fa-heart" style="color: #e53e3e; font-size: 20px; cursor: pointer;" onclick="removeFavorite('${f.name}')"></i>
+                        <i class="fa-solid fa-heart" style="color: #e53e3e; font-size: 20px; cursor: pointer; padding:6px;" onclick="removeFavorite('${f.name.replace(/'/g, "\\'")}')"></i>
                     </div>`;
                 });
                 document.getElementById('favoritesList').innerHTML = html;
@@ -393,57 +424,67 @@
             }
         }
 
-        function removeFavorite(name) {
+        window.removeFavorite = function(name) {
             let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
             favs = favs.filter(f => f.name !== name);
             localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
             loadFavorites();
-        }
+        };
 
-        function openSheet(sheetId) {
+        window.openSheet = function(sheetId) {
             overlay.style.opacity = '1';
             overlay.style.pointerEvents = 'auto';
             document.getElementById(sheetId).style.transform = 'translateY(0)';
-        }
+        };
 
-        function closeAllSheets() {
+        window.closeAllSheets = function() {
             overlay.style.opacity = '0';
             overlay.style.pointerEvents = 'none';
             sheets.forEach(sheet => {
                 sheet.style.transform = 'translateY(100%)';
             });
-        }
+        };
 
-        function saveProfile() {
+        // Uses .update() so saved address & GPS coordinates are NEVER overwritten!
+        window.saveProfile = function() {
             const fName = document.getElementById('editName').value.trim();
             const lName = document.getElementById('editSurname').value.trim();
             const email = document.getElementById('editEmail').value.trim();
 
             if (fName && lName) {
-                const profileData = { firstName: fName, lastName: lName, email: email, phone: userPhone };
+                const existingProf = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+                const updatedProf = {
+                    ...existingProf,
+                    firstName: fName,
+                    lastName: lName,
+                    email: email,
+                    phone: userPhone
+                };
                 
-                // Save locally and in Firebase
-                localStorage.setItem('userProfileData', JSON.stringify(profileData));
-                if(userPhone) {
-                    database.ref('users/' + userPhone + '/profile').set(profileData);
+                localStorage.setItem('userProfileData', JSON.stringify(updatedProf));
+                if (userPhone) {
+                    database.ref('users/' + userPhone + '/profile').update({
+                        firstName: fName,
+                        lastName: lName,
+                        email: email,
+                        phone: userPhone
+                    });
                 }
 
-                document.getElementById('displayFullName').innerText = fName + " " + lName;
-                document.getElementById('displayEmail').innerText = email;
-                document.getElementById('displayInitials').innerText = fName.charAt(0).toUpperCase() + lName.charAt(0).toUpperCase();
-                
+                renderProfileUI(updatedProf);
                 closeAllSheets();
             } else {
                 alert("Please enter both First Name and Last Name");
             }
-        }
+        };
 
-        function logoutApp() {
-            if(confirm("Are you sure you want to logout?")) {
-                localStorage.clear();
+        window.logoutApp = function() {
+            if (confirm("Are you sure you want to logout?")) {
+                localStorage.removeItem('userPhone');
+                localStorage.removeItem('userProfileData');
                 window.location.replace("index.html");
             }
-        }
+        };
     </script>
 </body>
 </html>
