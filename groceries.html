@@ -3,360 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCAL BOY - Groceries</title>
+    <title>LOCAL BOY - All Categories</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Firebase Web SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; overflow-x: hidden; width: 100vw; }
-        
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 95px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.95); opacity: 0.9; }
+        .clickable:active { transform: scale(0.95); opacity: 0.85; }
 
-        .top-nav { display: flex; align-items: center; gap: 15px; padding: 15px 20px; position: sticky; top: 0; z-index: 100; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
-        .icon-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; color: #1e293b; transition: 0.2s;}
-        .header-title { display: flex; flex-direction: column; }
-        .header-title h2 { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;}
-        .header-title p { font-size: 11px; color: #10b981; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+        /* Top Bar */
+        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; flex: 1; }
 
-        .search-container { padding: 15px 20px; background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 68px; z-index: 99;}
-        .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 18px; border: 1px solid #e2e8f0; transition: box-shadow 0.3s;}
-        .search-box:focus-within { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); border-color: #10b981; }
-        .search-box input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; padding: 0 12px; color: #1e293b; font-weight: 500;}
-        .search-box input::placeholder { color: #94a3b8; font-weight: 400; }
-        .search-icon { color: #10b981; font-size: 18px; }
+        .section-container { padding: 20px 20px 0; }
+        .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .section-title i { color: #ff5200; font-size: 19px; }
 
-        .premium-categories { display: flex; overflow-x: auto; gap: 15px; padding: 20px 15px; background: #ffffff; margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; scrollbar-width: none; -ms-overflow-style: none; }
-        .premium-categories::-webkit-scrollbar { display: none; }
-        
-        .cat-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; cursor: pointer; flex-shrink: 0; width: 72px; }
-        .cat-img-wrap { width: 72px; height: 72px; border-radius: 50%; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); transition: transform 0.2s;}
-        .cat-box:active .cat-img-wrap { transform: scale(0.92); }
-        .cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-        .cat-box span { font-size: 12px; font-weight: 700; color: #475569; line-height: 1.2; }
+        /* Category Grid Setup */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px 12px;
+            margin-bottom: 25px;
+        }
 
-        .section-header { padding: 15px 20px 5px; display: flex; align-items: center; justify-content: space-between; }
-        .section-header-left { display: flex; align-items: center; gap: 8px; }
-        .section-header h3 { font-size: 18px; font-weight: 800; color: #0f172a; }
-        .section-header i.fa-star { color: #f59e0b; font-size: 18px; }
+        .cat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            text-align: center;
+        }
 
-        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px; }
-        .prod-card { background: #ffffff; border-radius: 20px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; display: flex; flex-direction: column; position: relative; transition: box-shadow 0.2s;}
-        .discount-badge { position: absolute; top: 10px; left: 10px; background: #3b82f6; color: #ffffff; font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 2; }
-        .prod-img-box { width: 100%; height: 120px; background: #ffffff; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 5px; position: relative;}
-        .prod-img-box img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s;}
-        
-        .prod-title-en { font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .prod-weight { font-size: 11px; font-weight: 700; color: #3b82f6; margin-bottom: 8px; }
-        
-        .prod-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
-        .price-box { display: flex; flex-direction: column; }
-        .prod-price { font-size: 16px; font-weight: 800; color: #0f172a; }
-        .prod-strike { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 2px;}
-        
-        .add-btn-wrapper { width: 75px; height: 34px; background: #ffffff; border: 1px solid #10b981; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1); margin-bottom: 2px;}
-        .btn-add { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: #10b981; font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; background: #f0fdf4;}
-        .btn-controls { display: none; justify-content: space-between; align-items: center; width: 100%; height: 100%; background: #10b981; color: white;}
-        .btn-controls span { padding: 0 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; height: 100%;}
-        .qty-val { font-size: 14px; font-weight: 700; }
+        .cat-img-box {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-        .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px;}
-        .cart-footer.show { transform: translateY(0); }
-        .cart-banner { background: #10b981; border-radius: 14px; padding: 15px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); cursor: pointer;}
-        .cart-info h4 { font-size: 14px; font-weight: 800; }
-        .cart-info p { font-size: 11px; opacity: 0.9; margin-top: 2px; font-weight: 500;}
-        .view-cart-text { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .cat-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        .no-results { grid-column: span 2; text-align: center; padding: 50px 20px; }
-        .no-results i { font-size: 40px; color: #cbd5e0; margin-bottom: 15px; }
-        .no-results p { color: #64748b; font-size: 14px; font-weight: 500; }
-        
-        .loader { grid-column: span 2; text-align: center; padding: 40px; color: #a0aec0; }
+        .cat-item span {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #334155;
+            line-height: 1.2;
+        }
+
+        .icon-box { background: linear-gradient(135deg, #fff8eb, #ffedd5); color: #ff5200; font-size: 24px; }
+
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100; border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 4px; }
+        .nav-item.active { color: #ff5200; }
+        .nav-item i { font-size: 21px; }
+        .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <a href="javascript:history.back()" class="icon-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="header-title">
-            <h2>Groceries & Essentials</h2>
-            <p><i class="fa-solid fa-bolt"></i> Delivery in 15 mins</p>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Explore Categories</h2>
+        <a href="search.html" class="back-btn clickable" style="margin-right:0;"><i class="fa-solid fa-magnifying-glass" style="font-size:15px;"></i></a>
+    </div>
+
+    <!-- Food Categories Section -->
+    <div class="section-container">
+        <h3 class="section-title"><i class="fa-solid fa-utensils"></i> Food & Restaurant Dishes</h3>
+        
+        <div class="category-grid">
+            <a href="restaurants.html?category=biryani" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop" alt="Biryani"></div>
+                <span>Biryani</span>
+            </a>
+            <a href="restaurants.html?category=pizza" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200&auto=format&fit=crop" alt="Pizza"></div>
+                <span>Pizza</span>
+            </a>
+            <a href="restaurants.html?category=burger" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop" alt="Burger"></div>
+                <span>Burger</span>
+            </a>
+            <a href="restaurants.html?category=veg" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=200&auto=format&fit=crop" alt="Pure Veg"></div>
+                <span>Pure Veg</span>
+            </a>
+            <a href="restaurants.html?category=dosa" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?q=80&w=200&auto=format&fit=crop" alt="Dosa"></div>
+                <span>Dosa & Tiffins</span>
+            </a>
+            <a href="restaurants.html?category=meals" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop" alt="Meals"></div>
+                <span>Meals & Thali</span>
+            </a>
+            <a href="restaurants.html?category=chinese" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=200&auto=format&fit=crop" alt="Chinese"></div>
+                <span>Chinese</span>
+            </a>
+            <a href="restaurants.html?category=cakes" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=200&auto=format&fit=crop" alt="Cakes"></div>
+                <span>Cakes & Bakery</span>
+            </a>
         </div>
     </div>
 
-    <div class="search-container">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="grocerySearch" placeholder="Search tomatoes, milk, pins..." onkeyup="filterGroceries()">
+    <hr style="border: none; border-top: 6px solid #f1f5f9; margin: 5px 0;">
+
+    <!-- Grocery Categories Section (Directly opens groceries.html with category filter) -->
+    <div class="section-container">
+        <h3 class="section-title" style="color: #10b981;"><i class="fa-solid fa-basket-shopping" style="color: #10b981;"></i> Groceries & Daily Essentials</h3>
+        
+        <div class="category-grid">
+            <a href="groceries.html?category=vegetables" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?q=80&w=200&auto=format&fit=crop" alt="Vegetables"></div>
+                <span>Fresh Veggies</span>
+            </a>
+            <a href="groceries.html?category=fruits" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=200&auto=format&fit=crop" alt="Fruits"></div>
+                <span>Fresh Fruits</span>
+            </a>
+            <a href="groceries.html?category=dairy" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=200&auto=format&fit=crop" alt="Dairy"></div>
+                <span>Dairy & Milk</span>
+            </a>
+            <a href="groceries.html?category=meat" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=200&auto=format&fit=crop" alt="Meat"></div>
+                <span>Meat & Fish</span>
+            </a>
+            <a href="groceries.html?category=snacks" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=200&auto=format&fit=crop" alt="Snacks"></div>
+                <span>Snacks</span>
+            </a>
+            <a href="groceries.html?category=drinks" class="cat-item clickable">
+                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200&auto=format&fit=crop" alt="Drinks"></div>
+                <span>Cold Drinks</span>
+            </a>
+            <a href="groceries.html?category=pharmacy" class="cat-item clickable">
+                <div class="cat-img-box icon-box"><i class="fa-solid fa-pills"></i></div>
+                <span>Pharmacy</span>
+            </a>
+            <a href="groceries.html?category=petcare" class="cat-item clickable">
+                <div class="cat-img-box icon-box" style="background: linear-gradient(135deg, #e6f8f1, #d1fae5); color: #10b981;"><i class="fa-solid fa-paw"></i></div>
+                <span>Pet Care</span>
+            </a>
         </div>
     </div>
 
-    <!-- Direct Fast Images replacing Cloudinary links -->
-    <div class="premium-categories">
-        <div class="cat-box" onclick="filterByCategory('vegetables')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=300" alt="Veggies"></div><span>Fresh<br>Veggies</span></div>
-        <div class="cat-box" onclick="filterByCategory('fruits')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=300" alt="Fruits"></div><span>Fresh<br>Fruits</span></div>
-        <div class="cat-box" onclick="filterByCategory('dairy')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=300" alt="Dairy"></div><span>Dairy &<br>Milk</span></div>
-        <div class="cat-box" onclick="filterByCategory('meat')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=300" alt="Meat"></div><span>Meat &<br>Fish</span></div>
-        <div class="cat-box" onclick="filterByCategory('snacks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=300" alt="Snacks"></div><span>Snacks</span></div>
-        <div class="cat-box" onclick="filterByCategory('drinks')"><div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=300" alt="Drinks"></div><span>Cold<br>Drinks</span></div>
-        <div class="cat-box" onclick="filterByCategory('pharmacy')"><div class="cat-img-wrap" style="background: #fff3e0; box-shadow: none;"><img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" style="width: 50%; height: 50%; object-fit: contain;" alt="Pharmacy"></div><span>Pharmacy</span></div>
-        <div class="cat-box" onclick="filterByCategory('petcare')"><div class="cat-img-wrap" style="background: #e6f8f1; box-shadow: none;"><i class="fa-solid fa-paw" style="font-size: 32px; color: #10b981;"></i></div><span>Pet Care</span></div>
-    </div>
-
-    <div class="section-header" id="dynamicHeader">
-        <div class="section-header-left">
-            <h3>A to Z Items</h3>
-            <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
-        </div>
-    </div>
-
-    <!-- Products Grid -->
-    <div class="product-grid" id="productGrid">
-        <div class="loader">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-            Loading Groceries...
-        </div>
-    </div>
-
-    <!-- Sticky Cart Footer -->
-    <div class="cart-footer" id="cartFooter">
-        <a href="cart.html" class="cart-banner clickable">
-            <div class="cart-info">
-                <h4 id="totalItems">1 Item added</h4>
-                <p>Extra charges may apply</p>
-            </div>
-            <div class="view-cart-text">View Cart <i class="fa-solid fa-caret-right"></i></div>
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="home.html" class="nav-item">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+        <a href="groceries.html" class="nav-item">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span>Grocery</span>
+        </a>
+        <a href="cart.html" class="nav-item">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="cart-badge">0</span>
+            <span>Cart</span>
+        </a>
+        <a href="orders.html" class="nav-item">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Orders</span>
         </a>
     </div>
 
     <script>
-        // Exact Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
-            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
-        };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const database = firebase.database();
-
-        let groceryDB = [];
-        const productGrid = document.getElementById('productGrid');
-        const currentRestId = 'grocery_store'; 
-        let cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
-
         window.addEventListener('pageshow', function() {
-            cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
-            fetchGroceries();
-            updateCartUI();
+            const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
+            const cartBadge = document.querySelector('.cart-badge');
+            
+            if (cartData && cartData.totalQty > 0) {
+                if(cartBadge) {
+                    cartBadge.innerText = cartData.totalQty;
+                    cartBadge.style.display = 'flex';
+                }
+            } else {
+                if(cartBadge) {
+                    cartBadge.style.display = 'none';
+                }
+            }
         });
-
-        function fetchGroceries() {
-            productGrid.innerHTML = `
-                <div class="loader">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading Groceries...
-                </div>`;
-                
-            database.ref('groceries').once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    groceryDB = Object.keys(data).map(key => ({
-                        id: key,
-                        ...data[key]
-                    }));
-                    renderProducts(groceryDB);
-                } else {
-                    productGrid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fa-solid fa-basket-shopping"></i>
-                        <p>No groceries available at the moment.</p>
-                    </div>`;
-                }
-            }).catch((error) => {
-                console.error("Error fetching groceries:", error);
-            });
-        }
-
-        function renderProducts(items) {
-            productGrid.innerHTML = '';
-            if(items.length === 0) {
-                productGrid.innerHTML = `
-                    <div class="no-results">
-                        <i class="fa-solid fa-basket-shopping"></i>
-                        <p>No items found matching your filter.</p>
-                    </div>`;
-                return;
-            }
-
-            items.forEach(item => {
-                let qty = cartData.items[item.id] || 0;
-                let btnHtml = qty > 0 
-                    ? `<div class="btn-controls" style="display:flex;"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val" id="qty-${item.id}">${qty}</div><span onclick="updateItem('${item.id}', 1)">+</span></div>`
-                    : `<div class="btn-add" id="add-btn-${item.id}" onclick="addItem('${item.id}')">ADD</div>
-                       <div class="btn-controls" id="controls-${item.id}"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val" id="qty-${item.id}">1</div><span onclick="updateItem('${item.id}', 1)">+</span></div>`;
-
-                let tagHtml = '';
-                if(item.discount && item.discount > 0) {
-                    tagHtml = `<div class="discount-badge">${item.discount}% OFF</div>`;
-                }
-
-                let priceHtml = '';
-                if(item.discount && item.discount > 0) {
-                    priceHtml = `
-                        <div class="prod-strike"><strike>₹${item.originalPrice}</strike></div>
-                        <div class="prod-price">₹${item.price}</div>
-                    `;
-                } else {
-                    priceHtml = `<div class="prod-price">₹${item.price}</div>`;
-                }
-
-                let itemName = item.name || item.en; 
-                let itemWeight = item.weight ? item.weight : '';
-                
-                // Original image logic with strong onerror fallback
-                let imgUrl = item.image && item.image.startsWith('http') ? item.image : 'https://cdn-icons-png.flaticon.com/512/3194/3194591.png';
-
-                productGrid.innerHTML += `
-                    <div class="prod-card">
-                        ${tagHtml}
-                        <div class="prod-img-box">
-                            <img src="${imgUrl}" alt="${itemName}" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/3194/3194591.png'; this.style.padding='10px';">
-                        </div>
-                        <div class="prod-title-en">${itemName}</div>
-                        <div class="prod-weight">${itemWeight}</div>
-                        <div class="prod-bottom">
-                            <div class="price-box">
-                                ${priceHtml}
-                            </div>
-                            <div class="add-btn-wrapper" id="wrapper-${item.id}">
-                                ${btnHtml}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // --- FILTER LOGIC FIXED (Case Insensitive + Client Side) ---
-        function filterByCategory(category) {
-            if (category === 'all') {
-                document.getElementById('dynamicHeader').innerHTML = `
-                    <div class="section-header-left">
-                        <h3>A to Z Items</h3>
-                        <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
-                    </div>`;
-                renderProducts(groceryDB); // Show all loaded groceries
-                return;
-            }
-
-            let title = category.charAt(0).toUpperCase() + category.slice(1);
-            if(category === 'petcare') title = 'Pet Care';
-            if(category === 'vegetables') title = 'Fresh Veggies';
-            if(category === 'fruits') title = 'Fresh Fruits';
-            
-            document.getElementById('dynamicHeader').innerHTML = `
-                <div class="section-header-left">
-                    <h3>${title}</h3>
-                </div>
-                <span style="font-size:12px; color:#ff5200; cursor:pointer; font-weight:700;" onclick="filterByCategory('all')">Clear Filter <i class="fa-solid fa-xmark"></i></span>
-            `;
-
-            productGrid.innerHTML = `
-                <div class="loader">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>
-                    Loading ${title}...
-                </div>`;
-
-            // Filter locally to avoid case sensitive 'Not Found' issues
-            setTimeout(() => {
-                const filteredItems = groceryDB.filter(item => 
-                    item.category && item.category.toLowerCase() === category.toLowerCase()
-                );
-                renderProducts(filteredItems);
-            }, 300); // Tiny delay for smooth UI transition
-        }
-
-        function filterGroceries() {
-            const query = document.getElementById('grocerySearch').value.toLowerCase();
-            
-            if (query.length > 0) {
-                document.getElementById('dynamicHeader').innerHTML = `<div class="section-header-left"><h3>Search Results</h3></div>`;
-                
-                const filtered = groceryDB.filter(item => 
-                    (item.name && item.name.toLowerCase().includes(query)) || 
-                    (item.en && item.en.toLowerCase().includes(query))
-                );
-                renderProducts(filtered);
-            } else {
-                filterByCategory('all');
-            }
-        }
-
-        // --- CART LOGIC ---
-        function addItem(id) {
-            if (cartData.restId !== null && cartData.restId !== currentRestId) {
-                if (confirm("Your cart contains food items from a restaurant. Clear cart to add groceries?")) {
-                    cartData = { restId: currentRestId, items: {}, totalQty: 0 };
-                } else return;
-            }
-            cartData.restId = currentRestId;
-            cartData.items[id] = 1;
-            saveCart();
-            
-            // Re-render currently viewed list
-            const currentCatHeader = document.getElementById('dynamicHeader').innerText;
-            if(currentCatHeader.includes('A to Z')) {
-                renderProducts(groceryDB);
-            } else {
-                filterGroceries(); // Re-trigger filter to keep state
-            }
-        }
-
-        function updateItem(id, change) {
-            let qty = cartData.items[id] + change;
-            if (qty > 0) {
-                cartData.items[id] = qty;
-            } else {
-                delete cartData.items[id];
-                if (Object.keys(cartData.items).length === 0) cartData.restId = null;
-            }
-            saveCart();
-            
-            const currentCatHeader = document.getElementById('dynamicHeader').innerText;
-            if(currentCatHeader.includes('A to Z')) {
-                renderProducts(groceryDB);
-            } else {
-                filterGroceries();
-            }
-        }
-
-        function saveCart() {
-            cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
-            localStorage.setItem('localBoyCart', JSON.stringify(cartData));
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const cartFooter = document.getElementById('cartFooter');
-            if (cartData.totalQty > 0) {
-                cartFooter.classList.add('show');
-                document.getElementById('totalItems').innerText = cartData.totalQty === 1 ? "1 Item added" : `${cartData.totalQty} Items added`;
-                document.body.style.paddingBottom = "100px"; 
-            } else {
-                cartFooter.classList.remove('show');
-                document.body.style.paddingBottom = "90px";
-            }
-        }
     </script>
 </body>
 </html>
