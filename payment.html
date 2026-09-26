@@ -12,35 +12,44 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
+    <!-- ⚡ Razorpay Official Checkout SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 110px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
-        .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
 
-        .amount-card { background: #ffffff; margin: 20px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;}
-        .amount-card p { font-size: 14px; color: #64748b; font-weight: 600; margin-bottom: 5px; }
-        .amount-card h1 { font-size: 32px; font-weight: 800; color: #0f172a; }
+        .amount-card { background: linear-gradient(135deg, #0f172a, #1e293b); margin: 18px 20px; padding: 24px 20px; border-radius: 22px; text-align: center; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15); color: #ffffff; position: relative; overflow: hidden; }
+        .amount-card p { font-size: 12.5px; color: #94a3b8; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .amount-card h1 { font-size: 34px; font-weight: 800; color: #ffffff; }
+        .amount-card .store-pill { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 11.5px; color: #cbd5e1; font-weight: 600; }
 
-        .payment-section { background: #ffffff; margin: 0 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid #f1f5f9;}
-        .payment-title { font-size: 13px; font-weight: 700; padding: 20px 20px 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;}
+        .payment-section { background: #ffffff; margin: 0 20px 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; border: 1px solid #f1f5f9; }
+        .payment-title { font-size: 12px; font-weight: 800; padding: 18px 20px 8px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .pay-option { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s;}
-        .pay-option:active { background: #f8fafc; }
-        .pay-details { display: flex; align-items: center; gap: 15px; }
-        .pay-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        .pay-details h4 { font-size: 15px; font-weight: 700; color: #1e293b; }
+        .pay-option { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
+        .pay-option:last-child { border-bottom: none; }
+        .pay-option.selected-opt { background: #fff8eb; }
+        .pay-details { display: flex; align-items: center; gap: 14px; }
+        .pay-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0; }
+        .pay-details h4 { font-size: 14.5px; font-weight: 800; color: #0f172a; }
+        .pay-details span { font-size: 11px; color: #64748b; font-weight: 500; display: block; margin-top: 1px; }
         
-        .radio-circle { width: 22px; height: 22px; border: 2px solid #cbd5e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
+        .radio-circle { width: 22px; height: 22px; border: 2px solid #cbd5e0; border-radius: 50%; display: flex; justify-content: center; align-items: center; transition: 0.2s; flex-shrink: 0; }
         .radio-circle.active { border-color: #10b981; }
         .radio-circle.active::after { content: ''; width: 12px; height: 12px; background: #10b981; border-radius: 50%; }
 
-        .pay-btn-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px;}
-        .btn-pay { width: 100%; background: #ff5200; color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
+        .secure-badge { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11.5px; color: #64748b; font-weight: 600; margin-top: 10px; }
+        .secure-badge i { color: #10b981; }
+
+        .pay-btn-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.06); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px; border-top: 1px solid #f1f5f9; }
+        .btn-pay { width: 100%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-pay:disabled { opacity: 0.7; cursor: not-allowed; }
     </style>
 </head>
@@ -48,138 +57,256 @@
 
     <div class="top-bar">
         <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2>Payments</h2>
+        <h2>Select Payment Method</h2>
     </div>
 
     <div class="amount-card">
-        <p>Amount to Pay</p>
-        <h1 id="payAmount"><i class="fa-solid fa-spinner fa-spin" style="font-size: 24px;"></i></h1>
+        <p>Total Amount to Pay</p>
+        <h1 id="payAmount">₹0.00</h1>
+        <div class="store-pill" id="payStoreName"><i class="fa-solid fa-store"></i> Local Boy Partner</div>
     </div>
 
     <div class="payment-section">
-        <div class="payment-title">Recommended Options</div>
+        <div class="payment-title">Pay Online (Instant & Secure)</div>
         
-        <div class="pay-option clickable" onclick="selectPayment(this)">
+        <div class="pay-option clickable selected-opt" data-method="razorpay_upi" onclick="selectPayment(this, 'razorpay_upi')">
             <div class="pay-details">
                 <div class="pay-icon" style="background: #ecfdf5; color: #10b981;"><i class="fa-brands fa-google-pay"></i></div>
-                <h4>Google Pay</h4>
-            </div>
-            <div class="radio-circle"></div>
-        </div>
-
-        <div class="pay-option clickable" onclick="selectPayment(this)">
-            <div class="pay-details">
-                <div class="pay-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-building-columns"></i></div>
-                <h4>PhonePe / UPI</h4>
-            </div>
-            <div class="radio-circle"></div>
-        </div>
-
-        <div class="payment-title" style="border-top: 6px solid #f8fafc;">Other Options</div>
-
-        <div class="pay-option clickable" onclick="selectPayment(this)">
-            <div class="pay-details">
-                <div class="pay-icon" style="background: #fff8eb; color: #ff5200;"><i class="fa-solid fa-money-bill-wave"></i></div>
-                <h4>Cash on Delivery (COD)</h4>
+                <div>
+                    <h4>Google Pay / PhonePe / UPI</h4>
+                    <span>Pay instantly using any UPI App</span>
+                </div>
             </div>
             <div class="radio-circle active"></div>
         </div>
+
+        <div class="pay-option clickable" data-method="razorpay_card" onclick="selectPayment(this, 'razorpay_card')">
+            <div class="pay-details">
+                <div class="pay-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-regular fa-credit-card"></i></div>
+                <div>
+                    <h4>Credit / Debit Cards & NetBanking</h4>
+                    <span>Visa, MasterCard, RuPay & Wallets</span>
+                </div>
+            </div>
+            <div class="radio-circle"></div>
+        </div>
+
+        <div class="payment-title" style="border-top: 6px solid #f8fafc;">Pay at Doorstep</div>
+
+        <div class="pay-option clickable" data-method="cod" onclick="selectPayment(this, 'cod')">
+            <div class="pay-details">
+                <div class="pay-icon" style="background: #fff8eb; color: #ff5200;"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <div>
+                    <h4>Cash on Delivery (COD)</h4>
+                    <span>Pay cash to delivery partner at doorstep</span>
+                </div>
+            </div>
+            <div class="radio-circle"></div>
+        </div>
+    </div>
+
+    <div class="secure-badge">
+        <i class="fa-solid fa-shield-halved"></i> 100% Safe & Secured by Razorpay
     </div>
 
     <div class="pay-btn-container">
-        <button class="btn-pay clickable" id="payBtn" onclick="processPayment()">Pay Now</button>
+        <button class="btn-pay clickable" id="payBtn" onclick="processPayment()">
+            Pay Online Now <i class="fa-solid fa-lock" style="font-size:14px;"></i>
+        </button>
     </div>
 
     <script>
-        // Firebase Config
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app"
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
+        // ⚡ RAZORPAY KEY ID (Using your Test Key ID; can also be updated from Firebase settings)
+        let RAZORPAY_KEY_ID = "rzp_test_TgdkUlyOnz4wEu";
+
         let cartData = JSON.parse(localStorage.getItem('localBoyCart'));
         let checkoutData = JSON.parse(localStorage.getItem('localBoyCheckoutData'));
         let finalAmountToPay = 0;
+        let selectedPayMethod = 'razorpay_upi';
 
-        window.onload = function() {
-            // కార్ట్ డేటా లేదా చెకౌట్ డేటా లేకపోతే హోమ్ పేజీకి పంపించేస్తాం
-            if(!cartData || cartData.totalQty === 0 || !checkoutData) {
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!cartData || cartData.totalQty === 0 || !checkoutData) {
                 window.location.replace("home.html");
                 return;
             }
 
-            // కార్ట్ నుంచి వచ్చిన ఫైనల్ అమౌంట్ ని డైరెక్ట్ గా వాడుకుంటాం
-            finalAmountToPay = checkoutData.toPay;
+            finalAmountToPay = parseFloat(checkoutData.toPay) || 0;
             document.getElementById('payAmount').innerText = `₹${finalAmountToPay.toFixed(2)}`;
-            document.getElementById('payBtn').disabled = false;
-        };
-
-        function selectPayment(element) { 
-            document.querySelectorAll('.radio-circle').forEach(el => el.classList.remove('active')); 
-            element.querySelector('.radio-circle').classList.add('active'); 
-        }
-
-        function processPayment() { 
-            const btn = document.getElementById('payBtn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Order...'; 
-            btn.disabled = true;
-
-            const userPhone = localStorage.getItem('userPhone');
-            const profileData = JSON.parse(localStorage.getItem('userProfileData')) || {};
-            const savedAddress = localStorage.getItem('userSavedAddress') || "Address not specified";
-
-            // Extract Name safely
-            let cName = "Guest";
-            if(profileData.firstName) {
-                cName = profileData.firstName + (profileData.lastName ? " " + profileData.lastName : "");
+            if (checkoutData.restaurantName) {
+                document.getElementById('payStoreName').innerHTML = `<i class="fa-solid fa-store"></i> ${checkoutData.restaurantName}`;
             }
 
-            // Generate unique Order ID (e.g., LB849302)
+            // Optional: Check if Admin updated Razorpay Key in Firebase settings
+            database.ref('settings/razorpayKeyId').once('value').then(snap => {
+                if (snap.exists() && snap.val()) {
+                    RAZORPAY_KEY_ID = snap.val().trim();
+                }
+            });
+
+            updatePayButtonLabel();
+        });
+
+        window.selectPayment = function(element, methodType) { 
+            selectedPayMethod = methodType;
+            document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected-opt'));
+            document.querySelectorAll('.radio-circle').forEach(el => el.classList.remove('active')); 
+            
+            element.classList.add('selected-opt');
+            element.querySelector('.radio-circle').classList.add('active');
+            updatePayButtonLabel();
+        };
+
+        function updatePayButtonLabel() {
+            const btn = document.getElementById('payBtn');
+            if (selectedPayMethod === 'cod') {
+                btn.innerHTML = `Place Order (Cash on Delivery) <i class="fa-solid fa-circle-check"></i>`;
+            } else {
+                btn.innerHTML = `Pay ₹${finalAmountToPay.toFixed(2)} Online <i class="fa-solid fa-lock" style="font-size:14px;"></i>`;
+            }
+        }
+
+        window.processPayment = function() {
+            if (selectedPayMethod === 'cod') {
+                saveOrderToFirebase('Cash on Delivery', 'Pending (COD)', null);
+            } else {
+                launchRazorpayCheckout();
+            }
+        };
+
+        // --- LAUNCH RAZORPAY CHECKOUT ---
+        function launchRazorpayCheckout() {
+            const btn = document.getElementById('payBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Opening Razorpay...';
+            btn.disabled = true;
+
+            const userPhone = localStorage.getItem('userPhone') || "";
+            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            const cName = profileData.firstName ? `${profileData.firstName} ${profileData.lastName || ''}`.trim() : "Local Boy Customer";
+            const cEmail = profileData.email || "customer@localboy.in";
+
+            // Razorpay expects amount in paise (₹1 = 100 paise)
+            const amountInPaise = Math.round(finalAmountToPay * 100);
+
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: amountInPaise,
+                currency: "INR",
+                name: "Local Boy Delivery",
+                description: `Order from ${checkoutData.restaurantName || 'Store'}`,
+                image: "https://cdn-icons-png.flaticon.com/512/2972/2972185.png",
+                prefill: {
+                    name: cName,
+                    email: cEmail,
+                    contact: userPhone
+                },
+                theme: {
+                    color: "#ff5200"
+                },
+                handler: function (response) {
+                    // Payment Successful! Save Order to Firebase with Razorpay Payment ID
+                    const rzpPaymentId = response.razorpay_payment_id || ("RZP_" + Date.now());
+                    saveOrderToFirebase('Paid Online (Razorpay)', 'Paid', rzpPaymentId);
+                },
+                modal: {
+                    ondismiss: function () {
+                        btn.disabled = false;
+                        updatePayButtonLabel();
+                    }
+                }
+            };
+
+            try {
+                const rzp = new Razorpay(options);
+                rzp.on('payment.failed', function (response) {
+                    alert("Payment Failed: " + (response.error && response.error.description ? response.error.description : "Please try again or choose Cash on Delivery."));
+                    btn.disabled = false;
+                    updatePayButtonLabel();
+                });
+                rzp.open();
+            } catch (err) {
+                alert("Could not initialize Razorpay: " + err.message);
+                btn.disabled = false;
+                updatePayButtonLabel();
+            }
+        }
+
+        // --- SAVE FINAL ORDER TO FIREBASE ---
+        function saveOrderToFirebase(paymentMethodStr, paymentStatusStr, txnId) {
+            const btn = document.getElementById('payBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Placing Your Order...'; 
+            btn.disabled = true;
+
+            const userPhone = localStorage.getItem('userPhone') || "Unknown";
+            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            const savedAddress = localStorage.getItem('userSavedAddress') || "Address not specified";
+            const userLat = parseFloat(localStorage.getItem('userLat')) || null;
+            const userLng = parseFloat(localStorage.getItem('userLng')) || null;
+
+            let cName = "Guest";
+            if (profileData.firstName) {
+                cName = profileData.firstName + (profileData.lastName ? " " + profileData.lastName : "");
+            } else if (savedAddress.includes('|')) {
+                cName = savedAddress.split('|')[1] || "Customer";
+            }
+
             const generatedOrderId = "LB" + Math.floor(100000 + Math.random() * 900000);
 
-            // ఆర్డర్ డేటాబేస్ లో సేవ్ చేయాల్సిన పూర్తి వివరాలు
             const orderData = {
                 orderId: generatedOrderId,
-                customerId: userPhone || "Unknown",
+                customerId: userPhone,
                 customerName: cName,
-                customerPhone: userPhone || "Unknown",
+                customerPhone: userPhone,
                 deliveryAddress: savedAddress,
+                customerLat: userLat,
+                customerLng: userLng,
                 restaurantId: cartData.restId,
+                restaurantName: checkoutData.restaurantName || (cartData.restId === 'grocery_store' ? 'Local Boy Groceries' : 'Restaurant'),
+                restaurantImage: checkoutData.restaurantImage || '',
                 items: cartData.items,
-                totalAmount: finalAmountToPay,
-                itemTotal: checkoutData.itemTotal,
-                deliveryFee: checkoutData.deliveryFee,
-                taxes: checkoutData.taxes,
-                restaurantEarnings: checkoutData.restaurantEarnings, // ఓనర్‌కి ఇచ్చే అమౌంట్ 
-                commissionPercent: checkoutData.commissionPercent,
-                distance: checkoutData.distance,
+                itemsDetails: checkoutData.itemsDetails || {},
+                totalAmount: Math.round(finalAmountToPay),
+                itemTotal: checkoutData.itemTotal || 0,
+                deliveryFee: checkoutData.deliveryFee || 30,
+                taxes: checkoutData.taxes || 25,
+                couponCode: checkoutData.couponCode || null,
+                couponDiscount: checkoutData.couponDiscount || 0,
+                restaurantEarnings: checkoutData.restaurantEarnings || 0,
+                commissionPercent: checkoutData.commissionPercent || 0,
+                distance: checkoutData.distance || 1.5,
                 instructions: checkoutData.instructions || "",
                 status: 'Placed',
                 timestamp: Date.now(),
-                paymentMethod: 'Cash on Delivery' // ప్రస్తుతానికి COD
+                paymentMethod: paymentMethodStr,
+                paymentStatus: paymentStatusStr,
+                paymentId: txnId || null
             };
 
-            // Push to Firebase Realtime Database
             database.ref('orders/' + generatedOrderId).set(orderData).then(() => {
-                // Tracking కోసం ఆర్డర్ ఐడీ సేవ్ చేసుకుంటాం
                 localStorage.setItem('lastOrderId', generatedOrderId);
                 localStorage.setItem('activeOrder', 'true');
                 
-                // ఆర్డర్ అయిపోయాక కార్ట్ ఖాళీ చేసేస్తాం (దీనివల్ల కింద బ్యాడ్జ్ వెళ్లిపోతుంది)
                 localStorage.removeItem('localBoyCart');
                 localStorage.removeItem('localBoyCheckoutData');
                 
-                // సక్సెస్ పేజీకి పంపిస్తాం
                 window.location.replace("success.html"); 
             }).catch((error) => {
                 alert("Failed to place order: " + error.message);
-                btn.innerHTML = 'Pay Now'; 
                 btn.disabled = false;
+                updatePayButtonLabel();
             });
         }
     </script>
