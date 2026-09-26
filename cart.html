@@ -14,88 +14,108 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 120px; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 155px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
         /* Top Bar */
         .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
 
         /* Section Container */
-        .section-box { background: #ffffff; margin: 15px 15px 0; padding: 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;}
+        .section-box { background: #ffffff; margin: 14px 15px 0; padding: 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
         
         /* Delivery Address */
-        .delivery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .delivery-header h3 { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a;}
+        .delivery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .delivery-header h3 { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a; }
         .delivery-header h3 i { color: #ff5200; font-size: 18px; }
-        .change-btn { color: #ff5200; font-size: 12px; font-weight: 700; text-transform: uppercase; cursor: pointer; background: #fff8eb; padding: 4px 10px; border-radius: 8px; }
-        .address-text { font-size: 12px; color: #64748b; line-height: 1.5; padding-left: 26px; font-weight: 500;}
-        .time-estimate { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #10b981; margin-top: 10px; padding-left: 26px; }
+        .change-btn { color: #ff5200; font-size: 11.5px; font-weight: 800; text-transform: uppercase; cursor: pointer; background: #fff8eb; padding: 5px 12px; border-radius: 8px; }
+        .address-text { font-size: 12px; color: #64748b; line-height: 1.5; padding-left: 26px; font-weight: 500; }
+        .time-estimate { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: #10b981; margin-top: 8px; padding-left: 26px; }
 
         /* Cart Items */
-        .restaurant-name { font-size: 16px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; display: flex; align-items: center; gap: 8px; color: #0f172a;}
-        .restaurant-name img { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; }
+        .restaurant-name { font-size: 16px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 12px; display: flex; align-items: center; gap: 10px; color: #0f172a; }
+        .restaurant-name img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; background: #f1f5f9; }
         
-        .cart-item { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; }
         .cart-item:last-child { margin-bottom: 0; }
         
-        .item-details { flex: 1; display: flex; gap: 10px; }
-        .veg-indicator { width: 14px; height: 14px; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; border-radius: 4px; margin-top: 3px; flex-shrink: 0;}
+        .item-details { flex: 1; display: flex; gap: 10px; align-items: flex-start; }
+        .veg-indicator { width: 14px; height: 14px; border: 1.5px solid #10b981; display: flex; justify-content: center; align-items: center; border-radius: 4px; margin-top: 3px; flex-shrink: 0; }
         .veg-indicator::after { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
         .nonveg-indicator { border-color: #ef4444; }
         .nonveg-indicator::after { background: #ef4444; border-radius: 0; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
         .grocery-indicator { border-color: #3b82f6; }
         .grocery-indicator::after { background: #3b82f6; border-radius: 2px; }
         
-        .item-name { font-size: 14px; font-weight: 700; color: #1e293b; line-height: 1.3;}
+        .item-name { font-size: 13.5px; font-weight: 700; color: #1e293b; line-height: 1.3; }
         .item-weight { font-size: 11px; font-weight: 600; color: #3b82f6; margin-top: 2px; }
-        .item-price { font-size: 13px; font-weight: 700; color: #475569; margin-top: 4px; }
+        .item-price { font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 3px; }
         
-        .qty-controls { display: flex; align-items: center; background: #fff8eb; border: 1px solid #ff5200; border-radius: 10px; overflow: hidden; height: 32px; box-shadow: 0 2px 8px rgba(255, 82, 0, 0.1);}
-        .qty-controls span { width: 30px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 700; color: #ff5200; cursor: pointer; }
+        .qty-controls { display: flex; align-items: center; background: #fff8eb; border: 1.5px solid #ff5200; border-radius: 10px; overflow: hidden; height: 32px; box-shadow: 0 2px 8px rgba(255, 82, 0, 0.1); flex-shrink: 0; }
+        .qty-controls span { width: 30px; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 800; color: #ff5200; cursor: pointer; }
         .qty-controls .qty-val { font-size: 13px; font-weight: 800; color: #0f172a; width: 22px; text-align: center; }
 
-        /* Offers */
-        .offer-box { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px dashed #cbd5e0; border-radius: 14px; background: #ffffff; cursor: pointer; margin-top: 15px; transition: 0.2s;}
-        .offer-box:active { background: #f8fafc; }
-        .offer-box div { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 700; color: #1e293b; }
-        .offer-box i.fa-tag { color: #ff5200; font-size: 18px; }
-        .offer-box i.fa-chevron-right { color: #94a3b8; font-size: 14px; }
+        /* Instruction input */
+        .instruction-box { margin-top: 16px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; padding: 11px 14px; gap: 10px; border: 1px solid #e2e8f0; }
+        .instruction-box i { color: #ff5200; font-size: 15px; }
+        .instruction-box input { border: none; background: transparent; outline: none; font-size: 12.5px; flex: 1; color: #1e293b; font-weight: 500; }
+
+        /* Coupon Box */
+        .offer-box-card { margin: 14px 15px 0; padding: 15px 18px; border: 1.5px dashed #fdba74; border-radius: 18px; background: #fff8eb; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .offer-box-card.applied { background: #ecfdf5; border-color: #10b981; border-style: solid; }
+        .offer-left { display: flex; align-items: center; gap: 12px; }
+        .offer-left i { font-size: 20px; color: #ff5200; }
+        .offer-box-card.applied .offer-left i { color: #10b981; }
+        .offer-left h4 { font-size: 14px; font-weight: 800; color: #0f172a; }
+        .offer-left p { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 1px; }
+        .remove-coupon-btn { color: #ef4444; font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 5px 10px; background: #fef2f2; border-radius: 8px; }
 
         /* Bill Details */
-        .bill-title { font-size: 15px; font-weight: 800; margin-bottom: 15px; scroll-margin-top: 80px; color: #0f172a;}
-        .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: #475569; margin-bottom: 10px; font-weight: 500;}
-        .bill-row.discount { color: #10b981; font-weight: 600;}
-        .bill-row.total { font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0; margin-bottom: 0;}
-        
-        /* Instruction input */
-        .instruction-box { margin-top: 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center; padding: 12px 15px; gap: 10px; border: 1px solid #e2e8f0; }
-        .instruction-box i { color: #94a3b8; font-size: 16px;}
-        .instruction-box input { border: none; background: transparent; outline: none; font-size: 12px; flex: 1; color: #1e293b; font-weight: 500;}
-        .instruction-box input::placeholder { color: #94a3b8; font-weight: 400;}
+        .bill-title { font-size: 15px; font-weight: 800; margin-bottom: 14px; color: #0f172a; }
+        .bill-row { display: flex; justify-content: space-between; font-size: 13px; color: #475569; margin-bottom: 10px; font-weight: 600; }
+        .bill-row.discount { color: #10b981; font-weight: 700; }
+        .bill-row.total { font-size: 16px; font-weight: 800; color: #0f172a; margin-top: 14px; padding-top: 14px; border-top: 1.5px dashed #e2e8f0; margin-bottom: 0; }
 
         /* Sticky Checkout Footer */
-        .checkout-footer { position: fixed; bottom: 70px; left: 0; width: 100%; background: #ffffff; padding: 15px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 100; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 24px; border-top-right-radius: 24px;}
+        .checkout-footer { position: fixed; bottom: 68px; left: 0; width: 100%; background: #ffffff; padding: 14px 20px; box-shadow: 0 -10px 25px rgba(0,0,0,0.06); z-index: 100; display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 22px; border-top-right-radius: 22px; border-top: 1px solid #f1f5f9; }
         .pay-details h4 { font-size: 18px; font-weight: 800; color: #0f172a; }
-        .view-bill-text { font-size: 11px; color: #10b981; font-weight: 700; margin-top: 2px; text-decoration: underline; cursor: pointer; display: inline-block; }
-        .btn-checkout { background: #ff5200; color: white; padding: 14px 24px; border-radius: 14px; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); text-decoration: none; border: none;}
+        .view-bill-text { font-size: 11px; color: #10b981; font-weight: 700; margin-top: 1px; text-decoration: underline; cursor: pointer; }
+        .btn-checkout { background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 14px 24px; border-radius: 14px; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); border: none; }
+        .btn-checkout:disabled { opacity: 0.6; }
 
         /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 4px; cursor: pointer; }
         .nav-item.active { color: #ff5200; }
-        .nav-item i { font-size: 22px; transition: transform 0.2s;}
-        .nav-item:active i { transform: scale(0.85); }
+        .nav-item i { font-size: 21px; }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
 
         /* Empty State */
         .empty-cart-state { display: none; text-align: center; padding: 80px 20px; }
-        .empty-cart-state img { width: 140px; margin-bottom: 25px; opacity: 0.9; }
-        .empty-cart-state h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
-        .empty-cart-state p { font-size: 14px; color: #64748b; margin-bottom: 25px; font-weight: 500;}
-        .browse-btn { display: inline-block; background: #ff5200; color: white; padding: 14px 28px; border-radius: 14px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25);}
+        .empty-cart-state img { width: 135px; margin-bottom: 22px; opacity: 0.9; }
+        .empty-cart-state h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+        .empty-cart-state p { font-size: 13.5px; color: #64748b; margin-bottom: 24px; font-weight: 500; }
+        .browse-btn { display: inline-block; background: #ff5200; color: white; padding: 14px 28px; border-radius: 14px; font-weight: 700; font-size: 15px; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); }
+
+        /* --- COUPONS BOTTOM SHEET MODAL --- */
+        .sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
+        .sheet-overlay.active { opacity: 1; pointer-events: auto; }
+        .coupon-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 22px 20px; max-height: 82vh; overflow-y: auto; }
+        .coupon-sheet.active { transform: translateY(0); }
+        .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .sheet-head h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+        .manual-coupon-row { display: flex; gap: 10px; margin-bottom: 18px; }
+        .manual-coupon-row input { flex: 1; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13.5px; font-weight: 700; text-transform: uppercase; outline: none; color: #0f172a; }
+        .manual-coupon-row input:focus { border-color: #ff5200; }
+        .manual-coupon-row button { padding: 0 20px; background: #0f172a; color: #fff; border: none; border-radius: 12px; font-size: 13px; font-weight: 800; cursor: pointer; }
+
+        .coupon-item-card { border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+        .cpn-code-tag { display: inline-block; background: #fff8eb; border: 1px dashed #ff5200; color: #ff5200; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 6px; margin-bottom: 5px; }
+        .cpn-desc { font-size: 12.5px; font-weight: 700; color: #0f172a; }
+        .cpn-min { font-size: 11px; color: #64748b; font-weight: 500; margin-top: 2px; }
+        .btn-apply-cpn { background: #ff5200; color: #fff; border: none; padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -122,7 +142,7 @@
             </div>
             <p class="address-text" id="cartAddressText">Loading address...</p>
             <div class="time-estimate" id="eta-display">
-                <i class="fa-solid fa-clock"></i> Delivery in 15 - 30 mins
+                <i class="fa-solid fa-clock"></i> Superfast Delivery in 20 - 30 mins
             </div>
         </div>
 
@@ -130,14 +150,10 @@
         <div class="section-box" id="itemsSection">
             <div class="restaurant-name" id="cartRestName">
                 <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100&auto=format&fit=crop" alt="Logo">
-                Loading Restaurant...
+                Loading Store...
             </div>
 
-            <div id="dynamicCartItems">
-                <div style="text-align: center; padding: 20px; color: #94a3b8;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 20px;"></i> Calculating Bill & Distance...
-                </div>
-            </div>
+            <div id="dynamicCartItems"></div>
 
             <div class="instruction-box" id="instructionBox">
                 <i class="fa-regular fa-comment-dots"></i>
@@ -145,11 +161,17 @@
             </div>
         </div>
 
-        <!-- Offers Section -->
-        <div class="section-box offer-box clickable" id="offersSection" style="padding: 0; margin-left: 15px; margin-right: 15px; border: none; background: transparent;">
-            <div class="offer-box" style="width: 100%; margin-top: 0;">
-                <div><i class="fa-solid fa-tag"></i> Apply Coupon</div>
-                <i class="fa-solid fa-chevron-right"></i>
+        <!-- Working Offers / Coupon Section -->
+        <div class="offer-box-card clickable" id="couponBoxCard" onclick="openCouponModal()">
+            <div class="offer-left">
+                <i class="fa-solid fa-tag" id="couponBoxIcon"></i>
+                <div>
+                    <h4 id="couponBoxTitle">Apply Coupon / Promo Code</h4>
+                    <p id="couponBoxSub">Tap to view available discounts</p>
+                </div>
+            </div>
+            <div id="couponBoxRight">
+                <i class="fa-solid fa-chevron-right" style="color: #94a3b8; font-size: 14px;"></i>
             </div>
         </div>
 
@@ -162,15 +184,19 @@
                 <span id="bill-item-total">₹0.00</span>
             </div>
             <div class="bill-row" id="delivery-fee-row">
-                <span id="delivery-fee-text">Delivery Fee | Calculating...</span>
+                <span id="delivery-fee-text">Delivery Partner Fee</span>
                 <span id="bill-delivery-fee">₹30.00</span>
             </div>
             <div class="bill-row discount" id="bill-discount-row" style="display: none;">
-                <span>Total Discount Applied</span>
+                <span>Item Savings</span>
                 <span id="bill-discount">- ₹0.00</span>
             </div>
+            <div class="bill-row discount" id="bill-coupon-row" style="display: none;">
+                <span id="bill-coupon-label">Coupon Discount</span>
+                <span id="bill-coupon-val">- ₹0.00</span>
+            </div>
             <div class="bill-row">
-                <span>Platform Taxes & Charges</span>
+                <span>Platform & Packaging Charges</span>
                 <span id="bill-taxes">₹25.00</span>
             </div>
             
@@ -192,6 +218,22 @@
         </button>
     </div>
 
+    <!-- COUPONS BOTTOM SHEET -->
+    <div class="sheet-overlay" id="couponOverlay" onclick="closeCouponModal()"></div>
+    <div class="coupon-sheet" id="couponSheet">
+        <div class="sheet-head">
+            <h3><i class="fa-solid fa-percent" style="color:#ff5200; margin-right:6px;"></i> Apply Promo Code</h3>
+            <i class="fa-solid fa-xmark" style="font-size:20px; color:#94a3b8; cursor:pointer;" onclick="closeCouponModal()"></i>
+        </div>
+        <div class="manual-coupon-row">
+            <input type="text" id="manualCouponInput" placeholder="Enter Coupon Code">
+            <button onclick="applyManualCoupon()">APPLY</button>
+        </div>
+        <div id="availableCouponsList">
+            <p style="text-align:center; color:#94a3b8; font-size:12px; padding:20px;">Loading active offers...</p>
+        </div>
+    </div>
+
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="home.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Home</span></a>
@@ -205,38 +247,98 @@
     </div>
 
     <script>
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         let cartData;
         let menuDB = {}; 
-        let checkoutData = {}; // Will hold the final numbers
+        let checkoutData = {};
+        let allPromos = [];
+        let appliedCoupon = null;
 
-        // Location Variables
-        let restLat = null, restLng = null;
-        let customerLat = null, customerLng = null;
+        // Store & Location Variables
+        let storeNameText = "Local Boy Store";
+        let storeImageUrl = "";
+        let restLat = 16.2366, restLng = 80.6405;
+        let customerLat = parseFloat(localStorage.getItem('userLat')) || null;
+        let customerLng = parseFloat(localStorage.getItem('userLng')) || null;
         let restCommission = 0;
-        let distanceInKm = 0;
-        let deliveryFee = 30; // Default base fee
+        let distanceInKm = 1.5;
+
+        // Admin Configurable Charges
+        let baseDeliveryFee = 30;
+        let baseKmLimit = 2;
+        let perExtraKmFee = 10;
+        let deliveryFee = 30;
         let itemTotal = 0;
         let taxes = 25;
 
-        // Haversine formula to calculate straight-line distance
         function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
             var R = 6371; 
-            var dLat = deg2rad(lat2-lat1);
-            var dLon = deg2rad(lon2-lon1);
-            var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c; 
+            var dLat = (lat2 - lat1) * (Math.PI / 180);
+            var dLon = (lon2 - lon1) * (Math.PI / 180);
+            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
         }
-        function deg2rad(deg) { return deg * (Math.PI/180); }
+
+        // Load Admin Delivery Charges, Platform Fees & Promocodes
+        function loadAdminConfigs() {
+            database.ref('delivery_charges').once('value').then(snap => {
+                if (snap.exists()) {
+                    const dc = snap.val();
+                    baseDeliveryFee = parseFloat(dc.baseCharge || dc.baseFee || dc.amount || 30);
+                    baseKmLimit = parseFloat(dc.baseKm || 2);
+                    perExtraKmFee = parseFloat(dc.perKmCharge || dc.extraKmFee || 10);
+                    calculateDistanceAndRender();
+                }
+            });
+
+            database.ref('platform_fees').once('value').then(snap => {
+                if (snap.exists()) {
+                    const pf = snap.val();
+                    if (typeof pf === 'number' || typeof pf === 'string') {
+                        taxes = parseFloat(pf) || 25;
+                    } else if (pf.fee !== undefined || pf.amount !== undefined || pf.platformFee !== undefined) {
+                        taxes = parseFloat(pf.fee ?? pf.amount ?? pf.platformFee ?? 25);
+                    }
+                    document.getElementById('bill-taxes').innerText = `₹${taxes.toFixed(2)}`;
+                    renderCartItemsAndBill();
+                }
+            });
+
+            database.ref('promocodes').once('value').then(snap => {
+                allPromos = [];
+                if (snap.exists()) {
+                    snap.forEach(c => {
+                        const p = c.val();
+                        if (p.status !== 'Inactive' && p.is_active !== false) {
+                            allPromos.push({
+                                code: (p.code || p.promoCode || '').toUpperCase().trim(),
+                                type: (p.discountType || p.type || 'flat').toLowerCase(),
+                                value: parseFloat(p.discountValue || p.discount || p.amount || 0),
+                                minOrder: parseFloat(p.minOrder || p.minAmount || 0),
+                                maxDiscount: parseFloat(p.maxDiscount || 0),
+                                desc: p.description || p.title || ''
+                            });
+                        }
+                    });
+                }
+                renderAvailableCouponsModal();
+            });
+        }
 
         function fetchLiveMenuAndInitCart() {
             cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
@@ -265,24 +367,25 @@
             emptyState.style.display = 'none';
             cartContentWrapper.style.display = 'block';
             checkoutFooter.style.display = 'flex';
-            document.getElementById('proceedBtn').innerText = 'Calculating...';
-            document.getElementById('proceedBtn').disabled = true;
 
-            // 1. Fetch Restaurant Data (Commission & Location)
             if (cartData.restId !== 'grocery_store') {
                 database.ref('restaurant_profiles/' + cartData.restId).once('value').then(snap => {
-                    if(snap.exists()) {
+                    if (snap.exists()) {
                         let profile = snap.val();
-                        restLat = profile.latitude;
-                        restLng = profile.longitude;
-                        restCommission = profile.commission || 0;
-                        cartRestName.innerHTML = `<img src="${profile.image || 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100'}"> ${profile.name}`;
+                        restLat = parseFloat(profile.latitude) || 16.2366;
+                        restLng = parseFloat(profile.longitude) || 80.6405;
+                        restCommission = parseFloat(profile.commission) || 0;
+                        storeNameText = profile.name || "Restaurant";
+                        storeImageUrl = profile.image || "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=100";
+                        cartRestName.innerHTML = `<img src="${storeImageUrl}"> ${storeNameText}`;
                     }
                     fetchMenuAndLocation('restaurant_menus/' + cartData.restId);
                 });
             } else {
-                cartRestName.innerHTML = `<img src="https://cdn-icons-png.flaticon.com/512/3194/3194591.png" style="background:#ecfdf5; padding:2px;"> Local Boy Groceries`;
-                restCommission = 0; // Groceries internal, 0 commission
+                storeNameText = "Local Boy Groceries";
+                storeImageUrl = "https://cdn-icons-png.flaticon.com/512/3194/3194591.png";
+                cartRestName.innerHTML = `<img src="${storeImageUrl}" style="background:#ecfdf5; padding:2px;"> ${storeNameText}`;
+                restCommission = 0;
                 fetchMenuAndLocation('groceries');
             }
         }
@@ -291,41 +394,42 @@
             database.ref(dbRefPath).once('value').then((snapshot) => {
                 menuDB = snapshot.val() || {};
                 
-                // Attempt to get Customer GPS
-                if(navigator.geolocation) {
+                // Render immediately using saved coordinates so there is ZERO wait!
+                calculateDistanceAndRender();
+
+                // Background GPS refresh if not saved yet
+                if (!customerLat && navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
                             customerLat = position.coords.latitude;
                             customerLng = position.coords.longitude;
+                            localStorage.setItem('userLat', customerLat);
+                            localStorage.setItem('userLng', customerLng);
                             calculateDistanceAndRender();
                         },
-                        (error) => {
-                            console.log("GPS denied or failed. Using default delivery fee.");
-                            calculateDistanceAndRender();
-                        }
+                        () => {},
+                        { timeout: 5000 }
                     );
-                } else {
-                    calculateDistanceAndRender();
                 }
             });
         }
 
         function calculateDistanceAndRender() {
-            if(restLat && restLng && customerLat && customerLng) {
+            if (restLat && restLng && customerLat && customerLng) {
                 distanceInKm = getDistanceFromLatLonInKm(restLat, restLng, customerLat, customerLng);
-                distanceInKm = parseFloat(distanceInKm.toFixed(1));
+                distanceInKm = Math.max(0.5, parseFloat(distanceInKm.toFixed(1)));
 
-                // Delivery Logic: Base ₹30 for 2KM. Extra ₹10 per KM
-                if(distanceInKm <= 2) {
-                    deliveryFee = 30;
+                if (distanceInKm <= baseKmLimit) {
+                    deliveryFee = baseDeliveryFee;
                 } else {
-                    let extraKm = Math.ceil(distanceInKm - 2);
-                    deliveryFee = 30 + (extraKm * 10);
+                    let extraKm = Math.ceil(distanceInKm - baseKmLimit);
+                    deliveryFee = baseDeliveryFee + (extraKm * perExtraKmFee);
                 }
-                document.getElementById('delivery-fee-text').innerText = `Delivery Fee | ${distanceInKm} kms`;
+                document.getElementById('delivery-fee-text').innerText = `Delivery Partner Fee (${distanceInKm} km)`;
             } else {
-                deliveryFee = 30; // Fallback
-                document.getElementById('delivery-fee-text').innerText = `Delivery Fee (Standard)`;
+                distanceInKm = 1.8;
+                deliveryFee = baseDeliveryFee;
+                document.getElementById('delivery-fee-text').innerText = `Delivery Partner Fee (Standard)`;
             }
             
             document.getElementById('bill-delivery-fee').innerText = `₹${deliveryFee.toFixed(2)}`;
@@ -337,16 +441,17 @@
             dynamicCartItems.innerHTML = '';
             
             itemTotal = 0;
-            let originalTotal = 0; 
+            let originalTotal = 0;
+            let itemsSnapshot = {};
 
             for (let id in cartData.items) {
                 let qty = cartData.items[id];
                 let item = menuDB[id];
+                if (!item) continue; 
                 
-                if(!item) continue; 
-                
-                itemTotal += (item.price * qty);
-                originalTotal += ((item.originalPrice || item.price) * qty);
+                let price = parseFloat(item.price) || 0;
+                itemTotal += (price * qty);
+                originalTotal += ((parseFloat(item.originalPrice) || price) * qty);
 
                 let vegClass = 'veg-indicator';
                 if (item.type === 'nonveg') vegClass = 'nonveg-indicator';
@@ -355,6 +460,14 @@
                 let itemName = item.name || item.en || 'Item';
                 let itemWeightHtml = item.weight ? `<div class="item-weight">${item.weight}</div>` : '';
 
+                // Store item details snapshot for orders.html & track.html
+                itemsSnapshot[id] = {
+                    name: itemName,
+                    qty: qty,
+                    price: price,
+                    weight: item.weight || ''
+                };
+
                 dynamicCartItems.innerHTML += `
                     <div class="cart-item">
                         <div class="item-details">
@@ -362,7 +475,7 @@
                             <div>
                                 <div class="item-name">${itemName}</div>
                                 ${itemWeightHtml}
-                                <div class="item-price">₹${item.price}</div>
+                                <div class="item-price">₹${price}</div>
                             </div>
                         </div>
                         <div class="qty-controls">
@@ -374,55 +487,166 @@
                 `;
             }
 
-            if(dynamicCartItems.innerHTML === '') {
+            if (dynamicCartItems.innerHTML === '') {
                 localStorage.setItem('localBoyCart', JSON.stringify({ restId: null, items: {}, totalQty: 0 }));
                 window.location.reload();
                 return;
             }
 
-            let toPay = itemTotal + deliveryFee + taxes;
-            let totalSaved = originalTotal - itemTotal;
+            // Calculate Coupon Discount if applied
+            let couponDiscountAmt = 0;
+            if (appliedCoupon) {
+                if (itemTotal < appliedCoupon.minOrder) {
+                    appliedCoupon = null;
+                    updateCouponBoxUI();
+                } else {
+                    if (appliedCoupon.type.includes('percent')) {
+                        couponDiscountAmt = Math.round((itemTotal * appliedCoupon.value) / 100);
+                        if (appliedCoupon.maxDiscount > 0 && couponDiscountAmt > appliedCoupon.maxDiscount) {
+                            couponDiscountAmt = appliedCoupon.maxDiscount;
+                        }
+                    } else {
+                        couponDiscountAmt = appliedCoupon.value;
+                    }
+                    couponDiscountAmt = Math.min(couponDiscountAmt, itemTotal);
+                }
+            }
 
-            // Restaurant Earnings Calculation (Item Total minus Commission)
+            let toPay = Math.max(0, (itemTotal - couponDiscountAmt) + deliveryFee + taxes);
+            let totalSaved = originalTotal - itemTotal;
             let restaurantEarnings = itemTotal - (itemTotal * (restCommission / 100));
 
-            // Save final data for payment page
             checkoutData = {
                 itemTotal: itemTotal,
                 deliveryFee: deliveryFee,
                 taxes: taxes,
+                couponCode: appliedCoupon ? appliedCoupon.code : null,
+                couponDiscount: couponDiscountAmt,
                 toPay: toPay,
-                restaurantEarnings: restaurantEarnings, // This will be sent to DB
+                restaurantEarnings: restaurantEarnings,
                 commissionPercent: restCommission,
-                distance: distanceInKm
+                distance: distanceInKm,
+                restaurantName: storeNameText,
+                restaurantImage: storeImageUrl,
+                itemsDetails: itemsSnapshot
             };
 
             document.getElementById('bill-item-total').innerText = `₹${itemTotal.toFixed(2)}`;
             
-            if(totalSaved > 0) {
+            if (totalSaved > 0) {
                 document.getElementById('bill-discount-row').style.display = 'flex';
                 document.getElementById('bill-discount').innerText = `- ₹${totalSaved.toFixed(2)}`;
             } else {
                 document.getElementById('bill-discount-row').style.display = 'none';
             }
 
+            if (couponDiscountAmt > 0 && appliedCoupon) {
+                document.getElementById('bill-coupon-row').style.display = 'flex';
+                document.getElementById('bill-coupon-label').innerText = `Coupon (${appliedCoupon.code})`;
+                document.getElementById('bill-coupon-val').innerText = `- ₹${couponDiscountAmt.toFixed(2)}`;
+            } else {
+                document.getElementById('bill-coupon-row').style.display = 'none';
+            }
+
             document.getElementById('bill-to-pay').innerText = `₹${toPay.toFixed(2)}`;
             document.getElementById('footer-to-pay').innerText = `₹${toPay.toFixed(2)}`;
-
-            document.getElementById('proceedBtn').innerHTML = 'Proceed to Pay <i class="fa-solid fa-caret-right"></i>';
             document.getElementById('proceedBtn').disabled = false;
         }
 
-        function updateCartItem(id, change) {
+        // --- COUPON MODAL FUNCTIONS ---
+        window.openCouponModal = function() {
+            document.getElementById('couponOverlay').classList.add('active');
+            document.getElementById('couponSheet').classList.add('active');
+            renderAvailableCouponsModal();
+        };
+
+        window.closeCouponModal = function() {
+            document.getElementById('couponOverlay').classList.remove('active');
+            document.getElementById('couponSheet').classList.remove('active');
+        };
+
+        function renderAvailableCouponsModal() {
+            const container = document.getElementById('availableCouponsList');
+            if (!allPromos || allPromos.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-size:12.5px; padding:20px;">No active coupons available right now. You can still enter a code above if you have one.</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            allPromos.forEach(p => {
+                const discText = p.type.includes('percent') ? `${p.value}% OFF` : `FLAT ₹${p.value} OFF`;
+                const minText = p.minOrder > 0 ? `Valid on orders above ₹${p.minOrder}` : `No minimum order required`;
+
+                container.innerHTML += `
+                    <div class="coupon-item-card">
+                        <div>
+                            <span class="cpn-code-tag">${p.code}</span>
+                            <div class="cpn-desc">${discText} ${p.desc ? '• ' + p.desc : ''}</div>
+                            <div class="cpn-min">${minText}</div>
+                        </div>
+                        <button class="btn-apply-cpn clickable" onclick="selectCouponCode('${p.code}')">APPLY</button>
+                    </div>
+                `;
+            });
+        }
+
+        window.applyManualCoupon = function() {
+            const code = document.getElementById('manualCouponInput').value.toUpperCase().trim();
+            if (!code) return;
+            selectCouponCode(code);
+        };
+
+        window.selectCouponCode = function(code) {
+            const found = allPromos.find(p => p.code === code);
+            if (!found) {
+                alert("Invalid or expired coupon code!");
+                return;
+            }
+            if (itemTotal < found.minOrder) {
+                alert(`Add ₹${Math.ceil(found.minOrder - itemTotal)} more worth of items to use coupon ${code} (Min order: ₹${found.minOrder}).`);
+                return;
+            }
+
+            appliedCoupon = found;
+            closeCouponModal();
+            renderCartItemsAndBill();
+            updateCouponBoxUI();
+        };
+
+        window.removeAppliedCoupon = function(event) {
+            event.stopPropagation();
+            appliedCoupon = null;
+            updateCouponBoxUI();
+            renderCartItemsAndBill();
+        };
+
+        function updateCouponBoxUI() {
+            const card = document.getElementById('couponBoxCard');
+            const title = document.getElementById('couponBoxTitle');
+            const sub = document.getElementById('couponBoxSub');
+            const right = document.getElementById('couponBoxRight');
+
+            if (appliedCoupon) {
+                card.classList.add('applied');
+                title.innerText = `'${appliedCoupon.code}' Applied!`;
+                sub.innerText = `You saved ₹${checkoutData.couponDiscount || 0} on this order`;
+                right.innerHTML = `<span class="remove-coupon-btn" onclick="removeAppliedCoupon(event)">Remove</span>`;
+            } else {
+                card.classList.remove('applied');
+                title.innerText = `Apply Coupon / Promo Code`;
+                sub.innerText = `Tap to view available discounts`;
+                right.innerHTML = `<i class="fa-solid fa-chevron-right" style="color: #94a3b8; font-size: 14px;"></i>`;
+            }
+        }
+
+        window.updateCartItem = function(id, change) {
             let currentQty = cartData.items[id] || 0;
             let newQty = currentQty + change;
             
             if (newQty > 0) {
                 cartData.items[id] = newQty;
             } else {
-                if(confirm("Remove item from cart?")) {
-                    delete cartData.items[id];
-                } else { return; }
+                delete cartData.items[id];
             }
             
             cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
@@ -430,35 +654,33 @@
             
             localStorage.setItem('localBoyCart', JSON.stringify(cartData));
             fetchLiveMenuAndInitCart(); 
-        }
+        };
 
-        function scrollToBill() {
+        window.scrollToBill = function() {
             const billSection = document.getElementById('billSection');
             if (billSection) {
-                const y = billSection.getBoundingClientRect().top + window.scrollY - 100;
-                window.scrollTo({top: y, behavior: 'smooth'});
+                const y = billSection.getBoundingClientRect().top + window.scrollY - 90;
+                window.scrollTo({ top: y, behavior: 'smooth' });
             }
-        }
+        };
 
-        function proceedToPay() {
+        window.proceedToPay = function() {
             const currentAddress = document.getElementById("cartAddressText").innerText;
-            if(currentAddress === "Loading address..." || currentAddress === "Please add your delivery address" || currentAddress === "") {
-                alert("Please add a delivery address before proceeding to pay.");
+            if (currentAddress === "Loading address..." || currentAddress === "Please add your delivery address" || currentAddress === "") {
+                alert("Please select your delivery address before proceeding to payment.");
                 window.location.href = "location.html?from=cart";
             } else {
-                // Save checkout calculations and instructions to pass to Payment
                 checkoutData.instructions = document.getElementById('orderInstructions').value.trim();
                 localStorage.setItem('localBoyCheckoutData', JSON.stringify(checkoutData));
                 window.location.href = "payment.html";
             }
-        }
+        };
 
-        // --- Address Fetch Logic ---
         function displayAddress(fullStr) {
             const addressTextElem = document.getElementById("cartAddressText");
             const addressTitleElem = document.getElementById("cartAddressTitle");
             
-            if(fullStr) {
+            if (fullStr) {
                 if (fullStr.includes('|')) {
                     let parts = fullStr.split('|');
                     let type = parts[0];
@@ -480,21 +702,28 @@
         }
 
         window.addEventListener('pageshow', function() {
+            loadAdminConfigs();
             fetchLiveMenuAndInitCart();
             
+            const savedLocal = localStorage.getItem("userSavedAddress");
+            if (savedLocal) displayAddress(savedLocal);
+
             const userPhone = localStorage.getItem('userPhone');
-            if(userPhone) {
-                database.ref('users/' + userPhone + '/profile/address').once('value').then((snapshot) => {
-                    const fbAddress = snapshot.val();
-                    if(fbAddress) {
-                        displayAddress(fbAddress);
-                        localStorage.setItem('userSavedAddress', fbAddress);
-                    } else {
-                        displayAddress(localStorage.getItem("userSavedAddress"));
+            if (userPhone) {
+                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
+                    const prof = snapshot.val();
+                    if (prof && prof.address) {
+                        displayAddress(prof.address);
+                        localStorage.setItem('userSavedAddress', prof.address);
+                        if (prof.latitude && prof.longitude) {
+                            customerLat = parseFloat(prof.latitude);
+                            customerLng = parseFloat(prof.longitude);
+                            localStorage.setItem('userLat', customerLat);
+                            localStorage.setItem('userLng', customerLng);
+                            calculateDistanceAndRender();
+                        }
                     }
-                }).catch(() => { displayAddress(localStorage.getItem("userSavedAddress")); });
-            } else {
-                displayAddress(localStorage.getItem("userSavedAddress"));
+                });
             }
         });
     </script>
