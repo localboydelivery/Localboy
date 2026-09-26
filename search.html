@@ -8,52 +8,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #fafafa; color: #1a202c; }
+        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; padding-bottom: 40px; }
         a { text-decoration: none; color: inherit; display: block; }
-        .clickable:active { transform: scale(0.97); opacity: 0.8; }
+        .clickable:active { transform: scale(0.97); opacity: 0.85; }
 
-        /* Top Search Bar Header */
-        .search-header { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.04); gap: 15px;}
-        .back-btn { font-size: 20px; color: #1a202c; cursor: pointer; }
+        .search-header { display: flex; align-items: center; padding: 15px 18px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.04); gap: 12px; }
+        .back-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; color: #0f172a; cursor: pointer; flex-shrink: 0; }
         
-        .search-input-wrapper { flex: 1; display: flex; align-items: center; background: #f7fafc; border-radius: 14px; padding: 10px 15px; border: 1px solid #e2e8f0; transition: 0.3s;}
-        .search-input-wrapper.active { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1);}
+        .search-input-wrapper { flex: 1; display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 10px 14px; border: 1.5px solid #e2e8f0; transition: 0.25s; }
+        .search-input-wrapper.active { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
         
-        .search-input-wrapper input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #1a202c;}
+        .search-input-wrapper input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
+        .search-input-wrapper input::placeholder { color: #94a3b8; font-weight: 400; }
         
-        /* Mic Icon Styling */
-        .mic-btn { color: #4a5568; font-size: 18px; cursor: pointer; padding: 5px; transition: 0.3s;}
-        .mic-btn.listening { color: #ff5200; animation: pulse 1s infinite; }
+        .clear-input-btn { color: #94a3b8; font-size: 15px; cursor: pointer; padding: 4px 8px; display: none; }
+        .mic-btn { width: 32px; height: 32px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
+        .mic-btn.listening { background: #ef4444; color: #ffffff; animation: pulse 1s infinite; }
 
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Recent Searches & Trending */
         .search-content { padding: 20px; }
-        .section-title { font-size: 14px; font-weight: 700; color: #1a202c; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
-        .section-title span { font-size: 11px; color: #ff5200; cursor: pointer; font-weight: 600;}
+        .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .section-title span { font-size: 11px; color: #ff5200; cursor: pointer; font-weight: 700; }
         
         .chip-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
-        .chip { background: #ffffff; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 500; color: #4a5568; display: flex; align-items: center; gap: 6px; cursor: pointer;}
-        .chip i { color: #a0aec0; font-size: 10px;}
+        .chip { background: #ffffff; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .chip i { color: #ff5200; font-size: 11px; }
 
-        /* Search Results */
-        #searchResults { display: none; margin-top: 20px;}
-        .result-item { display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #edf2f7; cursor: pointer;}
-        .result-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover;}
-        .result-info { flex: 1; }
-        .result-info h4 { font-size: 14px; font-weight: 600; color: #1a202c;}
-        .result-info p { font-size: 11px; color: #718096; margin-top: 2px;}
-        .result-arrow { color: #cbd5e0; font-size: 14px;}
+        #searchResults { display: none; padding-top: 10px; }
+        .result-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: #ffffff; border-radius: 16px; margin-bottom: 10px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
+        .result-img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
+        .result-info { flex: 1; min-width: 0; }
+        .result-info h4 { font-size: 14px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-info p { font-size: 11.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
+        .result-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 6px; margin-right: 5px; }
+        .badge-rest { background: #fff8eb; color: #ff5200; }
+        .badge-dish { background: #eff6ff; color: #3b82f6; }
+        .badge-groc { background: #ecfdf5; color: #10b981; }
+        .result-arrow { color: #cbd5e1; font-size: 14px; }
         
-        .empty-result { text-align:center; padding:40px 20px; color:#a0aec0; }
-        .empty-result i { font-size:40px; margin-bottom:15px; color: #cbd5e0;}
-        .empty-result p { font-size: 14px; font-weight: 500; }
+        .empty-result { text-align: center; padding: 45px 20px; color: #94a3b8; }
+        .empty-result i { font-size: 42px; margin-bottom: 14px; color: #cbd5e1; }
+        .empty-result p { font-size: 14px; font-weight: 600; color: #64748b; }
     </style>
 </head>
 <body>
@@ -62,50 +68,200 @@
         <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <div class="search-input-wrapper" id="searchWrapper">
             <i class="fa-solid fa-magnifying-glass" style="color: #ff5200;"></i>
-            <input type="text" id="searchInput" placeholder="Search for food, groceries..." autofocus onkeyup="filterResults()">
-            <i class="fa-solid fa-microphone mic-btn" id="micBtn" onclick="startVoiceSearch()"></i>
+            <input type="text" id="searchInput" placeholder="Search biryani, restaurants, groceries..." autofocus oninput="filterResults()">
+            <i class="fa-solid fa-circle-xmark clear-input-btn" id="clearInputBtn" onclick="clearSearchInput()"></i>
+            <div class="mic-btn clickable" id="micBtn" onclick="startVoiceSearch()">
+                <i class="fa-solid fa-microphone"></i>
+            </div>
         </div>
     </div>
 
     <!-- Default Search View -->
     <div class="search-content" id="defaultSearch">
-        <div class="section-title">Recent Searches <span onclick="clearRecent()">CLEAR</span></div>
-        <div class="chip-container" id="recentContainer">
-            <div class="chip clickable" onclick="setSearch('Bawarchi')"><i class="fa-solid fa-clock-rotate-left"></i> Bawarchi</div>
-            <div class="chip clickable" onclick="setSearch('Pizza')"><i class="fa-solid fa-clock-rotate-left"></i> Pizza</div>
-            <div class="chip clickable" onclick="setSearch('Milk')"><i class="fa-solid fa-clock-rotate-left"></i> Milk</div>
+        <div id="recentSectionWrap">
+            <div class="section-title">Recent Searches <span onclick="clearRecent()">CLEAR</span></div>
+            <div class="chip-container" id="recentContainer"></div>
         </div>
 
         <div class="section-title">Trending Near You <i class="fa-solid fa-fire-flame-curved" style="color: #ff5200;"></i></div>
         <div class="chip-container">
+            <div class="chip clickable" onclick="setSearch('Biryani')"><i class="fa-solid fa-arrow-trend-up"></i> Biryani</div>
+            <div class="chip clickable" onclick="setSearch('Fry Piece')"><i class="fa-solid fa-arrow-trend-up"></i> Fry Piece</div>
+            <div class="chip clickable" onclick="setSearch('Pizza')"><i class="fa-solid fa-arrow-trend-up"></i> Pizza</div>
             <div class="chip clickable" onclick="setSearch('Burger')"><i class="fa-solid fa-arrow-trend-up"></i> Burger</div>
-            <div class="chip clickable" onclick="setSearch('Ice Cream')"><i class="fa-solid fa-arrow-trend-up"></i> Ice Cream</div>
             <div class="chip clickable" onclick="setSearch('Dosa')"><i class="fa-solid fa-arrow-trend-up"></i> Dosa</div>
-            <div class="chip clickable" onclick="setSearch('Paneer')"><i class="fa-solid fa-arrow-trend-up"></i> Paneer</div>
+            <div class="chip clickable" onclick="setSearch('Milk')"><i class="fa-solid fa-arrow-trend-up"></i> Milk</div>
+            <div class="chip clickable" onclick="setSearch('Vegetables')"><i class="fa-solid fa-arrow-trend-up"></i> Vegetables</div>
+            <div class="chip clickable" onclick="setSearch('Ice Cream')"><i class="fa-solid fa-arrow-trend-up"></i> Ice Cream</div>
         </div>
     </div>
 
     <!-- Real-time Search Results -->
     <div class="search-content" id="searchResults">
-        <div class="section-title">Search Results</div>
-        <div id="resultsContainer">
-            <!-- Items generated by JavaScript -->
-        </div>
+        <div class="section-title" id="resultsCountTitle">Search Results</div>
+        <div id="resultsContainer"></div>
     </div>
 
     <script>
+        // EXACT NEW FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
         const searchInput = document.getElementById('searchInput');
         const searchWrapper = document.getElementById('searchWrapper');
+        const clearInputBtn = document.getElementById('clearInputBtn');
         const micBtn = document.getElementById('micBtn');
         const defaultSearch = document.getElementById('defaultSearch');
         const searchResults = document.getElementById('searchResults');
         const resultsContainer = document.getElementById('resultsContainer');
 
+        let liveSearchData = [];
+
+        function getSafeImage(url, fallback) {
+            if (!url) return fallback || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop";
+            return url;
+        }
+
         searchInput.addEventListener('focus', () => searchWrapper.classList.add('active'));
         searchInput.addEventListener('blur', () => searchWrapper.classList.remove('active'));
 
-        // 🔴 Voice Search Logic
-        function startVoiceSearch() {
+        // Render Recent Searches from localStorage
+        function renderRecentSearches() {
+            const recents = JSON.parse(localStorage.getItem('lb_recent_searches')) || ['Biryani', 'Pizza', 'Milk'];
+            const container = document.getElementById('recentContainer');
+            const wrap = document.getElementById('recentSectionWrap');
+
+            if (recents.length === 0) {
+                wrap.style.display = 'none';
+                return;
+            }
+            wrap.style.display = 'block';
+            container.innerHTML = '';
+            recents.slice(0, 6).forEach(term => {
+                container.innerHTML += `
+                    <div class="chip clickable" onclick="setSearch('${term.replace(/'/g, "\\'")}')">
+                        <i class="fa-solid fa-clock-rotate-left" style="color:#94a3b8;"></i> ${term}
+                    </div>
+                `;
+            });
+        }
+
+        function saveRecentSearch(term) {
+            if (!term || term.length < 2) return;
+            let recents = JSON.parse(localStorage.getItem('lb_recent_searches')) || ['Biryani', 'Pizza', 'Milk'];
+            recents = recents.filter(r => r.toLowerCase() !== term.toLowerCase());
+            recents.unshift(term);
+            localStorage.setItem('lb_recent_searches', JSON.stringify(recents.slice(0, 6)));
+        }
+
+        window.clearRecent = function() {
+            localStorage.setItem('lb_recent_searches', JSON.stringify([]));
+            renderRecentSearches();
+        };
+
+        window.clearSearchInput = function() {
+            searchInput.value = '';
+            filterResults();
+            searchInput.focus();
+        };
+
+        // Load Restaurants, Restaurant Menu Dishes & Groceries into Unified Search Index
+        async function buildSearchIndex() {
+            liveSearchData = [];
+            let restMap = {};
+
+            try {
+                const [restSnap, menuSnap, grocSnap] = await Promise.all([
+                    database.ref('restaurant_profiles').once('value'),
+                    database.ref('restaurant_menus').once('value'),
+                    database.ref('groceries').once('value')
+                ]);
+
+                // 1. Index Open Restaurants
+                if (restSnap.exists()) {
+                    restSnap.forEach(child => {
+                        let res = child.val();
+                        restMap[child.key] = res;
+                        if (res.status === 'Open' && res.is_active !== false) {
+                            liveSearchData.push({
+                                name: res.name || 'Restaurant',
+                                sub: res.cuisine || 'Restaurant • 25-30 mins',
+                                badge: 'Restaurant',
+                                badgeClass: 'badge-rest',
+                                keywords: `${res.name} ${res.cuisine || ''}`.toLowerCase(),
+                                img: getSafeImage(res.image),
+                                link: `restaurant-details.html?id=${child.key}`
+                            });
+                        }
+                    });
+                }
+
+                // 2. Index Individual Dishes from Open Restaurants
+                if (menuSnap.exists()) {
+                    menuSnap.forEach(restChild => {
+                        const rId = restChild.key;
+                        const parentRest = restMap[rId];
+                        if (!parentRest || parentRest.status !== 'Open' || parentRest.is_active === false) return;
+
+                        const dishesObj = restChild.val() || {};
+                        for (let dishId in dishesObj) {
+                            const d = dishesObj[dishId];
+                            if (d.inStock === false || d.available === false) continue;
+                            const dName = d.name || d.en || 'Dish';
+                            liveSearchData.push({
+                                name: dName,
+                                sub: `₹${d.price} • at ${parentRest.name}`,
+                                badge: 'Dish',
+                                badgeClass: 'badge-dish',
+                                keywords: `${dName} ${d.category || ''} ${parentRest.name}`.toLowerCase(),
+                                img: getSafeImage(d.image, parentRest.image),
+                                link: `restaurant-details.html?id=${rId}`
+                            });
+                        }
+                    });
+                }
+
+                // 3. Index Groceries
+                if (grocSnap.exists()) {
+                    grocSnap.forEach(child => {
+                        let item = child.val();
+                        if (item.inStock === false || item.available === false) return;
+                        let itemName = item.name || item.en || "Grocery Item";
+                        liveSearchData.push({
+                            name: itemName,
+                            sub: `₹${item.price} ${item.weight ? '• ' + item.weight : ''} • Groceries`,
+                            badge: 'Grocery',
+                            badgeClass: 'badge-groc',
+                            keywords: `${itemName} ${item.category || ''} grocery`.toLowerCase(),
+                            img: getSafeImage(item.image, "https://cdn-icons-png.flaticon.com/512/3082/3082011.png"),
+                            link: `groceries.html?category=${encodeURIComponent((item.category || 'all').toLowerCase())}`
+                        });
+                    });
+                }
+
+                // Re-run filter if user already typed or URL query exists
+                if (searchInput.value.trim().length > 0) {
+                    filterResults();
+                }
+            } catch (e) {
+                console.error("Search index error:", e);
+            }
+        }
+
+        // Voice Search Logic
+        window.startVoiceSearch = function() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 const recognition = new SpeechRecognition();
@@ -121,65 +277,55 @@
                 };
 
                 recognition.onresult = function(event) {
-                    const speechResult = event.results[0][0].transcript;
+                    const speechResult = event.results[0][0].transcript.trim();
                     searchInput.value = speechResult;
+                    saveRecentSearch(speechResult);
                     filterResults(); 
                 };
 
-                recognition.onerror = function() { alert('Voice recognition error. Please try typing.'); resetMic(); };
+                recognition.onerror = function() {
+                    resetMic();
+                };
                 recognition.onend = resetMic;
                 recognition.start();
             } else {
-                alert("Your browser does not support Voice Search. Please type your search.");
+                alert("Voice search is not supported on this browser. Please type your search.");
             }
-        }
+        };
 
         function resetMic() {
             micBtn.classList.remove('listening');
-            searchInput.placeholder = "Search for food, groceries...";
+            searchInput.placeholder = "Search biryani, restaurants, groceries...";
         }
 
-        function setSearch(keyword) {
+        window.setSearch = function(keyword) {
             searchInput.value = keyword;
+            saveRecentSearch(keyword);
             filterResults();
-        }
+        };
 
-        function clearRecent() {
-            document.getElementById('recentContainer').style.display = 'none';
-        }
-
-        // 🔴 UPDATED: Dynamic Database with actual links
-        const dummyData = [
-            { name: "Bawarchi Biryani", type: "Restaurant", img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop", link: "restaurant-details.html?id=1" },
-            { name: "Burger Spot", type: "Restaurant", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop", link: "restaurant-details.html?id=2" },
-            { name: "Chicken Dum Biryani", type: "Food Item • Bawarchi", img: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop", link: "restaurant-details.html?id=1" },
-            { name: "Paneer Butter Masala", type: "Food Item • Bawarchi", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?q=80&w=200&auto=format&fit=crop", link: "restaurant-details.html?id=1" },
-            { name: "Farmhouse Pizza", type: "Food Item", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200&auto=format&fit=crop", link: "restaurants.html?category=pizza" },
-            { name: "Amul Taaza Milk (1L)", type: "Grocery", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=200&auto=format&fit=crop", link: "categories.html" },
-            { name: "Masala Dosa", type: "Food Item", img: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?q=80&w=200&auto=format&fit=crop", link: "restaurants.html?category=dosa" }
-        ];
-
-        // 🔴 Live Filtering & Clickable Results
-        function filterResults() {
+        window.filterResults = function() {
             const query = searchInput.value.toLowerCase().trim();
+            clearInputBtn.style.display = query.length > 0 ? 'block' : 'none';
             
             if (query.length > 0) {
                 defaultSearch.style.display = 'none';
                 searchResults.style.display = 'block';
                 resultsContainer.innerHTML = '';
                 
-                const filtered = dummyData.filter(item => item.name.toLowerCase().includes(query) || item.type.toLowerCase().includes(query));
+                const filtered = liveSearchData.filter(item => item.keywords.includes(query));
+                document.getElementById('resultsCountTitle').innerText = `Search Results (${filtered.length})`;
                 
                 if (filtered.length > 0) {
-                    filtered.forEach(item => {
+                    filtered.slice(0, 35).forEach(item => {
                         resultsContainer.innerHTML += `
-                            <a href="${item.link}" class="result-item clickable">
-                                <img src="${item.img}" class="result-img" alt="${item.name}">
+                            <a href="${item.link}" onclick="saveRecentSearch('${item.name.replace(/'/g, "\\'")}')" class="result-item clickable">
+                                <img src="${item.img}" class="result-img" alt="${item.name}" loading="lazy">
                                 <div class="result-info">
                                     <h4>${item.name}</h4>
-                                    <p>${item.type}</p>
+                                    <p><span class="result-badge ${item.badgeClass}">${item.badge}</span> ${item.sub}</p>
                                 </div>
-                                <i class="fa-solid fa-arrow-up-right-from-square result-arrow"></i>
+                                <i class="fa-solid fa-chevron-right result-arrow"></i>
                             </a>
                         `;
                     });
@@ -187,7 +333,7 @@
                     resultsContainer.innerHTML = `
                         <div class="empty-result">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <p>No results found for "${query}"</p>
+                            <p>No dishes, restaurants or groceries found for "${query}"</p>
                         </div>
                     `;
                 }
@@ -195,7 +341,23 @@
                 defaultSearch.style.display = 'block';
                 searchResults.style.display = 'none';
             }
-        }
+        };
+
+        window.addEventListener('pageshow', function() {
+            renderRecentSearches();
+            buildSearchIndex();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlQuery = urlParams.get('query');
+            const urlVoice = urlParams.get('voice');
+
+            if (urlQuery) {
+                searchInput.value = urlQuery;
+                filterResults();
+            } else if (urlVoice === 'true') {
+                setTimeout(() => startVoiceSearch(), 300);
+            }
+        });
     </script>
 </body>
 </html>
