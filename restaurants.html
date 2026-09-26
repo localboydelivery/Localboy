@@ -14,38 +14,53 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #fafafa; color: #1a202c; padding-bottom: 20px;}
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 30px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.97); opacity: 0.8; }
+        .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
-        .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; }
-        .top-bar h2 { font-size: 18px; font-weight: 700; text-transform: capitalize;}
+        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; text-transform: capitalize; color: #0f172a; flex: 1; }
 
-        .restaurant-list { padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        /* Quick Category Filter Pills */
+        .cat-pills-bar { display: flex; overflow-x: auto; gap: 10px; padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 70px; z-index: 99; scrollbar-width: none; -ms-overflow-style: none; }
+        .cat-pills-bar::-webkit-scrollbar { display: none; }
+        .cat-pill { padding: 7px 15px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 12px; font-weight: 700; color: #475569; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .cat-pill.active { background: #ff5200; color: #ffffff; border-color: #ff5200; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.25); }
 
-        .rest-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: relative; border: 1px solid #f7fafc; display: block; }
-        .rest-img-container { position: relative; height: 180px; background: #edf2f7;}
+        .restaurant-list { padding: 16px; display: flex; flex-direction: column; gap: 18px; }
+
+        .rest-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; border: 1px solid #f1f5f9; display: block; }
+        .rest-img-container { position: relative; height: 175px; background: #f1f5f9; }
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
         
-        .discount-tag { position: absolute; bottom: 15px; left: 15px; background: #ff5200; color: white; font-size: 12px; font-weight: 800; padding: 6px 10px; border-radius: 8px; box-shadow: 0 4px 10px rgba(255, 82, 0, 0.3); z-index: 6;}
-        .open-tag { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); color: white; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 12px; display: flex; align-items: center; gap: 5px; z-index: 6;}
-        .open-tag i { color: #10b981; font-size: 8px;}
+        .discount-tag { position: absolute; bottom: 12px; left: 12px; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; font-size: 11px; font-weight: 800; padding: 5px 10px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.25); z-index: 6; }
+        .open-tag { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 12px; display: flex; align-items: center; gap: 4px; z-index: 6; }
+        .open-tag i { color: #10b981; font-size: 8px; }
+
+        .closed { opacity: 0.82; filter: grayscale(35%); }
+        .closed-overlay-tag { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.4); z-index: 5; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .closed-text { background: rgba(0,0,0,0.8); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 700; font-size: 12px; }
 
         .rest-details { padding: 15px; position: relative; }
-        .rest-details h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; color: #000; text-transform: uppercase; letter-spacing: 0.5px;}
-        .fav-icon { position: absolute; top: 15px; right: 15px; color: #a0aec0; font-size: 20px; background: rgba(255,255,255,0.95); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+        .rest-details h3 { font-size: 17px; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
+        .fav-icon { position: absolute; top: 14px; left: 14px; color: #94a3b8; font-size: 18px; background: rgba(255,255,255,0.92); width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #4a5568; font-weight: 600; margin-bottom: 10px; }
-        .rating { background: #e6f8f1; color: #10b981; padding: 3px 6px; border-radius: 6px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
+        .rest-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #475569; font-weight: 600; margin-bottom: 8px; }
+        .rating { background: #ecfdf5; color: #10b981; padding: 3px 7px; border-radius: 6px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
         
-        .rest-desc { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #718096; font-weight: 500;}
+        .rest-desc { font-size: 12px; color: #64748b; font-weight: 500; }
 
-        .loader-state { text-align: center; padding: 50px 20px; color: #a0aec0;}
+        /* Matched Dishes Strip inside Restaurant Card */
+        .matched-dishes-box { margin-top: 10px; padding: 8px 12px; background: #fff8eb; border: 1px dashed #fdba74; border-radius: 10px; font-size: 11.5px; color: #c2410c; font-weight: 600; line-height: 1.4; }
+        .matched-dishes-box i { color: #ff5200; margin-right: 4px; }
+
+        .loader-state { text-align: center; padding: 50px 20px; color: #94a3b8; }
         .empty-state { text-align: center; padding: 50px 20px; display: none; }
-        .empty-state i { font-size: 50px; color: #cbd5e0; margin-bottom: 15px;}
-        .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 5px;}
-        .empty-state p { font-size: 13px; color: #718096; }
+        .empty-state i { font-size: 48px; color: #cbd5e1; margin-bottom: 15px; }
+        .empty-state h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; color: #0f172a; }
+        .empty-state p { font-size: 13px; color: #64748b; margin-bottom: 18px; }
+        .btn-show-all { display: inline-block; padding: 10px 20px; background: #ff5200; color: #fff; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -53,124 +68,251 @@
     <div class="top-bar">
         <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <h2 id="pageTitle">All Restaurants</h2>
+        <a href="search.html" class="back-btn clickable" style="margin-right:0;"><i class="fa-solid fa-magnifying-glass" style="font-size:15px;"></i></a>
+    </div>
+
+    <!-- Instant Category Filter Bar -->
+    <div class="cat-pills-bar" id="catPillsBar">
+        <div class="cat-pill active" data-cat="" onclick="selectCategoryPill('')">All Hotels</div>
+        <div class="cat-pill" data-cat="biryani" onclick="selectCategoryPill('biryani')">🍗 Biryani</div>
+        <div class="cat-pill" data-cat="pizza" onclick="selectCategoryPill('pizza')">🍕 Pizza</div>
+        <div class="cat-pill" data-cat="burger" onclick="selectCategoryPill('burger')">🍔 Burger</div>
+        <div class="cat-pill" data-cat="veg" onclick="selectCategoryPill('veg')">🥗 Pure Veg</div>
+        <div class="cat-pill" data-cat="dosa" onclick="selectCategoryPill('dosa')">🥞 Dosa & Tiffins</div>
+        <div class="cat-pill" data-cat="meals" onclick="selectCategoryPill('meals')">🍛 Meals</div>
+        <div class="cat-pill" data-cat="chinese" onclick="selectCategoryPill('chinese')">🍜 Chinese</div>
     </div>
 
     <div class="restaurant-list" id="restaurantList">
         <div class="loader-state" id="loaderState">
-            <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; margin-bottom: 15px; color: #ff5200;"></i>
-            <p>Loading restaurants...</p>
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 28px; margin-bottom: 12px; color: #ff5200;"></i>
+            <p>Finding best restaurants & menus...</p>
         </div>
     </div>
 
     <div class="empty-state" id="emptyState">
-        <i class="fa-solid fa-store-slash"></i>
-        <h3>No Restaurants Found</h3>
-        <p>Sorry, we couldn't find any active restaurants right now.</p>
+        <i class="fa-solid fa-utensils"></i>
+        <h3 id="emptyTitle">No Matching Items Found</h3>
+        <p id="emptySub">We couldn't find any restaurant serving this category right now.</p>
+        <div class="btn-show-all clickable" onclick="selectCategoryPill('')">Show All Restaurants</div>
     </div>
 
     <script>
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const database = firebase.database();
 
+        function getSafeImage(url) {
+            if (!url) return "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop";
+            return url;
+        }
+
         function toggleFav(event, element, restName, restImg, restUrl) {
-            event.preventDefault(); 
+            event.preventDefault();
+            event.stopPropagation();
             let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
 
             if (element.classList.contains('fa-regular')) {
                 element.className = 'fa-solid fa-heart fav-icon';
                 element.style.color = '#e53e3e';
-                if(!favs.some(f => f.name === restName)) {
+                if (!favs.some(f => f.name === restName)) {
                     favs.push({ name: restName, img: restImg, url: restUrl });
                     localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
                 }
             } else {
                 element.className = 'fa-regular fa-heart fav-icon';
-                element.style.color = '#a0aec0';
+                element.style.color = '#94a3b8';
                 favs = favs.filter(f => f.name !== restName);
                 localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
             }
         }
 
         const urlParams = new URLSearchParams(window.location.search);
-        const selectedCategory = urlParams.get('category'); 
+        let selectedCategory = (urlParams.get('category') || '').toLowerCase().trim();
 
         const pageTitle = document.getElementById('pageTitle');
         const restaurantList = document.getElementById('restaurantList');
         const emptyState = document.getElementById('emptyState');
         const loaderState = document.getElementById('loaderState');
 
-        if (selectedCategory) {
-            pageTitle.innerText = "Top for " + selectedCategory;
+        let allProfilesMap = {};
+        let allMenusMap = {};
+
+        function updateActivePillUI() {
+            if (selectedCategory) {
+                pageTitle.innerText = selectedCategory === 'veg' ? "Pure Veg & Healthy" : `${selectedCategory} Places`;
+            } else {
+                pageTitle.innerText = "All Restaurants";
+            }
+
+            document.querySelectorAll('.cat-pill').forEach(p => {
+                const cat = p.getAttribute('data-cat');
+                p.classList.toggle('active', cat === selectedCategory);
+            });
+        }
+
+        window.selectCategoryPill = function(cat) {
+            selectedCategory = cat.toLowerCase().trim();
+            updateActivePillUI();
+            renderFilteredRestaurants();
+        };
+
+        // Check if a restaurant or its menu items match the selected category
+        function checkRestaurantMatch(rId, res, cat) {
+            if (!cat) return { matched: true, dishes: [] };
+
+            const matchedDishes = [];
+            const rMenu = allMenusMap[rId] || {};
+
+            // Synonym keywords for smart matching
+            const keywords = [cat];
+            if (cat === 'biryani') keywords.push('biriyani', 'pulav', 'pulao', 'mandi', 'dum', 'fry piece');
+            if (cat === 'pizza') keywords.push('margherita', 'pepperoni', 'dominos', 'cheese');
+            if (cat === 'burger') keywords.push('zinger', 'sandwich', 'fries', 'roll', 'shawarma');
+            if (cat === 'dosa') keywords.push('idli', 'vada', 'tiffin', 'breakfast', 'pesarattu', 'puri', 'upma');
+            if (cat === 'meals') keywords.push('thali', 'rice', 'curry', 'sambar', 'lunch', 'dinner');
+            if (cat === 'chinese') keywords.push('noodles', 'manchurian', 'fried rice', 'chilli', 'momos');
+            if (cat === 'desserts' || cat === 'cakes') keywords.push('cake', 'pastry', 'ice cream', 'sweet', 'gulab', 'brownie');
+
+            // 1. Scan Menu Items of this Restaurant
+            for (let itemId in rMenu) {
+                const item = rMenu[itemId];
+                if (item.inStock === false || item.available === false) continue;
+
+                const iName = (item.name || item.en || '').toLowerCase();
+                const iCat = (item.category || '').toLowerCase();
+                const iDesc = (item.desc || '').toLowerCase();
+                const iType = (item.type || '').toLowerCase();
+
+                if (cat === 'veg') {
+                    if (iType === 'veg' || iName.includes('veg') || iName.includes('paneer') || iName.includes('mushroom')) {
+                        matchedDishes.push(`${item.name || item.en} (₹${item.price})`);
+                    }
+                } else {
+                    const hit = keywords.some(kw => iName.includes(kw) || iCat.includes(kw) || iDesc.includes(kw));
+                    if (hit) {
+                        matchedDishes.push(`${item.name || item.en} (₹${item.price})`);
+                    }
+                }
+            }
+
+            // 2. Also check Restaurant Name / Cuisine tags
+            const rName = (res.name || '').toLowerCase();
+            const rCuisine = (res.cuisine || '').toLowerCase();
+            const nameHit = keywords.some(kw => rName.includes(kw) || rCuisine.includes(kw));
+
+            return {
+                matched: matchedDishes.length > 0 || nameHit,
+                dishes: matchedDishes.slice(0, 3)
+            };
+        }
+
+        function renderFilteredRestaurants() {
+            loaderState.style.display = 'none';
+            restaurantList.innerHTML = '';
+            emptyState.style.display = 'none';
+
+            const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
+            let listToRender = [];
+
+            for (let rId in allProfilesMap) {
+                const res = allProfilesMap[rId];
+                if (res.is_active === false) continue;
+
+                const check = checkRestaurantMatch(rId, res, selectedCategory);
+                if (check.matched) {
+                    listToRender.push({ rId, res, matchedDishes: check.dishes });
+                }
+            }
+
+            // Sort Open restaurants first
+            listToRender.sort((a, b) => {
+                if (a.res.status === 'Open' && b.res.status !== 'Open') return -1;
+                if (a.res.status !== 'Open' && b.res.status === 'Open') return 1;
+                return b.matchedDishes.length - a.matchedDishes.length;
+            });
+
+            if (listToRender.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            listToRender.forEach(({ rId, res, matchedDishes }) => {
+                const isOpen = res.status === 'Open';
+                const isFav = favs.some(f => f.name === res.name);
+                const heartClass = isFav ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon';
+                const heartColor = isFav ? '#e53e3e' : '#94a3b8';
+
+                const statusTag = isOpen
+                    ? `<div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>`
+                    : `<div class="closed-tag" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;padding:4px 9px;border-radius:12px;z-index:6;"><i class="fa-solid fa-circle" style="color:#ef4444;font-size:8px;"></i> Closed</div>`;
+
+                const closedOverlay = isOpen ? '' : `<div class="closed-overlay-tag"><div class="closed-text">Currently Closed</div></div>`;
+                const linkHref = isOpen ? `restaurant-details.html?id=${rId}` : `javascript:void(0)`;
+                const imgSrc = getSafeImage(res.image);
+
+                let matchedStripHtml = '';
+                if (selectedCategory && matchedDishes.length > 0) {
+                    matchedStripHtml = `
+                        <div class="matched-dishes-box">
+                            <i class="fa-solid fa-fire-flame-curved"></i> Available: ${matchedDishes.join(' • ')}
+                        </div>
+                    `;
+                }
+
+                restaurantList.innerHTML += `
+                    <a href="${linkHref}" class="rest-card ${isOpen ? 'clickable' : 'closed'}">
+                        <div class="rest-img-container">
+                            <img src="${imgSrc}" alt="${res.name}" loading="lazy">
+                            ${closedOverlay}
+                            <div class="discount-tag"><i class="fa-solid fa-tag"></i> Best Deals</div>
+                            ${statusTag}
+                            <i class="${heartClass}" style="color:${heartColor}" onclick="toggleFav(event, this, '${res.name.replace(/'/g, "\\'")}', '', 'restaurant-details.html?id=${rId}')"></i>
+                        </div>
+                        <div class="rest-details">
+                            <h3>${res.name}</h3>
+                            <div class="rest-stats">
+                                <span class="rating"><i class="fa-solid fa-star"></i> ${res.rating || '4.2'}</span>
+                                <span><i class="fa-regular fa-clock"></i> 25-30 mins</span>
+                            </div>
+                            <div class="rest-desc">
+                                <span><i class="fa-solid fa-utensils" style="width: 15px; color:#ff5200;"></i> ${res.cuisine || 'Biryani, Meals, Fast Food'}</span>
+                            </div>
+                            ${matchedStripHtml}
+                        </div>
+                    </a>
+                `;
+            });
         }
 
         window.addEventListener('pageshow', function() {
-            database.ref('restaurant_profiles').orderByChild('status').equalTo('Open').once('value')
-                .then((snapshot) => {
-                    loaderState.style.display = 'none';
-                    
-                    if (!snapshot.exists()) {
-                        emptyState.style.display = 'block';
-                        return;
-                    }
+            updateActivePillUI();
 
-                    let foundCount = 0;
-                    const favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
-
-                    snapshot.forEach(child => {
-                        let res = child.val();
-                        let rId = child.key;
-
-                        // ఇప్పుడు ఏ కేటగిరీ నొక్కినా ఎంటీ రాకుండా అన్నీ చూపిస్తుంది
-                        foundCount++;
-                        let isFav = favs.some(f => f.name === res.name);
-                        let heartClass = isFav ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon';
-                        let heartColor = isFav ? '#e53e3e' : '#a0aec0';
-
-                        let discountText = res.commission ? `Up to ${res.commission}% OFF` : 'Best Offers';
-                        
-                        // Direct HD Image 
-                        let imgUrl = res.image && typeof res.image === 'string' && res.image.startsWith('http') 
-                                     ? res.image 
-                                     : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400';
-
-                        restaurantList.innerHTML += `
-                            <a href="restaurant-details.html?id=${rId}" class="rest-card clickable">
-                                <div class="rest-img-container">
-                                    <img src="${imgUrl}" alt="Restaurant" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=400';">
-                                    <div class="discount-tag">${discountText}</div>
-                                    <div class="open-tag"><i class="fa-solid fa-circle"></i> Open</div>
-                                    <i class="${heartClass}" style="color:${heartColor}" onclick="toggleFav(event, this, '${res.name}', '${imgUrl}', 'restaurant-details.html?id=${rId}')"></i>
-                                </div>
-                                <div class="rest-details">
-                                    <h3>${res.name}</h3>
-                                    <div class="rest-stats">
-                                        <span class="rating"><i class="fa-solid fa-star"></i> 4.0</span>
-                                        <span><i class="fa-regular fa-clock"></i> 30 mins</span>
-                                    </div>
-                                    <div class="rest-desc">
-                                        <span><i class="fa-solid fa-utensils" style="width: 15px;"></i> Delivery Available</span>
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-                    });
-
-                    if(foundCount === 0) {
-                        emptyState.style.display = 'block';
-                    }
-                }).catch(error => {
-                    loaderState.style.display = 'none';
-                    emptyState.style.display = 'block';
-                    console.error("Error:", error);
-                });
+            // Fetch both restaurant_profiles and restaurant_menus in parallel for accurate dish matching
+            Promise.all([
+                database.ref('restaurant_profiles').once('value'),
+                database.ref('restaurant_menus').once('value')
+            ]).then(([profSnap, menuSnap]) => {
+                allProfilesMap = profSnap.val() || {};
+                allMenusMap = menuSnap.val() || {};
+                renderFilteredRestaurants();
+            }).catch(err => {
+                console.error("Error loading restaurants:", err);
+                loaderState.style.display = 'none';
+                emptyState.style.display = 'block';
+            });
         });
     </script>
 </body>
