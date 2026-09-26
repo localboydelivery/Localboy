@@ -41,7 +41,7 @@
         .menu-section { background: #ffffff; padding: 20px 15px; border-top-left-radius: 24px; border-top-right-radius: 24px; min-height: 50vh; }
         .category-title { font-size: 18px; font-weight: 800; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #0f172a;}
         
-        .menu-item { display: flex; justify-content: space-between; gap: 15px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #edf2f7; }
+        .menu-item { display: flex; justify-content: space-between; gap: 15px; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px dashed #edf2f7; transition: 0.3s; }
         .item-info { flex: 1; }
         .veg-indicator { width: 14px; height: 14px; border: 1px solid #10b981; display: flex; justify-content: center; align-items: center; border-radius: 3px; margin-bottom: 6px;}
         .veg-indicator::after { content: ''; width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
@@ -57,13 +57,19 @@
         .item-desc { font-size: 11px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
         .item-image-box { position: relative; width: 110px; height: 110px; flex-shrink: 0; border-radius: 16px; background: #f8fafc;}
-        .item-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+        .item-img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; transition: 0.3s; }
         
         .add-btn-container { position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 85%; background: #ffffff; border: 1px solid #ff5200; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden;}
         .btn-add { width: 100%; padding: 8px 0; text-align: center; color: #ff5200; font-size: 14px; font-weight: 800; cursor: pointer; text-transform: uppercase; }
         .btn-controls { display: none; justify-content: space-between; align-items: center; width: 100%; background: #ff5200; color: white;}
         .btn-controls span { padding: 8px 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
         .qty-val { font-size: 14px; font-weight: 700; }
+
+        /* --- OUT OF STOCK STYLES (OPTION 2) --- */
+        .menu-item.out-of-stock .item-info { opacity: 0.55; }
+        .menu-item.out-of-stock .item-img { filter: grayscale(100%); opacity: 0.65; }
+        .add-btn-container.out-of-stock-box { border-color: #cbd5e1; background: #f1f5f9; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+        .btn-out-of-stock { width: 100%; padding: 8px 0; text-align: center; color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: not-allowed; letter-spacing: 0.3px; }
 
         .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 15px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); transform: translateY(100%); transition: transform 0.3s ease; z-index: 1000; }
         .cart-footer.show { transform: translateY(0); }
@@ -126,12 +132,16 @@
     </div>
 
     <script>
-        // Firebase Config
+        // UPDATED EXACT FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -159,7 +169,7 @@
         });
 
         function loadRestaurantDetails() {
-            database.ref('restaurant_profiles/' + currentRestId).once('value').then(snapshot => {
+            database.ref('restaurant_profiles/' + currentRestId).on('value', snapshot => {
                 if(snapshot.exists()) {
                     currentRestDetails = snapshot.val();
                     document.getElementById('restTitle').innerText = currentRestDetails.name;
@@ -175,7 +185,8 @@
         function loadMenuItems() {
             const container = document.getElementById('menuItemsContainer');
             
-            database.ref('restaurant_menus/' + currentRestId).once('value').then(snapshot => {
+            // Live listener (.on) so Out of Stock updates immediately on Customer screen
+            database.ref('restaurant_menus/' + currentRestId).on('value', snapshot => {
                 container.innerHTML = '';
                 
                 if(!snapshot.exists()) {
@@ -190,9 +201,11 @@
                 }
 
                 menuItemsData = snapshot.val();
+                let cartModified = false;
                 
                 for(let id in menuItemsData) {
                     let item = menuItemsData[id];
+                    let isInStock = item.in_stock !== false; // true by default unless explicitly false
                     let isVeg = item.type === 'veg';
                     let vegClass = isVeg ? '' : 'nonveg-indicator';
                     let itemImg = item.image || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop";
@@ -206,19 +219,35 @@
                         priceHtml = `₹${item.price} <strike>₹${item.originalPrice}</strike> <span class="discount-badge">${item.discount}% OFF</span>`;
                     }
 
+                    // If item was in cart but restaurant just turned it Out of Stock, remove from cart
+                    if (!isInStock && cartData.restId === currentRestId && itemQuantities[id]) {
+                        delete itemQuantities[id];
+                        cartModified = true;
+                    }
+
                     let qty = 0;
-                    if(cartData.restId === currentRestId && itemQuantities[id]) {
+                    if(isInStock && cartData.restId === currentRestId && itemQuantities[id]) {
                         qty = itemQuantities[id];
                     }
 
-                    let btnHtml = qty > 0 
-                        ? `<div class="btn-add" id="btn-add-${id}" style="display:none;" onclick="addItem('${id}', ${item.price})">ADD</div>
-                           <div class="btn-controls" id="btn-controls-${id}" style="display:flex;"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">${qty}</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`
-                        : `<div class="btn-add" id="btn-add-${id}" onclick="addItem('${id}', ${item.price})">ADD</div>
-                           <div class="btn-controls" id="btn-controls-${id}"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">0</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`;
+                    let btnHtml = '';
+                    let addBoxExtraClass = '';
+                    let menuItemExtraClass = '';
+
+                    if (!isInStock) {
+                        menuItemExtraClass = 'out-of-stock';
+                        addBoxExtraClass = 'out-of-stock-box';
+                        btnHtml = `<div class="btn-out-of-stock">Out of Stock</div>`;
+                    } else if (qty > 0) {
+                        btnHtml = `<div class="btn-add" id="btn-add-${id}" style="display:none;" onclick="addItem('${id}', ${item.price})">ADD</div>
+                                   <div class="btn-controls" id="btn-controls-${id}" style="display:flex;"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">${qty}</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`;
+                    } else {
+                        btnHtml = `<div class="btn-add" id="btn-add-${id}" onclick="addItem('${id}', ${item.price})">ADD</div>
+                                   <div class="btn-controls" id="btn-controls-${id}"><span onclick="updateItem('${id}', -1, ${item.price})">−</span><div class="qty-val" id="qty-${id}">0</div><span onclick="updateItem('${id}', 1, ${item.price})">+</span></div>`;
+                    }
 
                     container.innerHTML += `
-                        <div class="menu-item">
+                        <div class="menu-item ${menuItemExtraClass}">
                             <div class="item-info">
                                 <div class="veg-indicator ${vegClass}"></div>
                                 <h3 class="item-name">${itemName}</h3>
@@ -229,19 +258,30 @@
                             </div>
                             <div class="item-image-box">
                                 <img src="${itemImg}" class="item-img" alt="${itemName}">
-                                <div class="add-btn-container" id="add-box-${id}">
+                                <div class="add-btn-container ${addBoxExtraClass}" id="add-box-${id}">
                                     ${btnHtml}
                                 </div>
                             </div>
                         </div>
                     `;
                 }
-                updateCartUI();
+
+                if (cartModified) {
+                    if (Object.keys(itemQuantities).length === 0) { cartData.restId = null; }
+                    saveCart();
+                } else {
+                    updateCartUI();
+                }
             });
         }
 
         // --- CART LOGIC ---
         function addItem(id, price) {
+            if (menuItemsData[id] && menuItemsData[id].in_stock === false) {
+                alert("Sorry, this item is currently Out of Stock.");
+                return;
+            }
+
             if (cartData.restId !== null && cartData.restId !== currentRestId) {
                 if (confirm("Your cart has items from another restaurant. Do you want to clear it and add this item?")) {
                     cartData = { restId: currentRestId, items: {}, totalQty: 0 };
