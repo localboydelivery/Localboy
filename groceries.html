@@ -3,206 +3,405 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCAL BOY - All Categories</title>
+    <title>LOCAL BOY - Groceries</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Firebase Web SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 95px; overflow-x: hidden; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 100px; overflow-x: hidden; width: 100vw; }
         a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.95); opacity: 0.85; }
+        .clickable:active { transform: scale(0.95); opacity: 0.9; }
 
-        /* Top Bar */
-        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; flex: 1; }
+        .top-nav { display: flex; align-items: center; gap: 15px; padding: 15px 20px; position: sticky; top: 0; z-index: 100; background: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .icon-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; color: #1e293b; transition: 0.2s; }
+        .header-title { display: flex; flex-direction: column; flex: 1; }
+        .header-title h2 { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+        .header-title p { font-size: 11px; color: #10b981; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .section-container { padding: 20px 20px 0; }
-        .section-title { font-size: 17px; font-weight: 800; color: #0f172a; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .section-title i { color: #ff5200; font-size: 19px; }
+        .search-container { padding: 12px 20px; background: #ffffff; border-bottom: 1px solid #f1f5f9; position: sticky; top: 68px; z-index: 99; }
+        .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 10px 15px; border: 1.5px solid #e2e8f0; transition: 0.3s; }
+        .search-box:focus-within { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12); border-color: #10b981; background: #fff; }
+        .search-box input { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; padding: 0 10px; color: #1e293b; font-weight: 500; }
+        .search-box input::placeholder { color: #94a3b8; font-weight: 400; }
+        .search-icon { color: #10b981; font-size: 17px; }
+        .groc-mic-btn { width: 32px; height: 32px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; justify-content: center; align-items: center; font-size: 14px; cursor: pointer; }
+        .groc-mic-btn.listening { background: #ef4444; color: #fff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
-        /* Category Grid Setup */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px 12px;
-            margin-bottom: 25px;
-        }
+        .premium-categories { display: flex; overflow-x: auto; gap: 14px; padding: 16px 15px; background: #ffffff; margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; scrollbar-width: none; -ms-overflow-style: none; }
+        .premium-categories::-webkit-scrollbar { display: none; }
+        
+        .cat-box { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px; cursor: pointer; flex-shrink: 0; width: 70px; }
+        .cat-img-wrap { width: 68px; height: 68px; border-radius: 50%; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.06); border: 2.5px solid transparent; transition: 0.2s; background: #f8fafc; }
+        .cat-box.active .cat-img-wrap { border-color: #10b981; transform: scale(1.05); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25); }
+        .cat-box.active span { color: #10b981; font-weight: 800; }
+        .cat-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-box span { font-size: 11.5px; font-weight: 700; color: #475569; line-height: 1.2; }
 
-        .cat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 7px;
-            text-align: center;
-        }
+        .section-header { padding: 12px 20px 5px; display: flex; align-items: center; justify-content: space-between; }
+        .section-header-left { display: flex; align-items: center; gap: 8px; }
+        .section-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+        .section-header i.fa-star { color: #f59e0b; font-size: 16px; }
 
-        .cat-img-box {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            overflow: hidden;
-            border: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 10px 16px 20px; }
+        .prod-card { background: #ffffff; border-radius: 20px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; position: relative; }
+        .prod-card.out-of-stock { opacity: 0.6; }
+        .discount-badge { position: absolute; top: 10px; left: 10px; background: #3b82f6; color: #ffffff; font-size: 9px; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 2; }
+        .prod-img-box { width: 100%; height: 115px; background: #ffffff; border-radius: 14px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 4px; position: relative; }
+        .prod-img-box img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .prod-title-en { font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1.3; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-weight { font-size: 11px; font-weight: 700; color: #3b82f6; margin-bottom: 8px; }
+        
+        .prod-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; }
+        .price-box { display: flex; flex-direction: column; }
+        .prod-price { font-size: 16px; font-weight: 800; color: #0f172a; }
+        .prod-strike { font-size: 11px; color: #94a3b8; font-weight: 600; margin-bottom: 1px; }
+        
+        .add-btn-wrapper { width: 78px; height: 34px; background: #ffffff; border: 1.5px solid #10b981; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12); }
+        .btn-add { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: #10b981; font-size: 13px; font-weight: 800; cursor: pointer; text-transform: uppercase; background: #f0fdf4; }
+        .btn-controls { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 100%; background: #10b981; color: white; }
+        .btn-controls span { padding: 0 11px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; height: 100%; }
+        .qty-val { font-size: 13px; font-weight: 800; }
 
-        .cat-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .cart-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 14px 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.06); transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); z-index: 1000; border-top-left-radius: 24px; border-top-right-radius: 24px; }
+        .cart-footer.show { transform: translateY(0); }
+        .cart-banner { background: #10b981; border-radius: 14px; padding: 14px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); cursor: pointer; }
+        .cart-info h4 { font-size: 14px; font-weight: 800; }
+        .cart-info p { font-size: 11px; opacity: 0.9; margin-top: 2px; font-weight: 500; }
+        .view-cart-text { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
 
-        .cat-item span {
-            font-size: 11.5px;
-            font-weight: 700;
-            color: #334155;
-            line-height: 1.2;
-        }
-
-        .icon-box { background: linear-gradient(135deg, #fff8eb, #ffedd5); color: #ff5200; font-size: 24px; }
-
-        /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100; border-top-left-radius: 24px; border-top-right-radius: 24px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 4px; }
-        .nav-item.active { color: #ff5200; }
-        .nav-item i { font-size: 21px; }
-        .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; }
+        .no-results { grid-column: span 2; text-align: center; padding: 50px 20px; }
+        .no-results i { font-size: 40px; color: #cbd5e0; margin-bottom: 15px; }
+        .no-results p { color: #64748b; font-size: 14px; font-weight: 500; }
+        .loader { grid-column: span 2; text-align: center; padding: 40px; color: #94a3b8; }
     </style>
 </head>
 <body>
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2>Explore Categories</h2>
-        <a href="search.html" class="back-btn clickable" style="margin-right:0;"><i class="fa-solid fa-magnifying-glass" style="font-size:15px;"></i></a>
-    </div>
-
-    <!-- Food Categories Section -->
-    <div class="section-container">
-        <h3 class="section-title"><i class="fa-solid fa-utensils"></i> Food & Restaurant Dishes</h3>
-        
-        <div class="category-grid">
-            <a href="restaurants.html?category=biryani" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop" alt="Biryani"></div>
-                <span>Biryani</span>
-            </a>
-            <a href="restaurants.html?category=pizza" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200&auto=format&fit=crop" alt="Pizza"></div>
-                <span>Pizza</span>
-            </a>
-            <a href="restaurants.html?category=burger" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200&auto=format&fit=crop" alt="Burger"></div>
-                <span>Burger</span>
-            </a>
-            <a href="restaurants.html?category=veg" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=200&auto=format&fit=crop" alt="Pure Veg"></div>
-                <span>Pure Veg</span>
-            </a>
-            <a href="restaurants.html?category=dosa" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1589301760014-d929f39ce9b0?q=80&w=200&auto=format&fit=crop" alt="Dosa"></div>
-                <span>Dosa & Tiffins</span>
-            </a>
-            <a href="restaurants.html?category=meals" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=200&auto=format&fit=crop" alt="Meals"></div>
-                <span>Meals & Thali</span>
-            </a>
-            <a href="restaurants.html?category=chinese" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=200&auto=format&fit=crop" alt="Chinese"></div>
-                <span>Chinese</span>
-            </a>
-            <a href="restaurants.html?category=cakes" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=200&auto=format&fit=crop" alt="Cakes"></div>
-                <span>Cakes & Bakery</span>
-            </a>
+    <div class="top-nav">
+        <a href="home.html" class="icon-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="header-title">
+            <h2>Groceries & Essentials</h2>
+            <p><i class="fa-solid fa-bolt"></i> Superfast Delivery</p>
         </div>
     </div>
 
-    <hr style="border: none; border-top: 6px solid #f1f5f9; margin: 5px 0;">
-
-    <!-- Grocery Categories Section (Directly opens groceries.html with category filter) -->
-    <div class="section-container">
-        <h3 class="section-title" style="color: #10b981;"><i class="fa-solid fa-basket-shopping" style="color: #10b981;"></i> Groceries & Daily Essentials</h3>
-        
-        <div class="category-grid">
-            <a href="groceries.html?category=vegetables" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1566385101042-1a0aa0c1268c?q=80&w=200&auto=format&fit=crop" alt="Vegetables"></div>
-                <span>Fresh Veggies</span>
-            </a>
-            <a href="groceries.html?category=fruits" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=200&auto=format&fit=crop" alt="Fruits"></div>
-                <span>Fresh Fruits</span>
-            </a>
-            <a href="groceries.html?category=dairy" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=200&auto=format&fit=crop" alt="Dairy"></div>
-                <span>Dairy & Milk</span>
-            </a>
-            <a href="groceries.html?category=meat" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=200&auto=format&fit=crop" alt="Meat"></div>
-                <span>Meat & Fish</span>
-            </a>
-            <a href="groceries.html?category=snacks" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=200&auto=format&fit=crop" alt="Snacks"></div>
-                <span>Snacks</span>
-            </a>
-            <a href="groceries.html?category=drinks" class="cat-item clickable">
-                <div class="cat-img-box"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200&auto=format&fit=crop" alt="Drinks"></div>
-                <span>Cold Drinks</span>
-            </a>
-            <a href="groceries.html?category=pharmacy" class="cat-item clickable">
-                <div class="cat-img-box icon-box"><i class="fa-solid fa-pills"></i></div>
-                <span>Pharmacy</span>
-            </a>
-            <a href="groceries.html?category=petcare" class="cat-item clickable">
-                <div class="cat-img-box icon-box" style="background: linear-gradient(135deg, #e6f8f1, #d1fae5); color: #10b981;"><i class="fa-solid fa-paw"></i></div>
-                <span>Pet Care</span>
-            </a>
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="grocerySearch" placeholder="Search vegetables, milk, snacks..." oninput="applyCurrentFilters()">
+            <div class="groc-mic-btn clickable" id="grocMicBtn" onclick="startGroceryVoice()"><i class="fa-solid fa-microphone"></i></div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <a href="home.html" class="nav-item">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-        </a>
-        <a href="groceries.html" class="nav-item">
-            <i class="fa-solid fa-basket-shopping"></i>
-            <span>Grocery</span>
-        </a>
-        <a href="cart.html" class="nav-item">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-badge">0</span>
-            <span>Cart</span>
-        </a>
-        <a href="orders.html" class="nav-item">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <span>Orders</span>
+    <!-- Categories Bar -->
+    <div class="premium-categories" id="grocCategoriesBar">
+        <div class="cat-box active" data-cat="all" onclick="filterByCategory('all')">
+            <div class="cat-img-wrap" style="background: #ecfdf5;"><i class="fa-solid fa-layer-group" style="font-size: 24px; color: #10b981;"></i></div>
+            <span>All<br>Items</span>
+        </div>
+        <div class="cat-box" data-cat="vegetables" onclick="filterByCategory('vegetables')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?q=80&w=200&auto=format&fit=crop" alt="Veggies"></div>
+            <span>Fresh<br>Veggies</span>
+        </div>
+        <div class="cat-box" data-cat="fruits" onclick="filterByCategory('fruits')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=200&auto=format&fit=crop" alt="Fruits"></div>
+            <span>Fresh<br>Fruits</span>
+        </div>
+        <div class="cat-box" data-cat="dairy" onclick="filterByCategory('dairy')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=200&auto=format&fit=crop" alt="Dairy"></div>
+            <span>Dairy &<br>Milk</span>
+        </div>
+        <div class="cat-box" data-cat="meat" onclick="filterByCategory('meat')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=200&auto=format&fit=crop" alt="Meat"></div>
+            <span>Meat &<br>Fish</span>
+        </div>
+        <div class="cat-box" data-cat="snacks" onclick="filterByCategory('snacks')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1621939514649-280e2ee25f60?q=80&w=200&auto=format&fit=crop" alt="Snacks"></div>
+            <span>Snacks &<br>Biscuits</span>
+        </div>
+        <div class="cat-box" data-cat="drinks" onclick="filterByCategory('drinks')">
+            <div class="cat-img-wrap"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=200&auto=format&fit=crop" alt="Drinks"></div>
+            <span>Cold<br>Drinks</span>
+        </div>
+        <div class="cat-box" data-cat="pharmacy" onclick="filterByCategory('pharmacy')">
+            <div class="cat-img-wrap" style="background: #fff3e0;"><img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" style="width: 50%; height: 50%; object-fit: contain;" alt="Pharmacy"></div>
+            <span>Pharmacy</span>
+        </div>
+        <div class="cat-box" data-cat="petcare" onclick="filterByCategory('petcare')">
+            <div class="cat-img-wrap" style="background: #e6f8f1;"><i class="fa-solid fa-paw" style="font-size: 28px; color: #10b981;"></i></div>
+            <span>Pet Care</span>
+        </div>
+    </div>
+
+    <div class="section-header" id="dynamicHeader">
+        <div class="section-header-left">
+            <h3 id="currentCategoryTitle">A to Z Items</h3>
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <span id="clearFilterBtn" style="display:none; font-size:12px; color:#ff5200; cursor:pointer; font-weight:700;" onclick="filterByCategory('all')">Show All <i class="fa-solid fa-xmark"></i></span>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="product-grid" id="productGrid">
+        <div class="loader">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px; color:#10b981;"></i><br>
+            Loading Groceries...
+        </div>
+    </div>
+
+    <!-- Sticky Cart Footer -->
+    <div class="cart-footer" id="cartFooter">
+        <a href="cart.html" class="cart-banner clickable">
+            <div class="cart-info">
+                <h4 id="totalItems">1 Item added</h4>
+                <p>Tap to proceed to checkout</p>
+            </div>
+            <div class="view-cart-text">View Cart <i class="fa-solid fa-caret-right"></i></div>
         </a>
     </div>
 
     <script>
+        // EXACT NEW FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
+
+        let groceryDB = [];
+        let activeCategory = 'all';
+        const productGrid = document.getElementById('productGrid');
+        const currentRestId = 'grocery_store'; 
+        let cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
+
+        // Safe Image Helper (Never breaks Base64 or Firebase images)
+        function getSafeImage(url) {
+            if (!url) return "https://cdn-icons-png.flaticon.com/512/3082/3082011.png";
+            return url;
+        }
+
         window.addEventListener('pageshow', function() {
-            const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
-            const cartBadge = document.querySelector('.cart-badge');
+            cartData = JSON.parse(localStorage.getItem('localBoyCart')) || { restId: null, items: {}, totalQty: 0 };
             
-            if (cartData && cartData.totalQty > 0) {
-                if(cartBadge) {
-                    cartBadge.innerText = cartData.totalQty;
-                    cartBadge.style.display = 'flex';
-                }
-            } else {
-                if(cartBadge) {
-                    cartBadge.style.display = 'none';
-                }
+            // Check if category was passed in URL (e.g., groceries.html?category=vegetables)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlCat = urlParams.get('category');
+            if (urlCat) {
+                activeCategory = urlCat.toLowerCase().trim();
             }
+
+            updateCategoryHighlight();
+            fetchGroceries();
+            updateCartUI();
         });
+
+        function updateCategoryHighlight() {
+            document.querySelectorAll('#grocCategoriesBar .cat-box').forEach(box => {
+                box.classList.toggle('active', box.getAttribute('data-cat') === activeCategory);
+            });
+
+            const titleEl = document.getElementById('currentCategoryTitle');
+            const clearBtn = document.getElementById('clearFilterBtn');
+
+            if (activeCategory === 'all') {
+                titleEl.innerText = 'A to Z Items';
+                clearBtn.style.display = 'none';
+            } else {
+                let formatted = activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1);
+                if (activeCategory === 'petcare') formatted = 'Pet Care';
+                titleEl.innerText = formatted;
+                clearBtn.style.display = 'inline-block';
+            }
+        }
+
+        function fetchGroceries() {
+            // Instant render from cache first
+            const cached = localStorage.getItem('lb_cached_groceries');
+            if (cached) {
+                try {
+                    groceryDB = JSON.parse(cached);
+                    applyCurrentFilters();
+                } catch(e) {}
+            }
+
+            database.ref('groceries').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    groceryDB = Object.keys(data).map(key => ({
+                        id: key,
+                        ...data[key]
+                    }));
+                    try { localStorage.setItem('lb_cached_groceries', JSON.stringify(groceryDB)); } catch(e) {}
+                    applyCurrentFilters();
+                } else {
+                    groceryDB = [];
+                    productGrid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <p>No groceries available at the moment.</p>
+                    </div>`;
+                }
+            });
+        }
+
+        window.filterByCategory = function(category) {
+            activeCategory = category;
+            document.getElementById('grocerySearch').value = '';
+            updateCategoryHighlight();
+            applyCurrentFilters();
+        };
+
+        window.applyCurrentFilters = function() {
+            const query = (document.getElementById('grocerySearch').value || '').toLowerCase().trim();
+            let list = groceryDB.filter(item => item.inStock !== false && item.available !== false);
+
+            if (query.length > 0) {
+                document.getElementById('currentCategoryTitle').innerText = `Search: "${query}"`;
+                document.getElementById('clearFilterBtn').style.display = 'inline-block';
+                list = list.filter(item =>
+                    (item.name && item.name.toLowerCase().includes(query)) ||
+                    (item.en && item.en.toLowerCase().includes(query)) ||
+                    (item.category && item.category.toLowerCase().includes(query))
+                );
+            } else if (activeCategory !== 'all') {
+                list = list.filter(item => (item.category || '').toLowerCase() === activeCategory);
+            }
+
+            renderProducts(list);
+        };
+
+        function renderProducts(items) {
+            productGrid.innerHTML = '';
+            if (!items || items.length === 0) {
+                productGrid.innerHTML = `
+                    <div class="no-results">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <p>No items found in this section.</p>
+                    </div>`;
+                return;
+            }
+
+            items.forEach(item => {
+                let qty = (cartData.restId === currentRestId && cartData.items[item.id]) ? cartData.items[item.id] : 0;
+                let btnHtml = qty > 0 
+                    ? `<div class="btn-controls"><span onclick="updateItem('${item.id}', -1)">−</span><div class="qty-val">${qty}</div><span onclick="updateItem('${item.id}', 1)">+</span></div>`
+                    : `<div class="btn-add" onclick="addItem('${item.id}')">ADD</div>`;
+
+                let tagHtml = '';
+                if (item.discount && item.discount > 0) {
+                    tagHtml = `<div class="discount-badge">${item.discount}% OFF</div>`;
+                }
+
+                let priceHtml = '';
+                if (item.discount && item.discount > 0 && item.originalPrice) {
+                    priceHtml = `
+                        <div class="prod-strike"><strike>₹${item.originalPrice}</strike></div>
+                        <div class="prod-price">₹${item.price}</div>
+                    `;
+                } else {
+                    priceHtml = `<div class="prod-price">₹${item.price}</div>`;
+                }
+
+                let itemName = item.name || item.en || 'Grocery Item'; 
+                let itemWeight = item.weight || '';
+                let imgUrl = getSafeImage(item.image);
+
+                productGrid.innerHTML += `
+                    <div class="prod-card">
+                        ${tagHtml}
+                        <div class="prod-img-box"><img src="${imgUrl}" alt="${itemName}" loading="lazy"></div>
+                        <div class="prod-title-en">${itemName}</div>
+                        <div class="prod-weight">${itemWeight}</div>
+                        <div class="prod-bottom">
+                            <div class="price-box">
+                                ${priceHtml}
+                            </div>
+                            <div class="add-btn-wrapper">
+                                ${btnHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Voice Search inside Groceries
+        window.startGroceryVoice = function() {
+            const micBtn = document.getElementById('grocMicBtn');
+            const input = document.getElementById('grocerySearch');
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'en-IN';
+                recognition.onstart = () => { micBtn.classList.add('listening'); input.placeholder = "Listening..."; };
+                recognition.onresult = (ev) => {
+                    input.value = ev.results[0][0].transcript.trim();
+                    applyCurrentFilters();
+                };
+                recognition.onerror = () => micBtn.classList.remove('listening');
+                recognition.onend = () => { micBtn.classList.remove('listening'); input.placeholder = "Search vegetables, milk, snacks..."; };
+                recognition.start();
+            } else {
+                alert("Voice search is not supported in this browser.");
+            }
+        };
+
+        // --- CART LOGIC (Keeps current category filter intact!) ---
+        window.addItem = function(id) {
+            if (cartData.restId !== null && cartData.restId !== currentRestId && cartData.totalQty > 0) {
+                if (confirm("Your cart contains food items from a restaurant. Clear cart to add groceries?")) {
+                    cartData = { restId: currentRestId, items: {}, totalQty: 0 };
+                } else return;
+            }
+            cartData.restId = currentRestId;
+            cartData.items[id] = 1;
+            saveCart();
+        };
+
+        window.updateItem = function(id, change) {
+            let qty = (cartData.items[id] || 0) + change;
+            if (qty > 0) {
+                cartData.items[id] = qty;
+            } else {
+                delete cartData.items[id];
+                if (Object.keys(cartData.items).length === 0) cartData.restId = null;
+            }
+            saveCart();
+        };
+
+        function saveCart() {
+            cartData.totalQty = Object.values(cartData.items).reduce((a, b) => a + b, 0);
+            localStorage.setItem('localBoyCart', JSON.stringify(cartData));
+            updateCartUI();
+            applyCurrentFilters(); // Re-renders current filtered view without resetting to All!
+        }
+
+        function updateCartUI() {
+            const cartFooter = document.getElementById('cartFooter');
+            if (cartData.totalQty > 0 && cartData.restId === currentRestId) {
+                cartFooter.classList.add('show');
+                document.getElementById('totalItems').innerText = cartData.totalQty === 1 ? "1 Item added" : `${cartData.totalQty} Items added`;
+            } else {
+                cartFooter.classList.remove('show');
+            }
+        }
     </script>
 </body>
 </html>
