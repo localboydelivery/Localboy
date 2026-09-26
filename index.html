@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Login</title>
+
+    <!-- ⚡ ZERO-FLASH INSTANT REDIRECT (Runs before body renders) -->
+    <script>
+        if (localStorage.getItem('userPhone')) {
+            window.location.replace("home.html");
+        }
+    </script>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,35 +25,36 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #ff6a00; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden; }
-        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 35px; padding: 40px 25px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); text-align: center; position: relative; }
+        body { background: linear-gradient(135deg, #ff6a00, #ff5200); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden; }
+        .main-card { background-color: #ffffff; width: 100%; max-width: 380px; border-radius: 35px; padding: 40px 25px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2); text-align: center; position: relative; }
         .top-icons { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
         .icon-circle { width: 55px; height: 55px; border-radius: 50%; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; justify-content: center; align-items: center; overflow: hidden; padding: 8px; }
         .icon-circle img { width: 100%; height: 100%; object-fit: contain; }
         .brand-container { position: relative; display: inline-flex; align-items: flex-end; font-size: 42px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; }
         .brand-local { color: #1a202c; }
         .brand-boy { color: #ff5200; margin-left: 5px; }
-        .scooter-img { width: 70px; position: absolute; bottom: 5px; right: -65px; animation: driveIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .scooter-img { width: 70px; position: absolute; bottom: 5px; right: -65px; animation: driveIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         @keyframes driveIn { 0% { transform: translateX(-150px); opacity: 0; } 40% { opacity: 1; } 100% { transform: translateX(0); opacity: 1; } }
         .tagline { font-family: 'Caveat', cursive; font-size: 20px; color: #4a5568; line-height: 1.3; margin-bottom: 35px; }
         .just-for-you { position: relative; display: inline-block; color: #2d3748; font-weight: 700; }
-        .animated-underline { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); height: 2.5px; background-color: #ff5200; border-radius: 5px; width: 0; animation: drawLine 1s ease-out 1.2s forwards; }
+        .animated-underline { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); height: 2.5px; background-color: #ff5200; border-radius: 5px; width: 0; animation: drawLine 0.8s ease-out 0.8s forwards; }
         @keyframes drawLine { to { width: 100%; } }
-        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1px solid #d1d5db; border-radius: 12px; padding: 5px 15px; margin-bottom: 20px; background: #fff; }
-        .input-wrapper:focus-within { border-color: #ff5200; }
+        .input-wrapper { display: flex; align-items: center; width: 100%; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 5px 15px; margin-bottom: 18px; background: #f8fafc; transition: 0.2s; }
+        .input-wrapper:focus-within { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
         .country-icon { color: #ff5200; font-size: 18px; margin-right: 12px; }
-        .country-code { font-weight: 600; color: #1a202c; padding-right: 12px; border-right: 1px solid #d1d5db; margin-right: 12px; font-size: 15px; }
-        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 16px; line-height: normal; min-height: 45px; color: #1a202c; background: transparent; }
-        .primary-btn { background: #ff5200; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); transition: 0.3s; }
+        .country-code { font-weight: 700; color: #1a202c; padding-right: 12px; border-right: 1px solid #cbd5e0; margin-right: 12px; font-size: 15px; }
+        .input-wrapper input { flex: 1; width: 100%; border: none; outline: none; padding: 10px 0; font-size: 16px; font-weight: 600; line-height: normal; min-height: 45px; color: #1a202c; background: transparent; }
+        .input-wrapper input::placeholder { font-weight: 400; color: #94a3b8; }
+        .primary-btn { background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; width: 100%; padding: 15px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); transition: 0.2s; }
         .primary-btn:active { transform: scale(0.98); }
+        .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
         .features { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; padding-top: 20px; border-top: 1px dashed #e2e8f0; }
-        .feature-item { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: 500; color: #4a5568; text-align: center; line-height: 1.2; }
+        .feature-item { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; color: #4a5568; text-align: center; line-height: 1.2; }
         .feature-item i { font-size: 20px; color: #ff5200; }
         
         #otp-section, #profile-section { display: none; }
-        .error-message { color: #e53e3e; font-size: 12px; margin-top: 10px; display: none; font-weight: 500;}
+        .error-message { color: #ef4444; background: #fef2f2; border: 1px solid #fee2e2; padding: 10px; border-radius: 10px; font-size: 12px; margin-top: 12px; display: none; font-weight: 600; }
         
-        /* Hide google recaptcha badge so it won't block UI */
         .grecaptcha-badge { visibility: hidden !important; }
     </style>
 </head>
@@ -84,7 +92,6 @@
                 Login Securely
             </button>
 
-            <!-- Login / Signup Toggle -->
             <div id="auth-toggle" style="font-size: 13px; color: #4a5568; margin-top: 15px; font-weight: 600; cursor: pointer;" onclick="toggleAuthMode()">
                 Don't have an account? <span style="color: #ff5200; text-decoration: underline;">Sign up here</span>
             </div>
@@ -93,18 +100,22 @@
         </div>
 
         <div id="otp-section">
+            <div style="font-size: 12px; color: #64748b; margin-bottom: 12px; font-weight: 600;" id="otp-sent-text">OTP sent to your mobile</div>
             <div class="input-wrapper">
                 <i class="fa-solid fa-unlock-keyhole country-icon"></i>
-                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 2px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                <input type="tel" id="otp-input" placeholder="Enter 6-digit OTP" maxlength="6" style="text-align: center; letter-spacing: 3px;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <button class="primary-btn" id="verify-otp-btn" onclick="verifyOTP()">
                 Verify OTP
             </button>
+            <div style="font-size: 12px; color: #ff5200; margin-top: 14px; font-weight: 700; cursor: pointer;" onclick="backToMobile()">
+                <i class="fa-solid fa-arrow-left"></i> Change Mobile Number
+            </div>
         </div>
 
         <!-- Profile Section for New Signups -->
         <div id="profile-section">
-            <div style="font-size: 16px; font-weight: 700; color: #1a202c; margin-bottom: 15px;">Complete Your Profile</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 15px;">Complete Your Profile</div>
             <div class="input-wrapper">
                 <i class="fa-regular fa-user country-icon"></i>
                 <input type="text" id="prof-name" placeholder="First Name (Required)">
@@ -117,7 +128,7 @@
                 <i class="fa-regular fa-envelope country-icon"></i>
                 <input type="email" id="prof-email" placeholder="Email (Optional)">
             </div>
-            <button class="primary-btn" onclick="saveProfile()">Create Account</button>
+            <button class="primary-btn" id="create-acc-btn" onclick="saveProfile()">Create Account</button>
         </div>
 
         <div class="error-message" id="error-msg"></div>
@@ -130,34 +141,43 @@
     </div>
 
     <script>
-        // Updated Firebase Config
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
             storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
             messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:7ef47b55ab678bb0dfd287"
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const database = firebase.database();
         
         let coderesult;
         let userPhoneNumber = ""; 
-        let authMode = 'login'; // 'login' or 'signup'
+        let authMode = 'login';
 
-        window.onload = function () {
+        window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('userPhone')) {
                 window.location.replace("home.html");
                 return;
             }
-            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                'size': 'invisible',
-                'callback': (response) => {}
-            });
-        };
+            initRecaptcha();
+        });
+
+        function initRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': () => {}
+                });
+            }
+        }
 
         function toggleAuthMode() {
             const toggleDiv = document.getElementById('auth-toggle');
@@ -175,92 +195,114 @@
             document.getElementById('error-msg').style.display = 'none';
         }
 
+        function backToMobile() {
+            document.getElementById('otp-section').style.display = 'none';
+            document.getElementById('mobile-section').style.display = 'block';
+            const btn = document.getElementById('get-otp-btn');
+            btn.disabled = false;
+            btn.innerText = authMode === 'login' ? 'Login Securely' : 'Sign Up Securely';
+        }
+
         function showError(msg) {
             const errorDiv = document.getElementById('error-msg');
             errorDiv.innerText = msg;
             errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 4000);
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 4500);
         }
 
         function sendOTP() {
-            const number = document.getElementById('mobile-number').value;
+            const number = document.getElementById('mobile-number').value.trim();
             if (number.length !== 10) {
                 showError("Please enter a valid 10-digit mobile number.");
                 return;
             }
             userPhoneNumber = "+91" + number; 
             const btn = document.getElementById('get-otp-btn');
-            
+            btn.disabled = true;
             btn.innerText = 'Checking Account...';
 
             database.ref('users/' + userPhoneNumber).once('value').then((snapshot) => {
                 const userExists = snapshot.exists();
-                
-                if (authMode === 'login' && !userExists) {
-                    showError("Account not found! Please sign up first.");
+                const userData = snapshot.val() || {};
+
+                // Check if blocked by Admin
+                if (userData.status === 'Blocked' || userData.is_active === false) {
+                    showError("Your account has been blocked by Admin.");
+                    btn.disabled = false;
                     btn.innerText = 'Login Securely';
                     return;
                 }
                 
-                if (authMode === 'signup' && userExists) {
-                    showError("Account already exists! Please login.");
-                    btn.innerText = 'Sign Up Securely';
-                    return;
+                // Smart Auto-Switch: If user forgot to click Sign Up or Login, guide smoothly
+                if (authMode === 'login' && !userExists) {
+                    showError("Account not found! Switching to Sign Up...");
+                    authMode = 'signup';
+                    document.getElementById('auth-toggle').innerHTML = 'Already have an account? <span style="color: #ff5200; text-decoration: underline;">Login here</span>';
+                } else if (authMode === 'signup' && userExists) {
+                    authMode = 'login';
                 }
 
-                // Proceed with OTP if conditions are met
                 btn.innerText = 'Sending OTP...';
+                initRecaptcha();
+
                 firebase.auth().signInWithPhoneNumber(userPhoneNumber, window.recaptchaVerifier)
                     .then((confirmationResult) => {
                         window.confirmationResult = confirmationResult;
                         coderesult = confirmationResult;
                         
+                        document.getElementById('otp-sent-text').innerText = `OTP sent to ${userPhoneNumber}`;
                         document.getElementById('mobile-section').style.display = 'none';
                         document.getElementById('otp-section').style.display = 'block';
                         document.getElementById('error-msg').style.display = 'none';
                     }).catch((error) => {
+                        btn.disabled = false;
                         btn.innerText = authMode === 'login' ? 'Login Securely' : 'Sign Up Securely';
                         showError(error.message);
+                        if (window.recaptchaVerifier) {
+                            window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId));
+                        }
                     });
 
             }).catch(err => {
+                btn.disabled = false;
                 btn.innerText = authMode === 'login' ? 'Login Securely' : 'Sign Up Securely';
                 showError(err.message);
             });
         }
 
         function verifyOTP() {
-            const code = document.getElementById('otp-input').value;
+            const code = document.getElementById('otp-input').value.trim();
             if (code.length !== 6) {
                 showError("Please enter the 6-digit OTP.");
                 return;
             }
             const verifyBtn = document.getElementById('verify-otp-btn');
+            verifyBtn.disabled = true;
             verifyBtn.innerText = 'Verifying...';
 
-            coderesult.confirm(code).then((result) => {
-                if (authMode === 'login') {
-                    // Fetch existing profile and redirect
-                    database.ref('users/' + userPhoneNumber + '/profile').once('value').then((snap) => {
-                        if (snap.exists()) {
-                            localStorage.setItem('userProfileData', JSON.stringify(snap.val()));
-                        }
+            coderesult.confirm(code).then(() => {
+                database.ref('users/' + userPhoneNumber + '/profile').once('value').then((snap) => {
+                    if (snap.exists() && snap.val().firstName) {
+                        const prof = snap.val();
+                        localStorage.setItem('userProfileData', JSON.stringify(prof));
+                        if (prof.address) localStorage.setItem('userSavedAddress', prof.address);
                         localStorage.setItem('userPhone', userPhoneNumber);
                         
                         verifyBtn.style.background = "#10b981";
-                        verifyBtn.innerText = 'Success! Redirecting...';
-                        setTimeout(() => { window.location.replace("home.html"); }, 800);
-                    });
-                } else {
-                    // Switch to profile form for signup
-                    document.getElementById('otp-section').style.display = 'none';
-                    document.getElementById('profile-section').style.display = 'block';
-                    document.getElementById('error-msg').style.display = 'none';
-                    document.getElementById('features-div').style.display = 'none';
-                }
-            }).catch((error) => {
+                        verifyBtn.innerText = 'Verified! Opening App...';
+                        window.location.replace("home.html");
+                    } else {
+                        // New User Profile Completion
+                        document.getElementById('otp-section').style.display = 'none';
+                        document.getElementById('profile-section').style.display = 'block';
+                        document.getElementById('error-msg').style.display = 'none';
+                        document.getElementById('features-div').style.display = 'none';
+                    }
+                });
+            }).catch(() => {
+                verifyBtn.disabled = false;
                 verifyBtn.innerText = 'Verify OTP';
-                showError("Invalid OTP. Please try again.");
+                showError("Invalid OTP. Please check and try again.");
             });
         }
 
@@ -274,6 +316,10 @@
                 return;
             }
 
+            const createBtn = document.getElementById('create-acc-btn');
+            createBtn.disabled = true;
+            createBtn.innerText = "Creating Account...";
+
             const profileData = { 
                 firstName: name, 
                 lastName: surname, 
@@ -281,13 +327,12 @@
                 phone: userPhoneNumber
             };
             
-            // Save locally
             localStorage.setItem('userProfileData', JSON.stringify(profileData));
             localStorage.setItem('userPhone', userPhoneNumber);
 
-            // Push to Firebase and redirect
-            database.ref('users/' + userPhoneNumber).set({
+            database.ref('users/' + userPhoneNumber).update({
                 phone: userPhoneNumber,
+                status: 'Active',
                 createdAt: Date.now(),
                 profile: profileData
             }).then(() => {
