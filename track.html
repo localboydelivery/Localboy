@@ -3,180 +3,573 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCAL BOY - Track Order</title>
+    <title>LOCAL BOY - Live Track Order</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Leaflet Maps CSS & JS (100% Free, Fast & Zero Billing Blocks) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #ffffff; color: #1a202c; }
-        a { text-decoration: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; color: #0f172a; overflow-x: hidden; padding-bottom: 40px; }
+        a { text-decoration: none; color: inherit; }
+        .clickable:active { transform: scale(0.96); }
+
+        /* --- SWIGGY / ZOMATO TOP LIVE MAP SECTION --- */
+        .map-hero-wrapper {
+            position: relative;
+            width: 100%;
+            height: 44vh;
+            min-height: 300px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+        #liveTrackMap { width: 100%; height: 100%; z-index: 1; }
+
+        /* Floating Back & Recenter Buttons on Map */
+        .back-btn-float {
+            position: absolute; top: 16px; left: 16px; width: 42px; height: 42px;
+            background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 500; font-size: 18px; color: #0f172a; cursor: pointer;
+        }
+        .recenter-btn-float {
+            position: absolute; bottom: 28px; right: 16px; padding: 8px 14px;
+            background: #ffffff; border-radius: 20px; display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 500; font-size: 12px; font-weight: 800; color: #ff5200; cursor: pointer;
+        }
+        .live-gps-badge {
+            position: absolute; top: 16px; right: 16px; padding: 6px 12px;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); color: #fff;
+            border-radius: 20px; font-size: 11px; font-weight: 700; z-index: 500;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: blinkDot 1s infinite; }
+        @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* Custom Map Pin Styles */
+        .custom-pin {
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 2.5px solid #ffffff; font-size: 16px; color: #ffffff;
+        }
+        .pin-store { background: #3b82f6; width: 36px; height: 36px; }
+        .pin-home { background: #10b981; width: 36px; height: 36px; }
+        .pin-rider {
+            background: #ff5200; width: 44px; height: 44px; font-size: 20px;
+            box-shadow: 0 0 0 6px rgba(255, 82, 0, 0.25), 0 6px 15px rgba(0,0,0,0.35);
+            animation: riderPulse 1.5s infinite;
+        }
+        @keyframes riderPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 82, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0); }
+        }
+
+        /* --- BOTTOM SHEET DETAILS CONTAINER --- */
+        .track-sheet {
+            position: relative; z-index: 10; margin-top: -20px;
+            background: #f8fafc; border-radius: 26px 26px 0 0;
+            padding: 20px 16px; min-height: 58vh;
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.08);
+        }
+
+        /* Status & ETA Banner Card */
+        .eta-card {
+            background: #ffffff; border-radius: 20px; padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        }
+        .eta-left h2 { font-size: 19px; font-weight: 800; color: #10b981; line-height: 1.2; }
+        .eta-left p { font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; }
+        .eta-badge-box {
+            background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669;
+            padding: 10px 14px; border-radius: 14px; text-align: center; min-width: 82px; flex-shrink: 0;
+        }
+        .eta-badge-box strong { display: block; font-size: 17px; font-weight: 800; }
+        .eta-badge-box span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+
+        /* --- SWIGGY STYLE DELIVERY PARTNER LIVE CARD --- */
+        .rider-card {
+            display: none; background: #ffffff; border-radius: 20px; padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1.5px solid #fed7aa;
+            margin-bottom: 15px;
+        }
+        .rider-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .rider-profile { display: flex; align-items: center; gap: 12px; }
+        .rider-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #ff5200; background: #fff8eb; flex-shrink: 0; }
+        .rider-info h3 { font-size: 15.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; }
+        .bike-pill { background: #fff8eb; color: #ff5200; border: 1px solid #fdba74; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 6px; }
+        .rider-info p { font-size: 12px; color: #059669; font-weight: 700; margin-top: 3px; }
         
-        .back-btn-float { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: #f7fafc; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 100; font-size: 20px; color: #1a202c;}
-        
-        .track-details { padding: 90px 20px 20px; min-height: 100vh; background: #ffffff; }
-        .eta-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed #edf2f7;}
-        .eta-header h2 { font-size: 22px; font-weight: 800; color: #10b981; }
-        .eta-header p { font-size: 13px; color: #718096; font-weight: 600; margin-top: 4px;}
-        
-        .timeline { padding-left: 10px; margin-top: 10px;}
-        .timeline-item { display: flex; gap: 15px; margin-bottom: 35px; position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: 11px; top: 25px; bottom: -40px; width: 2px; background: #edf2f7; }
+        .call-rider-btn {
+            width: 44px; height: 44px; border-radius: 50%; background: #10b981; color: #ffffff;
+            display: flex; justify-content: center; align-items: center; font-size: 18px;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); flex-shrink: 0;
+        }
+        .rider-dist-bar {
+            margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0;
+            display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: #475569; font-weight: 600;
+        }
+        .rider-dist-bar strong { color: #ff5200; font-weight: 800; }
+
+        /* --- TIMELINE CARD --- */
+        .section-card {
+            background: #ffffff; border-radius: 20px; padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 15px;
+        }
+        .card-heading { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+
+        .timeline { padding-left: 6px; }
+        .timeline-item { display: flex; gap: 14px; margin-bottom: 24px; position: relative; }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-item::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: -26px; width: 2px; background: #e2e8f0; }
         .timeline-item:last-child::before { display: none; }
-        .timeline-icon { width: 24px; height: 24px; border-radius: 50%; background: #edf2f7; display: flex; align-items: center; justify-content: center; z-index: 1; color: #a0aec0; font-size: 10px; }
-        .timeline-content h4 { font-size: 15px; font-weight: 700; color: #a0aec0; }
-        .timeline-content p { font-size: 12px; color: #cbd5e0; margin-top: 3px; line-height: 1.4;}
+        .timeline-icon { width: 24px; height: 24px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; z-index: 1; color: #94a3b8; font-size: 10px; flex-shrink: 0; }
+        .timeline-content h4 { font-size: 14px; font-weight: 700; color: #94a3b8; }
+        .timeline-content p { font-size: 11.5px; color: #cbd5e1; margin-top: 2px; line-height: 1.35; font-weight: 500; }
 
         .timeline-item.completed .timeline-icon { background: #10b981; color: white; }
-        .timeline-item.completed .timeline-content h4 { color: #1a202c; }
-        .timeline-item.completed .timeline-content p { color: #718096; }
+        .timeline-item.completed .timeline-content h4 { color: #0f172a; }
+        .timeline-item.completed .timeline-content p { color: #64748b; }
         .timeline-item.completed::before { background: #10b981; } 
 
-        .timeline-item.current .timeline-icon { background: #ff5200; color: white; animation: pulse 1.5s infinite; }
-        .timeline-item.current .timeline-content h4 { color: #ff5200; }
-        .timeline-item.current .timeline-content p { color: #718096; }
+        .timeline-item.current .timeline-icon { background: #ff5200; color: white; animation: pulseStep 1.5s infinite; }
+        .timeline-item.current .timeline-content h4 { color: #ff5200; font-weight: 800; }
+        .timeline-item.current .timeline-content p { color: #475569; font-weight: 600; }
+        @keyframes pulseStep { 0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(255, 82, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0); } }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 82, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0); } }
+        /* Order Items & Bill Summary */
+        .item-row { display: flex; justify-content: space-between; font-size: 13px; color: #334155; font-weight: 600; padding: 5px 0; border-bottom: 1px dashed #f1f5f9; }
+        .item-row:last-child { border-bottom: none; }
+        .item-row strong { color: #ff5200; font-weight: 800; margin-right: 5px; }
+        .bill-summary-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1.5px dashed #e2e8f0; font-size: 14px; font-weight: 800; color: #0f172a; }
+        .pay-tag { font-size: 11px; padding: 3px 9px; border-radius: 6px; font-weight: 800; }
+        .pay-tag.cod { background: #fff8eb; color: #d97706; border: 1px solid #fde68a; }
+        .pay-tag.paid { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
     </style>
 </head>
 <body>
 
-    <a href="javascript:history.back()" class="back-btn-float"><i class="fa-solid fa-arrow-left"></i></a>
+    <!-- TOP HALF: SWIGGY / ZOMATO LIVE INTERACTIVE MAP -->
+    <div class="map-hero-wrapper">
+        <a href="orders.html" class="back-btn-float clickable"><i class="fa-solid fa-arrow-left"></i></a>
+        <div class="live-gps-badge">
+            <span class="live-dot"></span>
+            <span id="mapBadgeText">Live GPS Tracking</span>
+        </div>
+        <div id="liveTrackMap"></div>
+        <div class="recenter-btn-float clickable" onclick="fitMapBounds()">
+            <i class="fa-solid fa-location-crosshairs"></i> Fit Map
+        </div>
+    </div>
 
-    <div class="track-details">
-        <div class="eta-header">
-            <div>
+    <!-- BOTTOM HALF: ORDER & RIDER DETAILS -->
+    <div class="track-sheet">
+        <!-- 1. Live Status & ETA Card -->
+        <div class="eta-card">
+            <div class="eta-left">
                 <h2 id="eta-text">Locating Order...</h2>
                 <p id="order-id-display">Fetching Details...</p>
             </div>
-            <i class="fa-solid fa-fire-burner" id="header-icon" style="font-size: 30px; color: #ff5200;"></i>
+            <div class="eta-badge-box" id="etaBadgeBox">
+                <strong id="etaMinsVal">--</strong>
+                <span>MINS ETA</span>
+            </div>
         </div>
 
-        <div class="timeline">
-            <div class="timeline-item" id="step-placed">
-                <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
-                <div class="timeline-content"><h4>Order Placed</h4><p>Waiting for restaurant to accept.</p></div>
+        <!-- 2. Delivery Partner Live Card (Shows as soon as assigned) -->
+        <div class="rider-card" id="riderLiveCard">
+            <div class="rider-top">
+                <div class="rider-profile">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" id="riderAvatar" class="rider-avatar">
+                    <div class="rider-info">
+                        <h3><span id="riderNameText">Delivery Partner</span> <span class="bike-pill" id="riderBikeText">BIKE</span></h3>
+                        <p id="riderStepText"><i class="fa-solid fa-circle-check"></i> Assigned to your order</p>
+                    </div>
+                </div>
+                <a href="#" id="riderCallBtn" class="call-rider-btn clickable" title="Call Delivery Partner">
+                    <i class="fa-solid fa-phone"></i>
+                </a>
             </div>
-            <div class="timeline-item" id="step-preparing">
-                <div class="timeline-icon"><i class="fa-solid fa-fire-burner"></i></div>
-                <div class="timeline-content"><h4>Preparing</h4><p>Restaurant is preparing your items.</p></div>
+            <div class="rider-dist-bar">
+                <span id="riderLiveDistText"><i class="fa-solid fa-route" style="color:#ff5200;"></i> Calculating live distance...</span>
+                <strong id="riderGpsUpdatedText">GPS Live</strong>
             </div>
-            <div class="timeline-item" id="step-ready">
-                <div class="timeline-icon"><i class="fa-solid fa-bag-shopping"></i></div>
-                <div class="timeline-content"><h4>Food Ready</h4><p>Order is packed and ready.</p></div>
+        </div>
+
+        <!-- 3. Step-by-Step Progress Timeline -->
+        <div class="section-card">
+            <div class="card-heading">
+                <span>Live Order Status</span>
+                <i class="fa-solid fa-fire-burner" id="header-icon" style="color: #ff5200; font-size: 18px;"></i>
             </div>
-            <div class="timeline-item" id="step-ontheway">
-                <div class="timeline-icon"><i class="fa-solid fa-motorcycle"></i></div>
-                <div class="timeline-content"><h4>On the Way</h4><p>Your order is out for delivery.</p></div>
+            <div class="timeline">
+                <div class="timeline-item" id="step-placed">
+                    <div class="timeline-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content"><h4>Order Placed</h4><p>Sent to store for confirmation.</p></div>
+                </div>
+                <div class="timeline-item" id="step-preparing">
+                    <div class="timeline-icon"><i class="fa-solid fa-fire-burner"></i></div>
+                    <div class="timeline-content"><h4>Preparing Your Order</h4><p id="prepSubText">Store is preparing your items fresh.</p></div>
+                </div>
+                <div class="timeline-item" id="step-ready">
+                    <div class="timeline-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <div class="timeline-content"><h4>Order Ready / Partner at Store</h4><p id="readySubText">Order is packed for pickup.</p></div>
+                </div>
+                <div class="timeline-item" id="step-ontheway">
+                    <div class="timeline-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                    <div class="timeline-content"><h4 id="onthewayTitle">Out for Delivery</h4><p id="onthewaySubText">Delivery partner is on the way to your location.</p></div>
+                </div>
+                <div class="timeline-item" id="step-delivered">
+                    <div class="timeline-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                    <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your order!</p></div>
+                </div>
             </div>
-            <div class="timeline-item" id="step-delivered">
-                <div class="timeline-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your order!</p></div>
+        </div>
+
+        <!-- 4. Ordered Items & Bill Info -->
+        <div class="section-card">
+            <div class="card-heading">
+                <span id="summaryStoreName">Order Details</span>
+                <span class="pay-tag cod" id="summaryPayTag">COD</span>
+            </div>
+            <div id="summaryItemsList"></div>
+            <div class="bill-summary-bar">
+                <span>Total Bill Amount</span>
+                <span id="summaryTotalAmt">₹0</span>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Logic -->
     <script>
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app"
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
-        
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         const urlParams = new URLSearchParams(window.location.search);
         let trackingId = urlParams.get('id') || localStorage.getItem('lastOrderId');
 
-        if (trackingId) {
-            database.ref('orders/' + trackingId).on('value', (snapshot) => {
-                const orderData = snapshot.val();
-                
-                if (orderData) {
-                    // Dynamically fetch actual restaurant/store name
-                    if(orderData.restaurantId === 'grocery_store') {
-                        document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • Local Boy Groceries`;
+        // Coordinates (Default Tenali)
+        let storeLat = 16.2366, storeLng = 80.6405;
+        let custLat = parseFloat(localStorage.getItem('userLat')) || 16.2415;
+        let custLng = parseFloat(localStorage.getItem('userLng')) || 80.6455;
+        let riderLat = null, riderLng = null;
+
+        let currentOrder = null;
+        let currentPartnerListenerId = null;
+        let restMenuMap = {};
+        let groceriesMap = {};
+
+        // --- INITIALIZE LEAFLET MAP ---
+        const map = L.map('liveTrackMap', { zoomControl: false }).setView([storeLat, storeLng], 14);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const storeIcon = L.divIcon({
+            className: '',
+            html: `<div class="custom-pin pin-store"><i class="fa-solid fa-store"></i></div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        });
+
+        const homeIcon = L.divIcon({
+            className: '',
+            html: `<div class="custom-pin pin-home"><i class="fa-solid fa-house"></i></div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        });
+
+        const riderIcon = L.divIcon({
+            className: '',
+            html: `<div class="custom-pin pin-rider"><i class="fa-solid fa-motorcycle"></i></div>`,
+            iconSize: [44, 44],
+            iconAnchor: [22, 22]
+        });
+
+        let storeMarker = L.marker([storeLat, storeLng], { icon: storeIcon }).addTo(map).bindPopup("<b>Store / Pickup</b>");
+        let homeMarker = L.marker([custLat, custLng], { icon: homeIcon }).addTo(map).bindPopup("<b>Your Delivery Location</b>");
+        let riderMarker = null;
+        let routeLine = L.polyline([[storeLat, storeLng], [custLat, custLng]], {
+            color: '#ff5200', weight: 4, dashArray: '8, 8', opacity: 0.85
+        }).addTo(map);
+
+        function getDistanceKm(lat1, lon1, lat2, lon2) {
+            if (!lat1 || !lon1 || !lat2 || !lon2) return 1.5;
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
+        window.fitMapBounds = function() {
+            const pts = [[storeLat, storeLng], [custLat, custLng]];
+            if (riderLat && riderLng) pts.push([riderLat, riderLng]);
+            map.fitBounds(pts, { padding: [45, 45] });
+        };
+
+        function updateMapMarkersAndRoute() {
+            storeMarker.setLatLng([storeLat, storeLng]);
+            homeMarker.setLatLng([custLat, custLng]);
+
+            if (riderLat && riderLng && currentOrder && currentOrder.status !== 'Delivered') {
+                if (!riderMarker) {
+                    riderMarker = L.marker([riderLat, riderLng], { icon: riderIcon, zIndexOffset: 1000 })
+                        .addTo(map)
+                        .bindPopup(`<b>${currentOrder.deliveryPartnerName || 'Delivery Partner'}</b><br>Live Location`);
+                } else {
+                    riderMarker.setLatLng([riderLat, riderLng]);
+                }
+
+                // Draw live path: If already picked up (On the Way), draw Rider -> Customer. Else Rider -> Store -> Customer
+                if (currentOrder.status === 'On the Way') {
+                    routeLine.setLatLngs([[riderLat, riderLng], [custLat, custLng]]);
+                } else {
+                    routeLine.setLatLngs([[riderLat, riderLng], [storeLat, storeLng], [custLat, custLng]]);
+                }
+            } else {
+                routeLine.setLatLngs([[storeLat, storeLng], [custLat, custLng]]);
+            }
+        }
+
+        // Listen to Live Delivery Partner GPS Node
+        function attachPartnerLiveGpsListener(dpId) {
+            if (currentPartnerListenerId === dpId) return;
+            if (currentPartnerListenerId) {
+                database.ref('delivery_partners/' + currentPartnerListenerId).off();
+            }
+            currentPartnerListenerId = dpId;
+
+            database.ref('delivery_partners/' + dpId).on('value', (snap) => {
+                if (!snap.exists() || !currentOrder) return;
+                const dp = snap.val();
+
+                // Update Rider Profile Info
+                document.getElementById('riderLiveCard').style.display = 'block';
+                document.getElementById('riderNameText').innerText = dp.name || currentOrder.deliveryPartnerName || 'Delivery Partner';
+                document.getElementById('riderBikeText').innerText = dp.vehicleNumber || 'BIKE';
+                if (dp.image) document.getElementById('riderAvatar').src = dp.image;
+
+                const phone = dp.phone || currentOrder.deliveryPartnerPhone || '';
+                const callBtn = document.getElementById('riderCallBtn');
+                if (phone) {
+                    callBtn.href = `tel:${phone}`;
+                    callBtn.style.display = 'flex';
+                } else {
+                    callBtn.style.display = 'none';
+                }
+
+                // Update Live Rider GPS Coordinates on Map
+                if (dp.latitude && dp.longitude) {
+                    riderLat = parseFloat(dp.latitude);
+                    riderLng = parseFloat(dp.longitude);
+                    updateMapMarkersAndRoute();
+
+                    // Calculate real-time distance from Rider to Customer (or Store)
+                    const isPickedUp = currentOrder.status === 'On the Way';
+                    const targetLat = isPickedUp ? custLat : storeLat;
+                    const targetLng = isPickedUp ? custLng : storeLng;
+                    const liveDist = getDistanceKm(riderLat, riderLng, targetLat, targetLng).toFixed(1);
+
+                    if (currentOrder.reachedCustomer) {
+                        document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-location-dot" style="color:#10b981;"></i> Partner has arrived at your doorstep!`;
+                    } else if (isPickedUp) {
+                        document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-motorcycle" style="color:#ff5200;"></i> Partner is <strong>${liveDist} km</strong> away from your location`;
+                        const dynamicMins = Math.max(2, Math.ceil(liveDist * 3.5));
+                        document.getElementById('etaMinsVal').innerText = dynamicMins;
                     } else {
-                        database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(resSnap => {
-                            if(resSnap.exists()) {
-                                document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • ${resSnap.val().name}`;
-                            } else {
-                                document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • Restaurant`;
-                            }
-                        });
-                    }
-                    
-                    updateTimeline(orderData.status);
-                    
-                    if (orderData.status === 'Delivered') {
-                        localStorage.setItem('activeOrder', 'false');
-                        document.getElementById('eta-text').innerText = "Delivered!";
-                        document.getElementById('eta-text').style.color = "#10b981";
-                        document.getElementById('header-icon').className = "fa-solid fa-face-smile-beam fa-bounce";
-                        document.getElementById('header-icon').style.color = "#10b981";
-                    } else if (orderData.status === 'Cancelled') {
-                        localStorage.setItem('activeOrder', 'false');
-                        document.getElementById('eta-text').innerText = "Order Cancelled";
-                        document.getElementById('eta-text').style.color = "#ef4444";
-                        document.getElementById('header-icon').className = "fa-solid fa-circle-xmark";
-                        document.getElementById('header-icon').style.color = "#ef4444";
+                        document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-store" style="color:#3b82f6;"></i> Partner is <strong>${liveDist} km</strong> from store`;
                     }
                 }
             });
-        } else {
-            document.getElementById('eta-text').innerText = "No Active Order";
-            document.getElementById('order-id-display').innerText = "Redirecting...";
-            setTimeout(() => { window.location.replace("home.html"); }, 2000);
         }
 
-        function updateTimeline(status) {
+        function renderOrderSummary(ord, storeName) {
+            document.getElementById('summaryStoreName').innerText = storeName;
+            document.getElementById('summaryTotalAmt').innerText = `₹${ord.totalAmount || 0}`;
+
+            const isCod = (ord.paymentMethod || 'Cash on Delivery').toLowerCase().includes('cash');
+            const payTag = document.getElementById('summaryPayTag');
+            payTag.className = `pay-tag ${isCod ? 'cod' : 'paid'}`;
+            payTag.innerText = isCod ? `Cash on Delivery (₹${ord.totalAmount})` : `Paid Online ✅`;
+
+            const listEl = document.getElementById('summaryItemsList');
+            listEl.innerHTML = '';
+            const snapDetails = ord.itemsDetails || {};
+            const itemsObj = ord.items || {};
+
+            for (let id in itemsObj) {
+                const qty = itemsObj[id];
+                let iName = 'Ordered Item';
+                if (snapDetails[id] && snapDetails[id].name) iName = snapDetails[id].name;
+                else if (ord.restaurantId === 'grocery_store' && groceriesMap[id]) iName = groceriesMap[id].name || groceriesMap[id].en;
+                else if (restMenuMap[id]) iName = restMenuMap[id].name || restMenuMap[id].en;
+
+                listEl.innerHTML += `
+                    <div class="item-row">
+                        <span><strong>${qty} x</strong> ${iName}</span>
+                    </div>
+                `;
+            }
+        }
+
+        function updateTimelineAndRiderStatus(ord) {
+            const status = ord.status || 'Placed';
             const steps = ['placed', 'preparing', 'ready', 'ontheway', 'delivered'];
-            
             let currentStepIndex = 0;
+
+            let defaultMins = ord.distance ? Math.max(8, Math.ceil(ord.distance * 4)) : 15;
+
+            // Update Rider Step Text
+            if (ord.deliveryPartnerId) {
+                const stepEl = document.getElementById('riderStepText');
+                if (status === 'Delivered') {
+                    stepEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Order Delivered Successfully`;
+                } else if (ord.reachedCustomer) {
+                    stepEl.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> Reached your drop location!`;
+                } else if (status === 'On the Way') {
+                    stepEl.innerHTML = `<i class="fa-solid fa-motorcycle"></i> Picked up order • On the way to you`;
+                } else if (ord.reachedRestaurant) {
+                    stepEl.innerHTML = `<i class="fa-solid fa-store"></i> Reached store • Waiting for food pickup`;
+                } else if (ord.riderAccepted) {
+                    stepEl.innerHTML = `<i class="fa-solid fa-check-double"></i> Accepted • Heading to store`;
+                } else {
+                    stepEl.innerHTML = `<i class="fa-solid fa-bell"></i> Assigned to your order`;
+                }
+            }
+
             if (status === 'Placed') {
                 currentStepIndex = 0;
-                document.getElementById('eta-text').innerText = "Waiting for confirmation";
+                document.getElementById('eta-text').innerText = "Waiting for Confirmation";
+                document.getElementById('etaMinsVal').innerText = defaultMins + 10;
                 document.getElementById('header-icon').className = "fa-solid fa-clock-rotate-left fa-spin-pulse";
-            }
-            else if (status === 'Preparing') {
+            } else if (status === 'Preparing') {
                 currentStepIndex = 1;
-                document.getElementById('eta-text').innerText = "Preparing Order...";
+                document.getElementById('eta-text').innerText = ord.reachedRestaurant ? "Partner at Store!" : "Preparing Your Order...";
+                document.getElementById('etaMinsVal').innerText = defaultMins + 5;
                 document.getElementById('header-icon').className = "fa-solid fa-fire-burner fa-bounce";
-            }
-            else if (status === 'Ready') {
+            } else if (status === 'Ready') {
                 currentStepIndex = 2;
-                document.getElementById('eta-text').innerText = "Order is Ready!";
+                document.getElementById('eta-text').innerText = "Order Packed & Ready!";
+                document.getElementById('etaMinsVal').innerText = defaultMins;
                 document.getElementById('header-icon').className = "fa-solid fa-bag-shopping fa-bounce";
-            }
-            else if (status === 'On the Way') {
+            } else if (status === 'On the Way') {
                 currentStepIndex = 3;
-                document.getElementById('eta-text').innerText = "Arriving in 15 mins";
+                if (ord.reachedCustomer) {
+                    document.getElementById('eta-text').innerText = "Partner Reached Doorstep!";
+                    document.getElementById('onthewayTitle').innerText = "Reached Your Location";
+                    document.getElementById('onthewaySubText').innerText = "Please collect your order from the delivery partner.";
+                    document.getElementById('etaMinsVal').innerText = "1";
+                } else {
+                    document.getElementById('eta-text').innerText = "Out for Delivery!";
+                    document.getElementById('onthewayTitle').innerText = "Out for Delivery";
+                    document.getElementById('onthewaySubText').innerText = "Delivery partner is on the way with your order.";
+                    document.getElementById('etaMinsVal').innerText = defaultMins;
+                }
                 document.getElementById('header-icon').className = "fa-solid fa-motorcycle fa-bounce";
-            }
-            else if (status === 'Delivered') {
+            } else if (status === 'Delivered') {
                 currentStepIndex = 4;
+                localStorage.setItem('activeOrder', 'false');
+                document.getElementById('eta-text').innerText = "Order Delivered!";
+                document.getElementById('eta-text').style.color = "#10b981";
+                document.getElementById('etaMinsVal').innerText = "✓";
+                document.getElementById('header-icon').className = "fa-solid fa-face-smile-beam";
+            } else if (status === 'Cancelled' || status === 'Rejected') {
+                localStorage.setItem('activeOrder', 'false');
+                document.getElementById('eta-text').innerText = "Order Cancelled";
+                document.getElementById('eta-text').style.color = "#ef4444";
+                document.getElementById('etaMinsVal').innerText = "✕";
+                return;
             }
-            else if (status === 'Cancelled') return;
 
             steps.forEach(s => {
                 document.getElementById(`step-${s}`).classList.remove('completed', 'current');
             });
 
             for (let i = 0; i <= currentStepIndex; i++) {
-                if (i === currentStepIndex) {
+                if (i === currentStepIndex && status !== 'Delivered') {
                     document.getElementById(`step-${steps[i]}`).classList.add('current');
                 } else {
                     document.getElementById(`step-${steps[i]}`).classList.add('completed');
                 }
             }
+        }
+
+        if (trackingId) {
+            database.ref('orders/' + trackingId).on('value', (snapshot) => {
+                const orderData = snapshot.val();
+                if (!orderData) return;
+                currentOrder = orderData;
+
+                if (orderData.customerLat && orderData.customerLng) {
+                    custLat = parseFloat(orderData.customerLat);
+                    custLng = parseFloat(orderData.customerLng);
+                }
+
+                // Resolve Store Details & Coordinates
+                if (orderData.restaurantId === 'grocery_store') {
+                    const sName = "Local Boy Groceries";
+                    document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • ${sName}`;
+                    database.ref('groceries').once('value').then(gSnap => {
+                        groceriesMap = gSnap.val() || {};
+                        renderOrderSummary(orderData, sName);
+                    });
+                    updateMapMarkersAndRoute();
+                    fitMapBounds();
+                } else {
+                    database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(resSnap => {
+                        let sName = orderData.restaurantName || "Restaurant";
+                        if (resSnap.exists()) {
+                            const r = resSnap.val();
+                            sName = r.name || sName;
+                            if (r.latitude && r.longitude) {
+                                storeLat = parseFloat(r.latitude);
+                                storeLng = parseFloat(r.longitude);
+                            }
+                        }
+                        document.getElementById('order-id-display').innerText = `Order #${orderData.orderId} • ${sName}`;
+                        updateMapMarkersAndRoute();
+                        fitMapBounds();
+
+                        database.ref('restaurant_menus/' + orderData.restaurantId).once('value').then(mSnap => {
+                            restMenuMap = mSnap.val() || {};
+                            renderOrderSummary(orderData, sName);
+                        });
+                    });
+                }
+
+                // If Delivery Partner is assigned, start live GPS tracking on map!
+                if (orderData.deliveryPartnerId) {
+                    attachPartnerLiveGpsListener(orderData.deliveryPartnerId);
+                } else {
+                    document.getElementById('riderLiveCard').style.display = 'none';
+                }
+
+                updateTimelineAndRiderStatus(orderData);
+            });
+        } else {
+            document.getElementById('eta-text').innerText = "No Active Order";
+            setTimeout(() => { window.location.replace("home.html"); }, 1500);
         }
     </script>
 </body>
