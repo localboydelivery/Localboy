@@ -13,154 +13,165 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #fafafa; color: #1a202c; overflow-x: hidden; }
+        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; padding-bottom: 40px; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
         
-        .top-bar { display: flex; align-items: center; padding: 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f7fafc; cursor: pointer; }
-        .top-bar h2 { font-size: 18px; font-weight: 700; }
+        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
         
-        .search-container { padding: 20px; background: #ffffff; }
-        .search-box { display: flex; align-items: center; background: #f7fafc; border-radius: 12px; padding: 12px 15px; border: 1px solid #e2e8f0; }
-        .search-box input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; }
+        .search-container { padding: 16px 20px; background: #ffffff; position: relative; }
+        .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 15px; border: 1.5px solid #e2e8f0; }
+        .search-box:focus-within { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
+        .search-box input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
         .search-icon { color: #ff5200; font-size: 18px; }
+
+        /* Live Search Suggestions Dropdown */
+        .search-suggestions { display: none; position: absolute; left: 20px; right: 20px; top: 68px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); border: 1px solid #e2e8f0; z-index: 500; max-height: 240px; overflow-y: auto; }
+        .sug-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; color: #334155; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; }
+        .sug-item:last-child { border-bottom: none; }
+        .sug-item:active { background: #fff8eb; }
+        .sug-item i { color: #ff5200; margin-top: 3px; }
         
-        .current-loc-btn { display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: #ffffff; border-bottom: 1px solid #edf2f7; color: #ff5200; cursor: pointer;}
-        .current-loc-btn i { font-size: 20px; }
+        .current-loc-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; color: #ff5200; cursor: pointer; }
+        .current-loc-btn i { font-size: 22px; }
         .current-loc-btn .text-content { display: flex; flex-direction: column; }
-        .current-loc-btn h3 { font-size: 15px; font-weight: 600; }
-        .current-loc-btn p { font-size: 12px; color: #718096; margin-top: 2px; }
+        .current-loc-btn h3 { font-size: 15px; font-weight: 800; }
+        .current-loc-btn p { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
         
         .section-container { padding: 20px; }
-        .section-title { font-size: 13px; color: #718096; text-transform: uppercase; font-weight: 600; margin-bottom: 15px; }
-        .address-list { display: flex; flex-direction: column; gap: 15px; }
-        .address-item { display: flex; align-items: flex-start; gap: 15px; padding: 15px; background: #ffffff; border-radius: 16px; border: 1px solid #f7fafc; box-shadow: 0 2px 12px rgba(0,0,0,0.03); cursor: pointer;}
-        .address-icon { width: 40px; height: 40px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; }
+        .section-title { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 14px; letter-spacing: 0.5px; }
+        .address-list { display: flex; flex-direction: column; gap: 14px; }
+        .address-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; }
+        .address-icon { width: 42px; height: 42px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; }
         .address-details { flex: 1; }
-        .address-details h3 { font-size: 15px; font-weight: 700; margin-bottom: 3px; display: flex; align-items: center; gap: 6px;}
-        .address-details p { font-size: 12px; color: #718096; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .address-details h3 { font-size: 15px; font-weight: 800; margin-bottom: 3px; color: #0f172a; }
+        .address-details p { font-size: 12px; color: #64748b; line-height: 1.45; font-weight: 500; }
         
-        .add-new-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 20px; padding: 15px; border-radius: 12px; border: 1.5px dashed #ff5200; color: #ff5200; font-size: 15px; font-weight: 600; cursor: pointer; background: #fff8eb;}
+        .add-new-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 20px 20px; padding: 15px; border-radius: 14px; border: 1.5px dashed #ff5200; color: #ff5200; font-size: 15px; font-weight: 700; cursor: pointer; background: #fff8eb; }
         
         /* Bottom Sheet & Map Styles */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 25px 20px; max-height: 90vh; overflow-y: auto; }
-        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .sheet-header h3 { font-size: 18px; font-weight: 700; }
-        .close-sheet { font-size: 20px; color: #a0aec0; cursor: pointer; padding: 5px;}
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
+        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 22px 20px; max-height: 92vh; overflow-y: auto; }
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+        .sheet-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
+        .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
         
-        .map-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #edf2f7; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .map-container { position: relative; width: 100%; height: 210px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #f1f5f9; }
         #google-map { width: 100%; height: 100%; z-index: 1; }
-        .map-gps-btn { position: absolute; bottom: 15px; right: 15px; width: 40px; height: 40px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); z-index: 10; color: #4a5568; font-size: 18px; cursor: pointer; transition: 0.2s; }
+        .map-gps-btn { position: absolute; bottom: 12px; right: 12px; width: 40px; height: 40px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; color: #ff5200; font-size: 18px; cursor: pointer; }
         
-        .manual-entry-link { font-size: 13px; color: #ff5200; font-weight: 600; text-align: right; margin-bottom: 15px; cursor: pointer; display: block;}
-        
-        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .detected-bar { display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #d1fae5; color: #059669; padding: 8px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
+
+        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .input-group { flex: 1; }
-        .input-group input, .input-group textarea { width: 100%; padding: 14px 15px; border-radius: 12px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 14px; outline: none; color: #1e293b; font-weight: 500;}
-        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1);}
-        .input-group textarea { resize: none; height: 80px; }
+        .input-group input, .input-group textarea { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 13.5px; outline: none; color: #0f172a; font-weight: 600; }
+        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
+        .input-group textarea { resize: none; height: 78px; line-height: 1.4; }
         
-        /* Address Type Buttons */
-        .address-type-section { margin-bottom: 20px; }
+        .address-type-section { margin-bottom: 18px; }
         .type-buttons { display: flex; gap: 10px; }
-        .type-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #4a5568; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .type-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 11px; border: 1.5px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .type-btn.active { background: #fff8eb; border-color: #ff5200; color: #ff5200; }
 
-        .save-btn { width: 100%; background: #ff5200; color: white; padding: 15px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;}
+        .save-btn { width: 100%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 15px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); }
+        .save-btn:disabled { opacity: 0.7; }
     </style>
 </head>
 <body>
     <div class="top-bar">
         <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2>Select a location</h2>
+        <h2>Select Delivery Location</h2>
     </div>
 
+    <!-- Search Box with Live Area Autocomplete -->
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" placeholder="Search for area, street name...">
+            <input type="text" id="pac-input" placeholder="Search area, street, Tenali, Guntur..." oninput="handleAreaSearch(this.value)">
         </div>
+        <div class="search-suggestions" id="searchSuggestions"></div>
     </div>
 
-    <!-- Live GPS Button -->
     <div class="current-loc-btn clickable" onclick="fetchRealLocationMain()">
         <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
         <div class="text-content">
-            <h3 id="gps-text">Use current location</h3>
-            <p>Using Google GPS to find you</p>
+            <h3 id="gps-text">Use Current Location</h3>
+            <p id="gps-subtext">Auto-detect your exact address & GPS</p>
         </div>
     </div>
 
     <div class="section-container">
-        <h4 class="section-title">Saved Addresses</h4>
+        <h4 class="section-title">Saved Address</h4>
         <div class="address-list" id="savedAddressesList">
-            <!-- Dynamic Addresses will load here -->
-            <div class="address-item clickable" onclick="selectExistingAddress('Home|Basava Rajesh|12-3, Main Road, Near Clock Tower, Tenali')">
-                <div class="address-icon"><i class="fa-solid fa-house"></i></div>
-                <div class="address-details"><h3>Home</h3><p>12-3, Main Road, Near Clock Tower, Tenali</p></div>
-            </div>
+            <p style="font-size: 12px; color: #94a3b8;">No saved address yet. Tap above to detect.</p>
         </div>
     </div>
 
-    <div class="add-new-btn clickable" onclick="openBottomSheet(16.2366, 80.6405)">
-        <i class="fa-solid fa-plus"></i> Add New Address
+    <div class="add-new-btn clickable" onclick="openBottomSheet(currentPickedLat, currentPickedLng, false)">
+        <i class="fa-solid fa-plus"></i> Add / Edit Complete Address
     </div>
 
-    <!-- Map & Form Bottom Sheet -->
+    <!-- Bottom Sheet -->
     <div class="overlay" id="sheetOverlay" onclick="closeBottomSheet()"></div>
     <div class="bottom-sheet" id="addressSheet">
         <div class="sheet-header">
-            <h3 id="sheet-title">Enter complete address</h3>
+            <h3 id="sheet-title">Confirm Delivery Address</h3>
             <i class="fa-solid fa-xmark close-sheet clickable" onclick="closeBottomSheet()"></i>
         </div>
         
         <div class="map-container" id="mapWrapper">
             <div id="google-map"></div>
-            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()"><i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i></div>
+            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()" title="Locate Me">
+                <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
+            </div>
         </div>
 
-        <span class="manual-entry-link clickable" id="manualBtn" onclick="toggleMap()">Enter address manually</span>
+        <div class="detected-bar" id="detectedStatusText">
+            <i class="fa-solid fa-circle-check"></i>
+            <span id="pinCoordStatus">Move pin or type your House / Flat details below</span>
+        </div>
         
-        <!-- Receiver Details -->
         <div class="input-row">
-            <div class="input-group"><input type="text" id="recvName" placeholder="First Name"></div>
+            <div class="input-group"><input type="text" id="recvName" placeholder="Receiver First Name"></div>
             <div class="input-group"><input type="text" id="recvSurname" placeholder="Last Name"></div>
         </div>
         
-        <div class="input-group" style="margin-bottom: 15px;">
-            <textarea id="fullAddress" placeholder="Enter Full Address (House No, Street, Landmark)"></textarea>
+        <div class="input-group" style="margin-bottom: 14px;">
+            <textarea id="fullAddress" placeholder="House / Flat No, Building, Street, Landmark, Area..."></textarea>
         </div>
 
-        <!-- Home / Work / Other Selection -->
         <div class="address-type-section">
-            <div style="font-size: 13px; color: #718096; font-weight: 600; margin-bottom: 10px;">Save address as:</div>
+            <div style="font-size: 12px; color: #64748b; font-weight: 700; margin-bottom: 8px;">Save address as:</div>
             <div class="type-buttons">
                 <div class="type-btn active" onclick="selectType('Home', this)"><i class="fa-solid fa-house"></i> Home</div>
                 <div class="type-btn" onclick="selectType('Work', this)"><i class="fa-solid fa-briefcase"></i> Work</div>
                 <div class="type-btn" onclick="selectType('Other', this)"><i class="fa-solid fa-location-dot"></i> Other</div>
             </div>
             
-            <!-- Other Input Box (Hidden by default) -->
-            <div class="input-group" id="otherInputWrapper" style="display: none; margin-top: 12px;">
-                <input type="text" id="customType" placeholder="e.g. Friend's House, Gym">
+            <div class="input-group" id="otherInputWrapper" style="display: none; margin-top: 10px;">
+                <input type="text" id="customType" placeholder="e.g. Friend's House, Shop">
             </div>
         </div>
 
-        <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save Address</button>
+        <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save & Proceed</button>
     </div>
 
     <!-- Google Maps Script -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAITao9tzWyZuXcMiGCfoTF3GboS32_48U&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAITao9tzWyZuXcMiGCfoTF3GboS32_48U&libraries=places&callback=initMap"></script>
 
     <script>
-        // Firebase Config
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
-            apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f"
+            projectId: "sri-vishnu-priya-finance-c591f",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
+            messagingSenderId: "184676228358",
+            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
+            measurementId: "G-E3TT96ZH1T"
         };
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
@@ -169,180 +180,300 @@
 
         const sheet = document.getElementById('addressSheet');
         const overlay = document.getElementById('sheetOverlay');
-        const mapWrapper = document.getElementById('mapWrapper');
-        let map; let marker; let blueDotMarker; 
-        let defaultLat = 16.2366; let defaultLng = 80.6405; // Tenali coordinates
-
+        let map, marker, geocoder;
+        let currentPickedLat = parseFloat(localStorage.getItem('userLat')) || 16.2366; // Default Tenali
+        let currentPickedLng = parseFloat(localStorage.getItem('userLng')) || 80.6405;
         let selectedAddressType = 'Home';
+        let searchTimer = null;
 
-        // Load Saved Address on page load
         window.addEventListener('pageshow', function() {
             const userPhone = localStorage.getItem('userPhone');
+            const localAddr = localStorage.getItem("userSavedAddress");
+            if (localAddr) displayDynamicAddress(localAddr);
+
             if (userPhone) {
-                database.ref('users/' + userPhone + '/profile/address').once('value').then((snapshot) => {
-                    const fbAddress = snapshot.val();
-                    if (fbAddress) {
-                        displayDynamicAddress(fbAddress);
+                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
+                    const prof = snapshot.val();
+                    if (prof) {
+                        if (prof.address) {
+                            localStorage.setItem("userSavedAddress", prof.address);
+                            displayDynamicAddress(prof.address);
+                        }
+                        if (prof.latitude && prof.longitude) {
+                            currentPickedLat = parseFloat(prof.latitude);
+                            currentPickedLng = parseFloat(prof.longitude);
+                            localStorage.setItem('userLat', currentPickedLat);
+                            localStorage.setItem('userLng', currentPickedLng);
+                        }
                     }
                 });
-            } else {
-                const saved = localStorage.getItem("userSavedAddress");
-                if (saved) displayDynamicAddress(saved);
             }
         });
 
         function displayDynamicAddress(fullStr) {
-            // New Format: "Home|Basava Rajesh|12-3, Main Road..."
-            let type = "Saved"; let details = fullStr;
+            let type = "Saved";
+            let details = fullStr;
             let iconClass = "fa-location-dot";
             
             if (fullStr.includes('|')) {
                 let parts = fullStr.split('|');
                 type = parts[0];
-                details = parts[2]; // Show only address, hide name in list
-            } else if (fullStr.includes(':')) {
-                // Fallback for old format "Home (Rajesh): 12-3..."
-                let parts = fullStr.split(':');
-                type = parts[0].split(' ')[0]; 
-                details = parts[1].trim();
+                details = parts[2]; 
             }
 
-            if(type.toLowerCase() === 'home') iconClass = "fa-house";
-            else if(type.toLowerCase() === 'work') iconClass = "fa-briefcase";
+            if (type.toLowerCase() === 'home') iconClass = "fa-house";
+            else if (type.toLowerCase() === 'work') iconClass = "fa-briefcase";
 
             document.getElementById('savedAddressesList').innerHTML = `
-                <div class="address-item clickable" onclick="selectExistingAddress('${fullStr}')">
+                <div class="address-item clickable" onclick="selectExistingAddress('${fullStr.replace(/'/g, "\\'")}')">
                     <div class="address-icon"><i class="fa-solid ${iconClass}"></i></div>
-                    <div class="address-details"><h3>${type}</h3><p>${details}</p></div>
+                    <div class="address-details">
+                        <h3>${type} <span style="font-size:10px; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; margin-left:6px;">Tap to Use</span></h3>
+                        <p>${details}</p>
+                    </div>
                 </div>
             `;
         }
 
-        // Map Functions
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("google-map"), { center: { lat: defaultLat, lng: defaultLng }, zoom: 16, disableDefaultUI: true, zoomControl: true });
-            marker = new google.maps.Marker({ position: { lat: defaultLat, lng: defaultLng }, map: map, draggable: true, animation: google.maps.Animation.DROP });
-            map.addListener('click', function(event) { marker.setPosition(event.latLng); map.panTo(event.latLng); });
-        }
+        // --- REVERSE GEOCODING (Converts Lat/Lng to Real Street Address) ---
+        async function reverseGeocodeCoordinates(lat, lng) {
+            currentPickedLat = lat;
+            currentPickedLng = lng;
+            const statusSpan = document.getElementById('pinCoordStatus');
+            const addrInput = document.getElementById('fullAddress');
+            statusSpan.innerText = "Fetching area & street address...";
 
-        function fetchRealLocationMain() {
-            document.getElementById('gps-text').innerText = "Locating you..."; 
-            document.getElementById('gps-icon').className = "fa-solid fa-spinner fa-spin";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => { 
-                        document.getElementById('gps-text').innerText = "Use current location"; 
-                        document.getElementById('gps-icon').className = "fa-solid fa-location-crosshairs";
-                        let userLat = position.coords.latitude; let userLng = position.coords.longitude;
-                        openBottomSheet(userLat, userLng); addBlueDot(userLat, userLng);
-                    },
-                    (error) => { 
-                        alert("Location access denied or failed."); 
-                        document.getElementById('gps-text').innerText = "Use current location"; 
-                        document.getElementById('gps-icon').className = "fa-solid fa-location-crosshairs"; 
-                        openBottomSheet(defaultLat, defaultLng); 
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                );
+            // 1. Try OpenStreetMap Nominatim (Free, No API billing needed, very accurate for AP/Telangana)
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+                    headers: { 'Accept-Language': 'en' }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.display_name) {
+                        addrInput.value = data.display_name;
+                        statusSpan.innerText = "GPS Location Locked! Add House/Door No if needed.";
+                        return;
+                    }
+                }
+            } catch (e) {}
+
+            // 2. Fallback to Google Maps Geocoder
+            if (geocoder) {
+                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                    if (status === "OK" && results[0]) {
+                        addrInput.value = results[0].formatted_address;
+                        statusSpan.innerText = "GPS Location Locked! Add House/Door No if needed.";
+                    } else {
+                        statusSpan.innerText = `GPS Pinned (${lat.toFixed(4)}, ${lng.toFixed(4)}). Enter address below:`;
+                    }
+                });
             } else {
-                openBottomSheet(defaultLat, defaultLng);
+                statusSpan.innerText = `GPS Pinned (${lat.toFixed(4)}, ${lng.toFixed(4)}). Enter address below:`;
             }
         }
 
-        function fetchRealLocationFromMap() {
+        // --- LIVE AREA SEARCH SUGGESTIONS ---
+        window.handleAreaSearch = function(query) {
+            const sugBox = document.getElementById('searchSuggestions');
+            if (searchTimer) clearTimeout(searchTimer);
+
+            if (!query || query.trim().length < 3) {
+                sugBox.style.display = 'none';
+                return;
+            }
+
+            searchTimer = setTimeout(async () => {
+                try {
+                    const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=in&q=${encodeURIComponent(query.trim())}&limit=5`;
+                    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+                    const list = await res.json();
+
+                    if (list && list.length > 0) {
+                        sugBox.innerHTML = '';
+                        list.forEach(place => {
+                            const lat = parseFloat(place.lat);
+                            const lon = parseFloat(place.lon);
+                            const disp = place.display_name;
+                            sugBox.innerHTML += `
+                                <div class="sug-item" onclick="pickSearchSuggestion(${lat}, ${lon}, '${disp.replace(/'/g, "\\'")}')">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span>${disp}</span>
+                                </div>
+                            `;
+                        });
+                        sugBox.style.display = 'block';
+                    } else {
+                        sugBox.style.display = 'none';
+                    }
+                } catch (e) {
+                    sugBox.style.display = 'none';
+                }
+            }, 350);
+        };
+
+        window.pickSearchSuggestion = function(lat, lng, addressText) {
+            document.getElementById('searchSuggestions').style.display = 'none';
+            document.getElementById('pac-input').value = '';
+            currentPickedLat = lat;
+            currentPickedLng = lng;
+            openBottomSheet(lat, lng, false);
+            document.getElementById('fullAddress').value = addressText;
+            document.getElementById('pinCoordStatus').innerText = "Area Selected! Add House/Flat No & Save.";
+        };
+
+        // Initialize Google Map
+        window.initMap = function() {
+            try {
+                geocoder = new google.maps.Geocoder();
+                map = new google.maps.Map(document.getElementById("google-map"), { 
+                    center: { lat: currentPickedLat, lng: currentPickedLng }, 
+                    zoom: 16, 
+                    disableDefaultUI: true, 
+                    zoomControl: true 
+                });
+                
+                marker = new google.maps.Marker({ 
+                    position: { lat: currentPickedLat, lng: currentPickedLng }, 
+                    map: map, 
+                    draggable: true, 
+                    animation: google.maps.Animation.DROP 
+                });
+                
+                map.addListener('click', function(event) { 
+                    const lat = event.latLng.lat();
+                    const lng = event.latLng.lng();
+                    marker.setPosition(event.latLng); 
+                    map.panTo(event.latLng);
+                    reverseGeocodeCoordinates(lat, lng);
+                });
+
+                marker.addListener('dragend', function(event) {
+                    const lat = event.latLng.lat();
+                    const lng = event.latLng.lng();
+                    reverseGeocodeCoordinates(lat, lng);
+                });
+            } catch (e) {
+                console.log("Map init error:", e);
+            }
+        };
+
+        // Main "Use Current Location" Button
+        window.fetchRealLocationMain = function() {
+            const gpsText = document.getElementById('gps-text');
+            const gpsSub = document.getElementById('gps-subtext');
+            const gpsIcon = document.getElementById('gps-icon');
+
+            gpsText.innerText = "Detecting your GPS location..."; 
+            gpsIcon.className = "fa-solid fa-spinner fa-spin";
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => { 
+                        gpsText.innerText = "Use Current Location"; 
+                        gpsSub.innerText = "GPS detected successfully!";
+                        gpsIcon.className = "fa-solid fa-location-crosshairs";
+
+                        currentPickedLat = position.coords.latitude;
+                        currentPickedLng = position.coords.longitude;
+                        openBottomSheet(currentPickedLat, currentPickedLng, true);
+                    },
+                    (error) => { 
+                        gpsText.innerText = "Use Current Location"; 
+                        gpsIcon.className = "fa-solid fa-location-crosshairs";
+                        alert("Please turn ON Location / GPS in your phone settings, or type your address below.");
+                        openBottomSheet(currentPickedLat, currentPickedLng, false); 
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
+                );
+            } else {
+                openBottomSheet(currentPickedLat, currentPickedLng, false);
+            }
+        };
+
+        window.fetchRealLocationFromMap = function() {
             const mapIcon = document.getElementById('map-gps-icon');
             mapIcon.className = "fa-solid fa-spinner fa-spin";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => { 
                         mapIcon.className = "fa-solid fa-location-crosshairs";
-                        let userLat = position.coords.latitude; let userLng = position.coords.longitude;
-                        const newPos = { lat: userLat, lng: userLng };
-                        map.setCenter(newPos); marker.setPosition(newPos); addBlueDot(userLat, userLng);
+                        currentPickedLat = position.coords.latitude;
+                        currentPickedLng = position.coords.longitude;
+                        const newPos = { lat: currentPickedLat, lng: currentPickedLng };
+                        if (map && marker) {
+                            map.setCenter(newPos);
+                            marker.setPosition(newPos);
+                        }
+                        reverseGeocodeCoordinates(currentPickedLat, currentPickedLng);
                     },
-                    (error) => { mapIcon.className = "fa-solid fa-location-crosshairs"; }, { enableHighAccuracy: true }
+                    () => { mapIcon.className = "fa-solid fa-location-crosshairs"; },
+                    { enableHighAccuracy: true, timeout: 8000 }
                 );
             }
-        }
+        };
 
-        function addBlueDot(lat, lng) {
-            const blueDotIcon = { path: google.maps.SymbolPath.CIRCLE, fillColor: '#4285F4', fillOpacity: 1, scale: 8, strokeColor: 'white', strokeWeight: 2 };
-            if (!blueDotMarker) { blueDotMarker = new google.maps.Marker({ position: { lat: lat, lng: lng }, map: map, icon: blueDotIcon, zIndex: 0 }); } 
-            else { blueDotMarker.setPosition({ lat: lat, lng: lng }); }
-        }
-
-        // Sheet Functions
-        function openBottomSheet(lat, lng) { 
-            overlay.style.opacity = '1'; overlay.style.pointerEvents = 'auto'; 
+        window.openBottomSheet = function(lat, lng, autoReverse) { 
+            overlay.style.opacity = '1';
+            overlay.style.pointerEvents = 'auto'; 
             sheet.style.transform = 'translateY(0)'; 
-            mapWrapper.style.display = 'block'; 
-            document.getElementById('manualBtn').innerText = "Enter address manually"; 
+            
             if (map && marker) { 
                 const newPos = { lat: lat, lng: lng }; 
                 map.setCenter(newPos); 
                 marker.setPosition(newPos); 
             } 
             
-            // Auto fill name if logged in
-            const profile = JSON.parse(localStorage.getItem('userProfileData'));
-            if(profile && profile.firstName) {
+            const profile = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            if (profile.firstName && !document.getElementById('recvName').value) {
                 document.getElementById('recvName').value = profile.firstName;
-                if(profile.lastName) document.getElementById('recvSurname').value = profile.lastName;
+                if (profile.lastName) document.getElementById('recvSurname').value = profile.lastName;
             }
-        }
+
+            if (autoReverse) {
+                reverseGeocodeCoordinates(lat, lng);
+            }
+        };
         
-        function closeBottomSheet() { 
+        window.closeBottomSheet = function() { 
             overlay.style.opacity = '0'; 
             overlay.style.pointerEvents = 'none'; 
             sheet.style.transform = 'translateY(100%)'; 
-        }
-        
-        function toggleMap() { 
-            if (mapWrapper.style.display === 'none') { 
-                mapWrapper.style.display = 'block'; 
-                document.getElementById('manualBtn').innerText = "Enter address manually"; 
-            } else { 
-                mapWrapper.style.display = 'none'; 
-                document.getElementById('manualBtn').innerText = "Pick on map instead"; 
-            } 
-        }
+        };
 
-        function selectType(type, element) {
+        window.selectType = function(type, element) {
             document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
             selectedAddressType = type;
-            
-            if(type === 'Other') {
-                document.getElementById('otherInputWrapper').style.display = 'block';
-            } else {
-                document.getElementById('otherInputWrapper').style.display = 'none';
-            }
-        }
+            document.getElementById('otherInputWrapper').style.display = (type === 'Other') ? 'block' : 'none';
+        };
 
-        // Navigation after saving
         function goBackToCorrectPage() {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('from') === 'cart') {
-                window.location.href = "cart.html";
+                window.location.replace("cart.html");
             } else {
-                window.history.back(); // Goes back to Home or Profile
+                window.location.replace("home.html"); 
             }
         }
 
-        // Saving Logic
-        function saveToFirebaseAndRedirect(addressText) {
-            localStorage.setItem("userSavedAddress", addressText); 
+        function saveToFirebaseAndRedirect(addressText, lat, lng) {
+            localStorage.setItem("userSavedAddress", addressText);
+            localStorage.setItem("userLat", lat);
+            localStorage.setItem("userLng", lng);
             
             const userPhone = localStorage.getItem('userPhone');
             if (userPhone) {
                 const btn = document.getElementById('saveAddrBtn');
-                if(btn) btn.innerText = "Saving...";
+                if (btn) { btn.innerText = "Saving Address..."; btn.disabled = true; }
                 
-                database.ref('users/' + userPhone + '/profile/address').set(addressText)
-                .then(() => {
+                database.ref('users/' + userPhone + '/profile').update({
+                    address: addressText,
+                    latitude: lat,
+                    longitude: lng
+                }).then(() => {
                     goBackToCorrectPage();
-                }).catch((error) => {
-                    console.error("Error saving address:", error);
+                }).catch(() => {
                     goBackToCorrectPage();
                 });
             } else {
@@ -350,33 +481,32 @@
             }
         }
 
-        function saveLocation() {
-            const fname = document.getElementById('recvName').value.trim(); 
+        window.saveLocation = function() {
+            const fname = document.getElementById('recvName').value.trim() || 'Customer'; 
             const sname = document.getElementById('recvSurname').value.trim(); 
             const fullAddr = document.getElementById('fullAddress').value.trim();
             
             let finalType = selectedAddressType;
-            if(selectedAddressType === 'Other') {
+            if (selectedAddressType === 'Other') {
                 const custom = document.getElementById('customType').value.trim();
-                if(!custom) { alert("Please enter the address type (e.g., Gym, Friend's house)"); return; }
+                if (!custom) { alert("Please enter address label (e.g. Shop, Friend's House)"); return; }
                 finalType = custom;
             }
 
-            if(!fname || !fullAddr) { 
-                alert("Please enter Name and Full Address"); 
+            if (!fullAddr) { 
+                alert("Please enter your Full Address (House No, Street, Area)"); 
                 return; 
             }
             
-            // Format: "Type|FirstName LastName|FullAddress"
             const finalName = fname + (sname ? ` ${sname}` : "");
             const finalAddressString = finalType + "|" + finalName + "|" + fullAddr;
             
-            saveToFirebaseAndRedirect(finalAddressString);
-        }
+            saveToFirebaseAndRedirect(finalAddressString, currentPickedLat, currentPickedLng);
+        };
 
-        function selectExistingAddress(addressText) { 
-            saveToFirebaseAndRedirect(addressText); 
-        }
+        window.selectExistingAddress = function(addressText) { 
+            saveToFirebaseAndRedirect(addressText, currentPickedLat, currentPickedLng); 
+        };
     </script>
 </body>
 </html>
