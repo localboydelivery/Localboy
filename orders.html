@@ -14,74 +14,80 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 90px; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 95px; overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
 
-        /* Premium Top Bar */
+        /* Top Bar */
         .top-bar { display: flex; align-items: center; padding: 15px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 20px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #1e293b; transition: 0.2s;}
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a;}
+        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
+        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
 
         /* Tabs */
-        .tabs-container { display: flex; background: #ffffff; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .tab { flex: 1; text-align: center; padding: 15px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.3s; }
+        .tabs-container { display: flex; background: #ffffff; padding: 0 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); position: sticky; top: 68px; z-index: 99; }
+        .tab { flex: 1; text-align: center; padding: 14px 0; font-size: 14px; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; transition: 0.25s; }
         .tab.active { color: #ff5200; border-bottom: 3px solid #ff5200; }
 
         /* Orders Container */
         .orders-container { padding: 15px; display: none; }
-        .orders-container.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .orders-container.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Premium Order Card */
-        .order-card { background: #ffffff; border-radius: 20px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        /* Order Card */
+        .order-card { background: #ffffff; border-radius: 20px; padding: 18px; margin-bottom: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
         
         /* Active Order Specific */
-        .live-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e2e8f0; }
-        .status-text h4 { font-size: 18px; font-weight: 800; color: #ff5200; display: flex; align-items: center; gap: 8px;}
-        .status-text p { font-size: 12px; color: #64748b; margin-top: 3px; font-weight: 600;}
+        .live-status { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px dashed #e2e8f0; }
+        .status-text h4 { font-size: 16px; font-weight: 800; color: #ff5200; display: flex; align-items: center; gap: 8px; }
+        .status-text p { font-size: 11.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
         
-        .eta-box { background: #ecfdf5; color: #10b981; padding: 10px 14px; border-radius: 14px; text-align: center; border: 1px solid #d1fae5; min-width: 75px;}
-        .eta-box strong { display: block; font-size: 16px; font-weight: 800; }
-        .eta-box span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+        .eta-box { background: #ecfdf5; color: #10b981; padding: 8px 12px; border-radius: 12px; text-align: center; border: 1px solid #d1fae5; min-width: 72px; }
+        .eta-box strong { display: block; font-size: 15px; font-weight: 800; }
+        .eta-box span { font-size: 9.5px; font-weight: 700; text-transform: uppercase; }
 
         .rest-info { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-        .rest-info img { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
-        .rest-name { font-size: 16px; font-weight: 800; color: #0f172a;}
-        .order-id { font-size: 11px; color: #94a3b8; font-weight: 600; margin-top: 2px;}
+        .rest-info img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; background: #f1f5f9; border: 1px solid #e2e8f0; flex-shrink: 0; }
+        .rest-name { font-size: 15.5px; font-weight: 800; color: #0f172a; line-height: 1.2; }
+        .order-id { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 3px; }
 
-        .items-count { font-size: 13px; color: #475569; margin-bottom: 20px; font-weight: 600;}
-        
-        .btn-solid { width: 100%; padding: 15px; background: #ff5200; border-radius: 14px; text-align: center; font-size: 15px; font-weight: 800; color: #ffffff; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); display: block; border: none; text-decoration: none;}
-        .btn-solid:active { transform: scale(0.98); }
+        /* Detailed Items List Box */
+        .order-items-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 11px 14px; margin-bottom: 14px; }
+        .order-item-row { display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; color: #1e293b; font-weight: 600; padding: 3px 0; }
+        .order-item-row strong { color: #ff5200; font-weight: 800; margin-right: 5px; }
+        .pay-mode-pill { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-left: 6px; }
+        .pill-paid { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
+        .pill-cod { background: #fff8eb; color: #d97706; border: 1px solid #fde68a; }
+
+        /* Live Delivery Partner Box inside Order Card */
+        .dp-assigned-box { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #fff8eb, #ffedd5); border: 1px solid #fdba74; border-radius: 14px; padding: 11px 14px; margin-bottom: 14px; gap: 10px; }
+        .dp-left { display: flex; align-items: center; gap: 10px; }
+        .dp-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid #ff5200; background: #fff; flex-shrink: 0; }
+        .dp-meta h5 { font-size: 13px; font-weight: 800; color: #0f172a; }
+        .dp-meta p { font-size: 11px; color: #c2410c; font-weight: 700; margin-top: 1px; }
+        .dp-call-btn { background: #10b981; color: #fff; padding: 8px 13px; border-radius: 10px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 5px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25); }
+
+        .btn-solid { width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6a00, #ff5200); border-radius: 14px; text-align: center; font-size: 14.5px; font-weight: 800; color: #ffffff; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); display: flex; justify-content: center; align-items: center; gap: 8px; border: none; }
 
         /* Past Order Specific */
-        .past-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .past-date { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px;}
-        .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;}
-        .status-delivered { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;}
-        .status-cancelled { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2;}
-        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 15px; border-top: 1px dashed #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center;}
+        .past-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .past-date { font-size: 11px; color: #64748b; font-weight: 600; margin-top: 2px; }
+        .status-badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
+        .status-delivered { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+        .status-cancelled { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
+        .total-amt { font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 12px; border-top: 1px dashed #e2e8f0; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; }
 
         /* Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 101; border-top-left-radius: 24px; border-top-right-radius: 24px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a0aec0; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 5px; cursor: pointer;}
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 11px; font-weight: 600; gap: 4px; position: relative; padding: 4px; cursor: pointer; }
         .nav-item.active { color: #ff5200; }
-        .nav-item i { font-size: 22px; transition: transform 0.2s;}
-        .nav-item:active i { transform: scale(0.85); }
+        .nav-item i { font-size: 21px; }
         .cart-badge { position: absolute; top: -2px; right: 0px; background: #ff5200; color: white; font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; }
 
         /* Empty State */
         .empty-state { text-align: center; padding: 60px 20px; }
-        .empty-state img { width: 120px; margin-bottom: 25px; opacity: 0.8;}
-        .empty-state h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;}
-        .empty-state p { font-size: 13px; color: #64748b; font-weight: 500;}
-        
-        /* Modal for Rating */
-        .modal-btn-cancel { flex: 1; padding: 14px; border-radius: 12px; background: #f1f5f9; color: #475569; font-weight: 700; border: none; font-size: 14px; cursor: pointer; transition: 0.2s;}
-        .modal-btn-cancel:active { transform: scale(0.95); }
-        .modal-btn-submit { flex: 1; padding: 14px; border-radius: 12px; background: #ff5200; color: white; font-weight: 700; border: none; font-size: 14px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(255,82,0,0.3);}
-        .modal-btn-submit:active { transform: scale(0.95); }
+        .empty-state img { width: 115px; margin-bottom: 20px; opacity: 0.85; }
+        .empty-state h3 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+        .empty-state p { font-size: 13px; color: #64748b; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -102,7 +108,7 @@
         <div class="empty-state" id="noActiveOrder" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
             <h3>No active orders</h3>
-            <p>You don't have any ongoing orders at the moment.</p>
+            <p>You don't have any ongoing orders right now.</p>
         </div>
         <div id="activeOrdersList"></div>
     </div>
@@ -112,44 +118,9 @@
         <div class="empty-state" id="noPastOrder" style="display: none;">
             <img src="https://cdn-icons-png.flaticon.com/512/2934/2934250.png" alt="No Orders">
             <h3>No past orders</h3>
-            <p>Your order history is empty.</p>
+            <p>Your completed order history will appear here.</p>
         </div>
         <div id="pastOrdersList"></div>
-    </div>
-
-    <!-- Beautiful Star Rating Modal (No More github.io Alerts!) -->
-    <div id="ratingModalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.6); z-index:1000; justify-content:center; align-items:center; backdrop-filter:blur(3px);">
-        <div id="modalBox" style="background:#fff; width:85%; max-width:340px; border-radius:24px; padding:25px; text-align:center; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
-            
-            <div id="ratingContent">
-                <h3 style="font-size:20px; font-weight:800; color:#0f172a; margin-bottom:5px;">Rate your Order</h3>
-                <p style="font-size:12px; color:#64748b; margin-bottom:20px; font-weight:500;">How was your food and delivery experience?</p>
-                
-                <div id="starContainer" style="display:flex; justify-content:center; gap:12px; font-size:35px; color:#e2e8f0; margin-bottom:25px;">
-                    <i class="fa-solid fa-star star-btn" data-val="1"></i>
-                    <i class="fa-solid fa-star star-btn" data-val="2"></i>
-                    <i class="fa-solid fa-star star-btn" data-val="3"></i>
-                    <i class="fa-solid fa-star star-btn" data-val="4"></i>
-                    <i class="fa-solid fa-star star-btn" data-val="5"></i>
-                </div>
-                
-                <input type="hidden" id="selectedRating" value="0">
-                <input type="hidden" id="ratingOrderId" value="">
-                
-                <div style="display:flex; gap:12px;">
-                    <button class="modal-btn-cancel" onclick="closeModal()">Cancel</button>
-                    <button class="modal-btn-submit" onclick="submitRating()">Submit</button>
-                </div>
-            </div>
-
-            <!-- Success Message Box -->
-            <div id="successContent" style="display: none; padding: 20px 0;">
-                <i class="fa-solid fa-circle-check" style="font-size: 50px; color: #10b981; margin-bottom: 15px;"></i>
-                <h3 style="font-size:20px; font-weight:800; color:#0f172a;">Thank You!</h3>
-                <p style="font-size:13px; color:#64748b; margin-top: 5px;">Your feedback has been submitted.</p>
-            </div>
-
-        </div>
     </div>
 
     <!-- Bottom Nav -->
@@ -169,13 +140,13 @@
             window.location.replace("index.html");
         }
 
-        // EXACT CORRECT FIREBASE CONFIG
+        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.appspot.com",
+            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
             messagingSenderId: "184676228358",
             appId: "1:184676228358:web:c2b32b68debeeadadfd287",
             measurementId: "G-E3TT96ZH1T"
@@ -183,6 +154,12 @@
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
+
+        let restProfilesMap = {};
+        let restMenusMap = {};
+        let groceriesMap = {};
+        let deliveryPartnersMap = {};
+        let userOrdersList = [];
 
         window.addEventListener('pageshow', function() {
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
@@ -194,219 +171,281 @@
                 bottomNavBadge.style.display = 'none';
             }
 
-            fetchOrders();
+            initReferenceListeners();
         });
 
-        function fetchOrders() {
+        function initReferenceListeners() {
             const userPhone = localStorage.getItem('userPhone');
-            if(!userPhone) {
-                document.getElementById('noActiveOrder').style.display = 'block';
-                document.getElementById('noPastOrder').style.display = 'block';
-                return;
-            }
+            if (!userPhone) return;
 
-            database.ref('orders').orderByChild('customerId').equalTo(userPhone)
-            .on('value', (snapshot) => {
-                const activeList = document.getElementById('activeOrdersList');
-                const pastList = document.getElementById('pastOrdersList');
-                activeList.innerHTML = '';
-                pastList.innerHTML = '';
-                
-                let hasActive = false;
-                let hasPast = false;
+            // Load reference maps so every Restaurant Name, Item Name & Delivery Partner resolves accurately
+            database.ref('restaurant_profiles').on('value', s => { restProfilesMap = s.val() || {}; renderAllOrders(); });
+            database.ref('restaurant_menus').on('value', s => { restMenusMap = s.val() || {}; renderAllOrders(); });
+            database.ref('groceries').on('value', s => { groceriesMap = s.val() || {}; renderAllOrders(); });
+            database.ref('delivery_partners').on('value', s => { deliveryPartnersMap = s.val() || {}; renderAllOrders(); });
 
-                let ordersArray = [];
-                snapshot.forEach(child => { ordersArray.push(child.val()); });
-                ordersArray.sort((a, b) => b.timestamp - a.timestamp);
-
-                ordersArray.forEach(order => {
-                    let totalItemsCount = 0;
-                    let itemsHtmlSummary = '';
-                    for (let id in order.items) {
-                        totalItemsCount += order.items[id];
-                    }
-                    itemsHtmlSummary = `${totalItemsCount} x Item${totalItemsCount > 1 ? 's' : ''}`;
-
-                    let fullItemsList = '';
-                    for (let id in order.items) {
-                        fullItemsList += `${order.items[id]} x Item<br>`;
-                    }
-
-                    const dateObj = new Date(order.timestamp);
-                    const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + ", " + dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-                    
-                    const isGrocery = order.restaurantId === 'grocery_store';
-                    const imgUrl = isGrocery ? 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=200' : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=200';
-                    const storeName = isGrocery ? 'Local Boy Groceries' : 'Restaurant Partner';
-
-                    if (order.status === 'Delivered' || order.status === 'Cancelled') {
-                        hasPast = true;
-                        let badgeClass = order.status === 'Delivered' ? 'status-delivered' : 'status-cancelled';
-                        
-                        let ratingHtml = `<span style="color: #64748b; font-size: 13px; font-weight: 600;">Total Amount</span>`;
-                        if (order.status === 'Delivered') {
-                            if (order.rating) {
-                                ratingHtml = `<span style="color: #f59e0b; font-size: 13px; font-weight: 700; background: #fffbeb; padding: 4px 10px; border-radius: 8px;"><i class="fa-solid fa-star"></i> Rated ${order.rating}/5</span>`;
-                            } else {
-                                ratingHtml = `<span class="clickable" style="color: #ff5200; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid #ff5200; padding: 4px 10px; border-radius: 8px;" onclick="openRatingModal('${order.orderId}')"><i class="fa-regular fa-star"></i> Rate Order</span>`;
-                            }
-                        }
-
-                        pastList.innerHTML += `
-                            <div class="order-card">
-                                <div class="past-header">
-                                    <div class="rest-info" style="margin-bottom: 0;">
-                                        <img src="${imgUrl}">
-                                        <div>
-                                            <div class="rest-name">${order.customerName ? (isGrocery ? storeName : 'Food Order') : storeName}</div>
-                                            <div class="past-date">${dateStr}</div>
-                                        </div>
-                                    </div>
-                                    <div class="status-badge ${badgeClass}">${order.status}</div>
-                                </div>
-                                <div class="items-count" style="margin-top: 10px;">${fullItemsList}</div>
-                                <div class="total-amt">
-                                    ${ratingHtml}
-                                    <span>₹${order.totalAmount}</span>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        hasActive = true;
-                        localStorage.setItem('activeOrder', 'true');
-                        
-                        let statusIcon = 'fa-fire-burner';
-                        let statusMainText = order.status;
-                        let statusSubText = "Order is currently being processed";
-                        
-                        let calculatedMins = 15;
-                        if(order.distance) {
-                            calculatedMins = Math.ceil(order.distance * 3);
-                        }
-
-                        if(order.status === 'Placed') {
-                            statusIcon = 'fa-clock';
-                            statusMainText = 'Waiting';
-                            statusSubText = 'Waiting for confirmation';
-                            calculatedMins = 20;
-                        } else if(order.status === 'Preparing') {
-                            statusIcon = 'fa-fire-burner';
-                            statusMainText = 'Preparing';
-                            statusSubText = 'Order is currently being processed';
-                            calculatedMins += 10;
-                        } else if(order.status === 'Ready') {
-                            statusIcon = 'fa-bag-shopping';
-                            statusMainText = 'Food Ready';
-                            statusSubText = 'Waiting for delivery partner';
-                            calculatedMins = 5;
-                        } else if(order.status === 'On the Way') {
-                            statusIcon = 'fa-motorcycle';
-                            statusMainText = 'On the Way';
-                            statusSubText = 'Partner is heading to you';
-                        }
-                        
-                        activeList.innerHTML += `
-                            <div class="order-card">
-                                <div class="live-status">
-                                    <div class="status-text">
-                                        <h4><i class="fa-solid ${statusIcon} fa-bounce"></i> ${statusMainText}</h4>
-                                        <p>${statusSubText}</p>
-                                    </div>
-                                    <div class="eta-box">
-                                        <strong>${calculatedMins} min</strong>
-                                        <span>ETA</span>
-                                    </div>
-                                </div>
-                                <div class="rest-info">
-                                    <img src="${imgUrl}">
-                                    <div>
-                                        <div class="rest-name">${order.customerName ? (isGrocery ? storeName : 'Food Order') : storeName}</div>
-                                        <div class="order-id">Order ID: #${order.orderId}</div>
-                                    </div>
-                                </div>
-                                <div class="items-count">${itemsHtmlSummary}</div>
-                                <a href="track.html?id=${order.orderId}" class="btn-solid clickable">Track on Map</a>
-                            </div>
-                        `;
-                    }
-                });
-
-                document.getElementById('noActiveOrder').style.display = hasActive ? 'none' : 'block';
-                document.getElementById('noPastOrder').style.display = hasPast ? 'none' : 'block';
-                
-                if(!hasActive) { localStorage.setItem('activeOrder', 'false'); }
+            // Listen to Customer's Orders
+            database.ref('orders').orderByChild('customerId').equalTo(userPhone).on('value', (snapshot) => {
+                userOrdersList = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const o = child.val();
+                        o._key = child.key;
+                        userOrdersList.push(o);
+                    });
+                    userOrdersList.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+                }
+                renderAllOrders();
             });
         }
 
-        function switchTab(tabName) {
+        // Resolve Store Name & Image accurately
+        function getStoreInfo(order) {
+            if (order.restaurantId === 'grocery_store') {
+                return {
+                    name: 'Local Boy Groceries',
+                    img: 'https://cdn-icons-png.flaticon.com/512/3194/3194591.png',
+                    isGrocery: true
+                };
+            }
+            const prof = restProfilesMap[order.restaurantId] || {};
+            return {
+                name: order.restaurantName || prof.name || 'Local Boy Partner Restaurant',
+                img: order.restaurantImage || prof.image || 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=150&auto=format&fit=crop',
+                isGrocery: false
+            };
+        }
+
+        // Resolve Exact Item Names & Quantities
+        function getOrderItemsHtml(order) {
+            let rowsHtml = '';
+            const snapDetails = order.itemsDetails || {};
+            const rMenu = restMenusMap[order.restaurantId] || {};
+            const itemsObj = order.items || {};
+
+            for (let itemId in itemsObj) {
+                const qty = itemsObj[itemId];
+                let itemName = '';
+                let itemWeight = '';
+
+                if (snapDetails[itemId] && snapDetails[itemId].name) {
+                    itemName = snapDetails[itemId].name;
+                    itemWeight = snapDetails[itemId].weight ? ` (${snapDetails[itemId].weight})` : '';
+                } else if (order.restaurantId === 'grocery_store' && groceriesMap[itemId]) {
+                    itemName = groceriesMap[itemId].name || groceriesMap[itemId].en || 'Grocery Item';
+                    itemWeight = groceriesMap[itemId].weight ? ` (${groceriesMap[itemId].weight})` : '';
+                } else if (rMenu[itemId]) {
+                    itemName = rMenu[itemId].name || rMenu[itemId].en || 'Menu Dish';
+                    itemWeight = rMenu[itemId].weight ? ` (${rMenu[itemId].weight})` : '';
+                } else {
+                    itemName = 'Ordered Item';
+                }
+
+                rowsHtml += `
+                    <div class="order-item-row">
+                        <span><strong>${qty} x</strong> ${itemName}${itemWeight}</span>
+                    </div>
+                `;
+            }
+
+            return rowsHtml || `<div class="order-item-row"><span>1 x Order Package</span></div>`;
+        }
+
+        // Build Delivery Partner Info Box if assigned
+        function getDeliveryPartnerHtml(order) {
+            if (!order.deliveryPartnerId) return '';
+
+            const dp = deliveryPartnersMap[order.deliveryPartnerId] || {};
+            const dpName = order.deliveryPartnerName || dp.name || 'Delivery Partner';
+            const dpPhone = order.deliveryPartnerPhone || dp.phone || '';
+            const dpPhoto = dp.image || 'https://cdn-icons-png.flaticon.com/512/2972/2972185.png';
+            const dpBike = dp.vehicleNumber ? `• Bike: ${dp.vehicleNumber}` : '';
+
+            let stepLabel = 'Assigned to your order';
+            if (order.status === 'Delivered') stepLabel = 'Delivered your order';
+            else if (order.reachedCustomer) stepLabel = '📍 Reached your doorstep!';
+            else if (order.status === 'On the Way') stepLabel = '🛵 Out for delivery';
+            else if (order.reachedRestaurant) stepLabel = '🏪 Reached store for pickup';
+            else if (order.riderAccepted) stepLabel = '✅ Accepted & heading to store';
+
+            return `
+                <div class="dp-assigned-box">
+                    <div class="dp-left">
+                        <img src="${dpPhoto}" class="dp-avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2972/2972185.png'">
+                        <div class="dp-meta">
+                            <h5>${dpName} <span style="font-size:11px; color:#64748b; font-weight:600;">${dpBike}</span></h5>
+                            <p>${stepLabel}</p>
+                        </div>
+                    </div>
+                    ${dpPhone && order.status !== 'Delivered' ? `<a href="tel:${dpPhone}" class="dp-call-btn clickable"><i class="fa-solid fa-phone"></i> Call</a>` : ''}
+                </div>
+            `;
+        }
+
+        function renderAllOrders() {
+            const activeList = document.getElementById('activeOrdersList');
+            const pastList = document.getElementById('pastOrdersList');
+            activeList.innerHTML = '';
+            pastList.innerHTML = '';
+            
+            let hasActive = false;
+            let hasPast = false;
+
+            userOrdersList.forEach(order => {
+                const ordId = order.orderId || order._key;
+                const store = getStoreInfo(order);
+                const itemsHtml = getOrderItemsHtml(order);
+                const dpBoxHtml = getDeliveryPartnerHtml(order);
+                const bgStyle = store.isGrocery ? 'style="background:#ecfdf5; padding:4px;"' : '';
+
+                const dateObj = new Date(order.timestamp || Date.now());
+                const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + " • " +
+                                dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+                const isCod = (order.paymentMethod || 'Cash on Delivery').toLowerCase().includes('cash');
+                const payPill = isCod
+                    ? `<span class="pay-mode-pill pill-cod">COD: ₹${order.totalAmount}</span>`
+                    : `<span class="pay-mode-pill pill-paid">Paid Online</span>`;
+
+                const st = order.status || 'Placed';
+
+                if (st === 'Delivered' || st === 'Cancelled' || st === 'Rejected') {
+                    hasPast = true;
+                    let badgeClass = st === 'Delivered' ? 'status-delivered' : 'status-cancelled';
+                    
+                    let ratingHtml = `<span style="color: #64748b; font-size: 12.5px; font-weight: 600;">Bill Total ${payPill}</span>`;
+                    if (st === 'Delivered') {
+                        if (order.rating) {
+                            ratingHtml = `<span style="color: #d97706; font-size: 13px; font-weight:700;"><i class="fa-solid fa-star"></i> Rated ${order.rating}/5 ${payPill}</span>`;
+                        } else {
+                            ratingHtml = `<span class="clickable" style="color: #ff5200; font-size: 13px; font-weight:700; cursor: pointer;" onclick="rateOrder('${order._key}', '${order.restaurantId}', '${store.name.replace(/'/g, "\\'")}')"><i class="fa-regular fa-star"></i> Rate Order ${payPill}</span>`;
+                        }
+                    }
+
+                    pastList.innerHTML += `
+                        <div class="order-card">
+                            <div class="past-header">
+                                <div class="rest-info" style="margin-bottom: 0;">
+                                    <img src="${store.img}" ${bgStyle}>
+                                    <div>
+                                        <div class="rest-name">${store.name}</div>
+                                        <div class="past-date">#${ordId} • ${dateStr}</div>
+                                    </div>
+                                </div>
+                                <div class="status-badge ${badgeClass}">${st}</div>
+                            </div>
+                            <div class="order-items-box" style="margin-top: 12px; margin-bottom: 10px;">
+                                ${itemsHtml}
+                            </div>
+                            ${order.deliveryPartnerId ? `<div style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:6px;"><i class="fa-solid fa-motorcycle" style="color:#10b981;"></i> Delivered by: <strong>${order.deliveryPartnerName || 'Partner'}</strong></div>` : ''}
+                            <div class="total-amt">
+                                ${ratingHtml}
+                                <span>₹${order.totalAmount}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    hasActive = true;
+                    localStorage.setItem('activeOrder', 'true');
+                    
+                    let statusIcon = 'fa-fire-burner';
+                    let statusMainText = st;
+                    let statusSubText = "Your order is being processed";
+                    let calculatedMins = order.distance ? Math.max(10, Math.ceil(order.distance * 4)) : 15;
+
+                    if (st === 'Placed') {
+                        statusIcon = 'fa-clock';
+                        statusMainText = 'Order Placed';
+                        statusSubText = 'Waiting for store confirmation';
+                        calculatedMins = 25;
+                    } else if (st === 'Preparing') {
+                        statusIcon = 'fa-fire-burner';
+                        statusMainText = 'Preparing Order';
+                        statusSubText = 'Chef is preparing your items fresh';
+                        calculatedMins += 10;
+                    } else if (st === 'Ready') {
+                        statusIcon = 'fa-bag-shopping';
+                        statusMainText = 'Order Ready';
+                        statusSubText = 'Packed & ready for pickup';
+                        calculatedMins = 12;
+                    } else if (st === 'On the Way') {
+                        statusIcon = 'fa-motorcycle';
+                        statusMainText = order.reachedCustomer ? 'Reached Your Location!' : 'Out for Delivery';
+                        statusSubText = order.reachedCustomer ? 'Delivery partner is at your doorstep' : 'Delivery partner is on the way to you';
+                        calculatedMins = order.reachedCustomer ? 1 : calculatedMins;
+                    }
+                    
+                    activeList.innerHTML += `
+                        <div class="order-card">
+                            <div class="live-status">
+                                <div class="status-text">
+                                    <h4><i class="fa-solid ${statusIcon} fa-bounce"></i> ${statusMainText}</h4>
+                                    <p>${statusSubText}</p>
+                                </div>
+                                <div class="eta-box">
+                                    <strong>${calculatedMins} min</strong>
+                                    <span>ETA</span>
+                                </div>
+                            </div>
+                            <div class="rest-info">
+                                <img src="${store.img}" ${bgStyle}>
+                                <div style="flex:1;">
+                                    <div class="rest-name">${store.name}</div>
+                                    <div class="order-id">Order #${ordId} • Total: <strong>₹${order.totalAmount}</strong> ${payPill}</div>
+                                </div>
+                            </div>
+                            <div class="order-items-box">
+                                ${itemsHtml}
+                            </div>
+                            ${dpBoxHtml}
+                            <a href="track.html?id=${ordId}" class="btn-solid clickable">
+                                <i class="fa-solid fa-location-crosshairs"></i> Live Track Order
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('noActiveOrder').style.display = hasActive ? 'none' : 'block';
+            document.getElementById('noPastOrder').style.display = hasPast ? 'none' : 'block';
+            if (!hasActive) { localStorage.setItem('activeOrder', 'false'); }
+        }
+
+        window.switchTab = function(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.orders-container').forEach(c => c.classList.remove('active'));
-            if(tabName === 'active') {
+            if (tabName === 'active') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('activeOrders').classList.add('active');
             } else {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('pastOrders').classList.add('active');
             }
-        }
+        };
 
-        // --- Custom Star Rating Logic ---
-        function openRatingModal(orderId) {
-            document.getElementById('ratingOrderId').value = orderId;
-            document.getElementById('selectedRating').value = "0";
-            document.querySelectorAll('.star-btn').forEach(s => s.style.color = '#e2e8f0');
-            
-            document.getElementById('ratingContent').style.display = 'block';
-            document.getElementById('successContent').style.display = 'none';
-            document.getElementById('ratingModalOverlay').style.display = 'flex';
-        }
+        window.rateOrder = function(orderKey, restId, restName) {
+            let rating = prompt("Rate your order out of 5 (1 to 5):", "5");
+            if (rating && !isNaN(rating) && rating >= 1 && rating <= 5) {
+                let comment = prompt("Write a quick review (optional):", "Great taste and fast delivery!") || "";
+                const numRating = parseInt(rating);
+                const prof = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+                const cName = prof.firstName ? `${prof.firstName} ${prof.lastName || ''}`.trim() : 'Customer';
 
-        function closeModal() {
-            document.getElementById('ratingModalOverlay').style.display = 'none';
-        }
-
-        document.querySelectorAll('.star-btn').forEach(star => {
-            star.addEventListener('click', function() {
-                let ratingVal = this.getAttribute('data-val');
-                document.getElementById('selectedRating').value = ratingVal;
-                
-                document.querySelectorAll('.star-btn').forEach(s => {
-                    if(s.getAttribute('data-val') <= ratingVal) {
-                        s.style.color = '#f59e0b'; // Gold color
-                    } else {
-                        s.style.color = '#e2e8f0'; // Gray color
-                    }
-                });
-            });
-        });
-
-        function submitRating() {
-            let orderId = document.getElementById('ratingOrderId').value;
-            let rating = parseInt(document.getElementById('selectedRating').value);
-            
-            if(rating > 0) {
-                database.ref('orders/' + orderId).update({ rating: rating })
-                .then(() => {
-                    // Show success checkmark nicely without browser alert
-                    document.getElementById('ratingContent').style.display = 'none';
-                    document.getElementById('successContent').style.display = 'block';
-                    
-                    setTimeout(() => {
-                        closeModal();
-                    }, 1500); // closes modal smoothly after 1.5 seconds
-                });
-            } else {
-                // If 0 stars selected, animate shaking or red border (No alerts)
-                const starBox = document.getElementById('starContainer');
-                starBox.style.border = "1px solid #ef4444";
-                starBox.style.padding = "5px";
-                starBox.style.borderRadius = "12px";
-                setTimeout(() => {
-                    starBox.style.border = "none";
-                    starBox.style.padding = "0";
-                }, 1500);
+                database.ref('orders/' + orderKey).update({ rating: numRating, reviewText: comment });
+                database.ref('reviews').push({
+                    orderId: orderKey,
+                    restaurantId: restId,
+                    restaurantName: restName,
+                    customerName: cName,
+                    customerPhone: localStorage.getItem('userPhone') || '',
+                    rating: numRating,
+                    comment: comment,
+                    timestamp: Date.now()
+                }).then(() => alert("Thank you for your feedback!"));
+            } else if (rating !== null) {
+                alert("Please enter a valid number between 1 and 5.");
             }
-        }
+        };
     </script>
 </body>
 </html>
