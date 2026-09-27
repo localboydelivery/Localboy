@@ -14,52 +14,53 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; padding-bottom: 40px; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: #f8fafc; color: #1e293b; padding-bottom: 40px; }
         a { text-decoration: none; color: inherit; display: block; }
         .clickable:active { transform: scale(0.97); opacity: 0.85; }
 
-        .search-header { display: flex; align-items: center; padding: 15px 18px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.04); gap: 12px; }
-        .back-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; color: #0f172a; cursor: pointer; flex-shrink: 0; }
+        /* Fixed Header - Never overflows screen width */
+        .search-header { display: flex; align-items: center; width: 100%; padding: 14px 16px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.04); gap: 10px; }
+        .back-btn { width: 38px; height: 38px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 17px; color: #0f172a; cursor: pointer; flex-shrink: 0; }
         
-        .search-input-wrapper { flex: 1; display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 10px 14px; border: 1.5px solid #e2e8f0; transition: 0.25s; }
+        .search-input-wrapper { flex: 1; min-width: 0; display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 8px 12px; border: 1.5px solid #e2e8f0; transition: 0.25s; }
         .search-input-wrapper.active { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
         
-        .search-input-wrapper input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
+        .search-input-wrapper input { flex: 1; min-width: 0; width: 100%; border: none; background: transparent; outline: none; font-size: 13.5px; padding: 0 8px; color: #0f172a; font-weight: 500; }
         .search-input-wrapper input::placeholder { color: #94a3b8; font-weight: 400; }
         
-        .clear-input-btn { color: #94a3b8; font-size: 15px; cursor: pointer; padding: 4px 8px; display: none; }
-        .mic-btn { width: 32px; height: 32px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-        .mic-btn.listening { background: #ef4444; color: #ffffff; animation: pulse 1s infinite; }
+        .clear-input-btn { color: #94a3b8; font-size: 16px; cursor: pointer; padding: 4px 6px; display: none; flex-shrink: 0; }
+        .mic-btn { width: 34px; height: 34px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; transition: 0.3s; flex-shrink: 0; border: 1px solid #fed7aa; }
+        .mic-btn.listening { background: #ef4444; color: #ffffff; border-color: #ef4444; animation: pulse 1s infinite; }
 
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { transform: scale(1.12); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+            50% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        .search-content { padding: 20px; }
-        .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .search-content { width: 100%; padding: 18px 16px; }
+        .section-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .section-title span { font-size: 11px; color: #ff5200; cursor: pointer; font-weight: 700; }
         
-        .chip-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
-        .chip { background: #ffffff; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .chip-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; width: 100%; }
+        .chip { background: #ffffff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; color: #334155; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
         .chip i { color: #ff5200; font-size: 11px; }
 
         #searchResults { display: none; padding-top: 10px; }
-        .result-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: #ffffff; border-radius: 16px; margin-bottom: 10px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; }
-        .result-img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
+        .result-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #ffffff; border-radius: 16px; margin-bottom: 10px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; width: 100%; }
+        .result-img { width: 54px; height: 54px; border-radius: 12px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
         .result-info { flex: 1; min-width: 0; }
         .result-info h4 { font-size: 14px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .result-info p { font-size: 11.5px; color: #64748b; margin-top: 3px; font-weight: 600; }
-        .result-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 6px; margin-right: 5px; }
+        .result-info p { font-size: 11.5px; color: #64748b; margin-top: 3px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 6px; margin-right: 4px; }
         .badge-rest { background: #fff8eb; color: #ff5200; }
         .badge-dish { background: #eff6ff; color: #3b82f6; }
         .badge-groc { background: #ecfdf5; color: #10b981; }
-        .result-arrow { color: #cbd5e1; font-size: 14px; }
+        .result-arrow { color: #cbd5e1; font-size: 14px; flex-shrink: 0; }
         
         .empty-result { text-align: center; padding: 45px 20px; color: #94a3b8; }
-        .empty-result i { font-size: 42px; margin-bottom: 14px; color: #cbd5e1; }
-        .empty-result p { font-size: 14px; font-weight: 600; color: #64748b; }
+        .empty-result i { font-size: 40px; margin-bottom: 12px; color: #cbd5e1; }
+        .empty-result p { font-size: 13.5px; font-weight: 600; color: #64748b; }
     </style>
 </head>
 <body>
@@ -67,8 +68,8 @@
     <div class="search-header">
         <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
         <div class="search-input-wrapper" id="searchWrapper">
-            <i class="fa-solid fa-magnifying-glass" style="color: #ff5200;"></i>
-            <input type="text" id="searchInput" placeholder="Search biryani, restaurants, groceries..." autofocus oninput="filterResults()">
+            <i class="fa-solid fa-magnifying-glass" style="color: #ff5200; font-size: 15px; flex-shrink: 0;"></i>
+            <input type="text" id="searchInput" placeholder="Search biryani, hotels, groceries..." oninput="filterResults()">
             <i class="fa-solid fa-circle-xmark clear-input-btn" id="clearInputBtn" onclick="clearSearchInput()"></i>
             <div class="mic-btn clickable" id="micBtn" onclick="startVoiceSearch()">
                 <i class="fa-solid fa-microphone"></i>
@@ -103,7 +104,6 @@
     </div>
 
     <script>
-        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -114,9 +114,7 @@
             appId: "1:184676228358:web:c2b32b68debeeadadfd287",
             measurementId: "G-E3TT96ZH1T"
         };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         const searchInput = document.getElementById('searchInput');
@@ -137,7 +135,6 @@
         searchInput.addEventListener('focus', () => searchWrapper.classList.add('active'));
         searchInput.addEventListener('blur', () => searchWrapper.classList.remove('active'));
 
-        // Render Recent Searches from localStorage
         function renderRecentSearches() {
             const recents = JSON.parse(localStorage.getItem('lb_recent_searches')) || ['Biryani', 'Pizza', 'Milk'];
             const container = document.getElementById('recentContainer');
@@ -177,7 +174,6 @@
             searchInput.focus();
         };
 
-        // Load Restaurants, Restaurant Menu Dishes & Groceries into Unified Search Index
         async function buildSearchIndex() {
             liveSearchData = [];
             let restMap = {};
@@ -189,7 +185,6 @@
                     database.ref('groceries').once('value')
                 ]);
 
-                // 1. Index Open Restaurants
                 if (restSnap.exists()) {
                     restSnap.forEach(child => {
                         let res = child.val();
@@ -198,7 +193,7 @@
                             liveSearchData.push({
                                 name: res.name || 'Restaurant',
                                 sub: res.cuisine || 'Restaurant • 25-30 mins',
-                                badge: 'Restaurant',
+                                badge: 'Hotel',
                                 badgeClass: 'badge-rest',
                                 keywords: `${res.name} ${res.cuisine || ''}`.toLowerCase(),
                                 img: getSafeImage(res.image),
@@ -208,7 +203,6 @@
                     });
                 }
 
-                // 2. Index Individual Dishes from Open Restaurants
                 if (menuSnap.exists()) {
                     menuSnap.forEach(restChild => {
                         const rId = restChild.key;
@@ -233,7 +227,6 @@
                     });
                 }
 
-                // 3. Index Groceries
                 if (grocSnap.exists()) {
                     grocSnap.forEach(child => {
                         let item = child.val();
@@ -251,51 +244,46 @@
                     });
                 }
 
-                // Re-run filter if user already typed or URL query exists
-                if (searchInput.value.trim().length > 0) {
-                    filterResults();
-                }
-            } catch (e) {
-                console.error("Search index error:", e);
-            }
+                if (searchInput.value.trim().length > 0) filterResults();
+            } catch (e) {}
         }
 
-        // Voice Search Logic
-        window.startVoiceSearch = function() {
+        window.startVoiceSearch = async function() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    s.getTracks().forEach(t => t.stop());
+                } catch(e) {}
+            }
+
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 const recognition = new SpeechRecognition();
-                
                 recognition.lang = 'en-IN'; 
                 recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
 
                 recognition.onstart = function() {
                     micBtn.classList.add('listening');
                     searchInput.placeholder = "Listening... Speak now";
                     searchInput.value = "";
                 };
-
                 recognition.onresult = function(event) {
                     const speechResult = event.results[0][0].transcript.trim();
                     searchInput.value = speechResult;
                     saveRecentSearch(speechResult);
                     filterResults(); 
                 };
-
-                recognition.onerror = function() {
-                    resetMic();
-                };
+                recognition.onerror = resetMic;
                 recognition.onend = resetMic;
                 recognition.start();
             } else {
-                alert("Voice search is not supported on this browser. Please type your search.");
+                searchInput.focus();
             }
         };
 
         function resetMic() {
             micBtn.classList.remove('listening');
-            searchInput.placeholder = "Search biryani, restaurants, groceries...";
+            searchInput.placeholder = "Search biryani, hotels, groceries...";
         }
 
         window.setSearch = function(keyword) {
@@ -333,7 +321,7 @@
                     resultsContainer.innerHTML = `
                         <div class="empty-result">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <p>No dishes, restaurants or groceries found for "${query}"</p>
+                            <p>No dishes, hotels or groceries found for "${query}"</p>
                         </div>
                     `;
                 }
