@@ -152,12 +152,13 @@
         <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save & Proceed</button>
     </div>
 
-    <!-- ⚡ Google Maps JS SDK with your new key AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0 -->
+    <!-- ⚡ GOOGLE MAPS API KEY: AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0 -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0&libraries=places&callback=initLocMap"></script>
 
     <script>
+        // ⚡ FIREBASE CONFIG (Kept your exact Firebase Key so Database works 100%)
         const firebaseConfig = {
-            apiKey: "AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0",
+            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
@@ -300,7 +301,7 @@
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    if (data && data.display_name && !addrInput.value) {
+                    if (data && data.display_name) {
                         addrInput.value = data.display_name;
                         statusSpan.innerText = "Exact Location Locked! Add House/Door No if needed.";
                         return;
