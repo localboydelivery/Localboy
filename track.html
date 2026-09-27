@@ -7,10 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Leaflet Maps CSS & JS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -41,51 +37,23 @@
         .st-eta-pill strong { display: block; font-size: 17px; font-weight: 800; line-height: 1.1; }
         .st-eta-pill span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-        /* --- CLEAN SWIGGY/ZOMATO MAP VIEW (NO THIRD-PARTY SHOP CLUTTER) --- */
+        /* --- CLEAN SWIGGY/ZOMATO GOOGLE MAP --- */
         .map-hero-wrapper {
             position: relative;
             width: 100%;
-            height: 42vh;
-            min-height: 290px;
+            height: 44vh;
+            min-height: 300px;
             background: #e2e8f0;
             z-index: 1;
         }
         #liveTrackMap { width: 100%; height: 100%; z-index: 1; }
-        .leaflet-control-attribution { display: none !important; }
 
         .recenter-btn-float {
-            position: absolute; bottom: 24px; right: 14px; padding: 7px 13px;
+            position: absolute; bottom: 24px; right: 14px; padding: 8px 14px;
             background: #ffffff; border-radius: 20px; display: flex; align-items: center; gap: 6px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.18); z-index: 500; font-size: 11.5px; font-weight: 800; color: #0f172a; cursor: pointer;
         }
         .recenter-btn-float i { color: #ff5200; }
-
-        /* Swiggy Style Clean Floating Map Pins */
-        .swiggy-pin-box { display: flex; flex-direction: column; align-items: center; transform: translateY(-10px); }
-        .swiggy-pin-tag {
-            background: #0f172a; color: #ffffff; font-size: 10px; font-weight: 800;
-            padding: 3px 9px; border-radius: 12px; white-space: nowrap;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.25); margin-bottom: 4px;
-            border: 1.5px solid #ffffff;
-        }
-        .swiggy-pin-circle {
-            width: 38px; height: 38px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            color: #ffffff; font-size: 15px; border: 3px solid #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .circle-store { background: #ff5200; }
-        .circle-home { background: #10b981; }
-        .circle-rider {
-            width: 44px; height: 44px; background: #0f172a; color: #ff5200;
-            border: 3px solid #ff5200; font-size: 19px;
-            animation: riderPulse 1.5s infinite;
-        }
-        @keyframes riderPulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.55); }
-            70% { box-shadow: 0 0 0 14px rgba(255, 82, 0, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0); }
-        }
 
         /* --- BOTTOM SHEET CONTAINER --- */
         .track-sheet {
@@ -181,7 +149,7 @@
         </div>
     </div>
 
-    <!-- CLEAN MINIMALIST DELIVERY MAP (Zero Business Clutter!) -->
+    <!-- CLEAN GOOGLE MAP (With Business Clutter Hidden) -->
     <div class="map-hero-wrapper">
         <div id="liveTrackMap"></div>
         <div class="recenter-btn-float clickable" onclick="fitMapBounds()">
@@ -202,7 +170,7 @@
                     <div class="rider-info">
                         <h3>
                             <span id="riderNameText">Assigning Delivery Partner...</span>
-                            <span class="bike-pill" id="riderBikeText" style="display:none;">AP</span>
+                            <span class="bike-pill" id="riderBikeText" style="display:none;">BIKE</span>
                         </h3>
                         <p id="riderStepText">Connecting to nearby delivery partner...</p>
                     </div>
@@ -261,9 +229,13 @@
         </div>
     </div>
 
+    <!-- ⚡ Google Maps JS SDK with your new key AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0 -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0&libraries=places&callback=initTrackMap"></script>
+
     <script>
+        // Updated Firebase Config with new API Key
         const firebaseConfig = {
-            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            apiKey: "AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
@@ -284,38 +256,97 @@
         let riderLat = null, riderLng = null;
         let storeLabelName = "Store";
 
+        let gMap = null;
+        let directionsService = null;
+        let directionsRenderer = null;
+        let storeMarker = null;
+        let homeMarker = null;
+        let riderMarker = null;
+        let fallbackLine = null;
+
         let currentOrder = null;
         let currentPartnerListenerId = null;
         let restMenuMap = {};
         let groceriesMap = {};
 
-        // ⚡ CLEAN NAVIGATION MAP (Shows clean roads & street names WITHOUT random restaurant/shop ads!)
-        const map = L.map('liveTrackMap', { zoomControl: false }).setView([storeLat, storeLng], 15);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 19
-        }).addTo(map);
-
-        function createSwiggyPin(label, circleClass, iconClass) {
-            return L.divIcon({
-                className: '',
-                html: `
-                    <div class="swiggy-pin-box">
-                        <div class="swiggy-pin-tag">${label}</div>
-                        <div class="swiggy-pin-circle ${circleClass}"><i class="fa-solid ${iconClass}"></i></div>
-                    </div>
-                `,
-                iconSize: [110, 62],
-                iconAnchor: [55, 52]
-            });
+        // Custom SVG Icons for Store, Customer Home & Delivery Scooter
+        function makeSvgPin(bgColor, labelText) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="110" height="58" viewBox="0 0 110 58">
+                <rect x="5" y="2" width="100" height="22" rx="11" fill="#0f172a" stroke="#ffffff" stroke-width="1.5"/>
+                <text x="55" y="16" font-family="Poppins, sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">${labelText.substring(0, 14)}</text>
+                <circle cx="55" cy="41" r="14" fill="${bgColor}" stroke="#ffffff" stroke-width="3"/>
+                <circle cx="55" cy="41" r="5" fill="#ffffff"/>
+            </svg>`;
+            return {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                scaledSize: new google.maps.Size(110, 58),
+                anchor: new google.maps.Point(55, 41)
+            };
         }
 
-        let storeMarker = L.marker([storeLat, storeLng], { icon: createSwiggyPin('Store', 'circle-store', 'fa-utensils') }).addTo(map);
-        let homeMarker = L.marker([custLat, custLng], { icon: createSwiggyPin('Your Location', 'circle-home', 'fa-house') }).addTo(map);
-        let riderMarker = null;
+        function makeScooterSvgPin(riderName) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="64" viewBox="0 0 120 64">
+                <rect x="10" y="2" width="100" height="22" rx="11" fill="#ff5200" stroke="#ffffff" stroke-width="1.5"/>
+                <text x="60" y="16" font-family="Poppins, sans-serif" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">🛵 ${riderName.substring(0, 11)}</text>
+                <circle cx="60" cy="45" r="16" fill="#0f172a" stroke="#ff5200" stroke-width="3.5"/>
+                <text x="60" y="51" font-size="15" text-anchor="middle">🛵</text>
+            </svg>`;
+            return {
+                url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+                scaledSize: new google.maps.Size(120, 64),
+                anchor: new google.maps.Point(60, 45)
+            };
+        }
 
-        // Dual-layer Route Line (Dark border + Bright Orange inner line like Swiggy)
-        let routeOutline = L.polyline([], { color: '#0f172a', weight: 7, opacity: 0.25 }).addTo(map);
-        let routeLine = L.polyline([], { color: '#ff5200', weight: 4.5, opacity: 0.95 }).addTo(map);
+        // Initialize Clean Swiggy/Zomato Style Google Map
+        window.initTrackMap = function() {
+            const swiggyCleanStyle = [
+                { featureType: "poi.business", stylers: [{ visibility: "off" }] },
+                { featureType: "poi.attraction", stylers: [{ visibility: "off" }] },
+                { featureType: "poi.Medical", stylers: [{ visibility: "off" }] },
+                { featureType: "transit", stylers: [{ visibility: "off" }] },
+                { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+                { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#fde68a" }] },
+                { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#f1f5f9" }] },
+                { featureType: "water", elementType: "geometry", stylers: [{ color: "#bae6fd" }] }
+            ];
+
+            gMap = new google.maps.Map(document.getElementById('liveTrackMap'), {
+                center: { lat: storeLat, lng: storeLng },
+                zoom: 15,
+                disableDefaultUI: true,
+                zoomControl: false,
+                styles: swiggyCleanStyle
+            });
+
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: gMap,
+                suppressMarkers: true,
+                polylineOptions: {
+                    strokeColor: '#ff5200',
+                    strokeOpacity: 0.95,
+                    strokeWeight: 5
+                }
+            });
+
+            storeMarker = new google.maps.Marker({
+                position: { lat: storeLat, lng: storeLng },
+                map: gMap,
+                icon: makeSvgPin('#ff5200', storeLabelName),
+                zIndex: 10
+            });
+
+            homeMarker = new google.maps.Marker({
+                position: { lat: custLat, lng: custLng },
+                map: gMap,
+                icon: makeSvgPin('#10b981', 'Your Location'),
+                zIndex: 10
+            });
+
+            updateMapMarkersAndRoute();
+            fitMapBounds();
+        };
 
         function getDistanceKm(lat1, lon1, lat2, lon2) {
             if (!lat1 || !lon1 || !lat2 || !lon2) return 1.2;
@@ -329,79 +360,71 @@
         }
 
         window.fitMapBounds = function() {
-            const pts = [[storeLat, storeLng], [custLat, custLng]];
-            if (riderLat && riderLng) pts.push([riderLat, riderLng]);
-            map.fitBounds(pts, { padding: [55, 55], maxZoom: 16 });
+            if (!gMap) return;
+            const bounds = new google.maps.LatLngBounds();
+            bounds.extend({ lat: storeLat, lng: storeLng });
+            bounds.extend({ lat: custLat, lng: custLng });
+            if (riderLat && riderLng) bounds.extend({ lat: riderLat, lng: riderLng });
+            gMap.fitBounds(bounds, 55);
         };
 
-        // Geocode text address if exact coordinates were missing
-        async function geocodeAddressString(addrStr) {
-            if (!addrStr) return null;
-            let clean = addrStr.includes('|') ? addrStr.split('|')[2] : addrStr;
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=in&q=${encodeURIComponent(clean)}&limit=1`);
-                const arr = await res.json();
-                if (arr && arr.length > 0) {
-                    return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
+        function drawGoogleRoute(originPt, destPt) {
+            if (!directionsService || !gMap) return;
+            directionsService.route({
+                origin: originPt,
+                destination: destPt,
+                travelMode: google.maps.TravelMode.DRIVING
+            }, (result, status) => {
+                if (status === 'OK') {
+                    if (fallbackLine) fallbackLine.setMap(null);
+                    directionsRenderer.setDirections(result);
+                } else {
+                    if (!fallbackLine) {
+                        fallbackLine = new google.maps.Polyline({
+                            path: [originPt, destPt],
+                            geodesic: true,
+                            strokeColor: '#ff5200',
+                            strokeOpacity: 0.9,
+                            strokeWeight: 4,
+                            map: gMap
+                        });
+                    } else {
+                        fallbackLine.setPath([originPt, destPt]);
+                    }
                 }
-            } catch (e) {}
-            return null;
-        }
-
-        // Also try live device GPS for customer's own pin if not saved
-        if (!localStorage.getItem('userLat') && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                custLat = pos.coords.latitude;
-                custLng = pos.coords.longitude;
-                localStorage.setItem('userLat', custLat);
-                localStorage.setItem('userLng', custLng);
-                updateMapMarkersAndRoute();
-                fitMapBounds();
-            }, () => {}, { enableHighAccuracy: false, timeout: 4000 });
-        }
-
-        async function drawRealRoadRoute(fromLat, fromLng, toLat, toLng) {
-            try {
-                const url = `https://router.project-osrm.org/route/v1/driving/${fromLng},${fromLat};${toLng},${toLat}?overview=full&geometries=geojson`;
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.routes && data.routes[0] && data.routes[0].geometry) {
-                    const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-                    routeOutline.setLatLngs(coords);
-                    routeLine.setLatLngs(coords);
-                    return;
-                }
-            } catch (e) {}
-            routeOutline.setLatLngs([[fromLat, fromLng], [toLat, toLng]]);
-            routeLine.setLatLngs([[fromLat, fromLng], [toLat, toLng]]);
+            });
         }
 
         function updateMapMarkersAndRoute() {
-            storeMarker.setLatLng([storeLat, storeLng]);
-            storeMarker.setIcon(createSwiggyPin(storeLabelName, 'circle-store', 'fa-utensils'));
-            homeMarker.setLatLng([custLat, custLng]);
+            if (!gMap) return;
+
+            storeMarker.setPosition({ lat: storeLat, lng: storeLng });
+            storeMarker.setIcon(makeSvgPin('#ff5200', storeLabelName));
+            homeMarker.setPosition({ lat: custLat, lng: custLng });
 
             const totalDistKm = getDistanceKm(storeLat, storeLng, custLat, custLng).toFixed(1);
 
             if (riderLat && riderLng && currentOrder && currentOrder.status !== 'Delivered') {
-                const rName = currentOrder.deliveryPartnerName || 'Delivery Partner';
+                const rName = currentOrder.deliveryPartnerName || 'Rider';
                 if (!riderMarker) {
-                    riderMarker = L.marker([riderLat, riderLng], {
-                        icon: createSwiggyPin(rName, 'circle-rider', 'fa-motorcycle'),
-                        zIndexOffset: 1000
-                    }).addTo(map);
+                    riderMarker = new google.maps.Marker({
+                        position: { lat: riderLat, lng: riderLng },
+                        map: gMap,
+                        icon: makeScooterSvgPin(rName),
+                        zIndex: 999
+                    });
                 } else {
-                    riderMarker.setLatLng([riderLat, riderLng]);
-                    riderMarker.setIcon(createSwiggyPin(rName, 'circle-rider', 'fa-motorcycle'));
+                    riderMarker.setPosition({ lat: riderLat, lng: riderLng });
+                    riderMarker.setIcon(makeScooterSvgPin(rName));
                 }
 
                 if (currentOrder.status === 'On the Way') {
-                    drawRealRoadRoute(riderLat, riderLng, custLat, custLng);
+                    drawGoogleRoute({ lat: riderLat, lng: riderLng }, { lat: custLat, lng: custLng });
                 } else {
-                    drawRealRoadRoute(riderLat, riderLng, storeLat, storeLng);
+                    drawGoogleRoute({ lat: riderLat, lng: riderLng }, { lat: storeLat, lng: storeLng });
                 }
             } else {
-                drawRealRoadRoute(storeLat, storeLng, custLat, custLng);
+                drawGoogleRoute({ lat: storeLat, lng: storeLng }, { lat: custLat, lng: custLng });
                 document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-route" style="color:#ff5200;"></i> Distance from ${storeLabelName}: <strong>${totalDistKm} km</strong>`;
             }
         }
@@ -541,21 +564,16 @@
         }
 
         if (trackingId) {
-            database.ref('orders/' + trackingId).on('value', async (snapshot) => {
+            database.ref('orders/' + trackingId).on('value', (snapshot) => {
                 const orderData = snapshot.val();
                 if (!orderData) return;
                 currentOrder = orderData;
 
-                // 1. Resolve Customer Coordinates accurately
                 if (orderData.customerLat && orderData.customerLng) {
                     custLat = parseFloat(orderData.customerLat);
                     custLng = parseFloat(orderData.customerLng);
-                } else if (orderData.deliveryAddress) {
-                    const geoCust = await geocodeAddressString(orderData.deliveryAddress);
-                    if (geoCust) { custLat = geoCust.lat; custLng = geoCust.lng; }
                 }
 
-                // 2. Resolve Store Coordinates & Name accurately
                 if (orderData.restaurantId === 'grocery_store') {
                     storeLabelName = "Local Boy Store";
                     document.getElementById('order-id-display').innerText = `#${orderData.orderId} • ${storeLabelName}`;
@@ -566,7 +584,7 @@
                     updateMapMarkersAndRoute();
                     fitMapBounds();
                 } else {
-                    database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(async resSnap => {
+                    database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(resSnap => {
                         let sName = orderData.restaurantName || "Restaurant";
                         if (resSnap.exists()) {
                             const r = resSnap.val();
@@ -574,9 +592,6 @@
                             if (r.latitude && r.longitude) {
                                 storeLat = parseFloat(r.latitude);
                                 storeLng = parseFloat(r.longitude);
-                            } else if (r.address || r.name) {
-                                const geoStore = await geocodeAddressString(`${r.name}, ${r.address || 'Tenali'}`);
-                                if (geoStore) { storeLat = geoStore.lat; storeLng = geoStore.lng; }
                             }
                         }
                         storeLabelName = sName;
@@ -591,7 +606,6 @@
                     });
                 }
 
-                // 3. Check Delivery Partner Assignment (Supports all field names)
                 const assignedDpId = orderData.deliveryPartnerId || orderData.riderId || orderData.partnerId || orderData.assignedTo;
                 if (assignedDpId) {
                     attachPartnerLiveGpsListener(assignedDpId);
