@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LOCAL BOY - Home</title>
     
-    <!-- Instant Auth Check -->
     <script>
         if (!localStorage.getItem('userPhone')) {
             window.location.replace("index.html");
@@ -28,7 +27,6 @@
         .clickable { transition: transform 0.18s ease; }
         .clickable:active { transform: scale(0.96); }
 
-        /* Top Header */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
         .location-container { display: flex; align-items: flex-start; gap: 10px; flex: 1; overflow: hidden; }
         .loc-icon { color: #ff5200; font-size: 22px; margin-top: 2px; }
@@ -38,19 +36,23 @@
         .loc-text p { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 92%; font-weight: 500; }
         .profile-icon { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #ff5200, #ff7a33); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 800; box-shadow: 0 4px 12px rgba(255, 82, 0, 0.3); flex-shrink: 0; }
 
-        /* Search Box with Separate Mic Trigger */
         .search-container { padding: 12px 20px 15px; background: #fff; border-bottom: 1px solid #f1f5f9; margin-bottom: 15px; }
         .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 10px 14px; border: 1.5px solid #e2e8f0; width: 100%; }
         .search-click-area { display: flex; align-items: center; flex: 1; cursor: pointer; padding: 2px 0; }
         .search-click-area span { flex: 1; font-size: 13.5px; padding: 0 10px; color: #94a3b8; font-weight: 500; }
         .search-icon { color: #ff5200; font-size: 17px; }
-        .mic-btn-home { width: 34px; height: 34px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; border: 1px solid #ffedd5; flex-shrink: 0; }
+        .mic-btn-home { width: 36px; height: 36px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; border: 1px solid #ffedd5; flex-shrink: 0; }
         .mic-btn-home.listening { background: #ef4444; color: #fff; animation: pulseMic 1s infinite; }
         @keyframes pulseMic { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); } 70% { box-shadow: 0 0 0 10px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
 
-        /* Voice Listening Popup */
-        .voice-toast { display: none; position: fixed; bottom: 95px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; z-index: 999; box-shadow: 0 10px 25px rgba(0,0,0,0.25); align-items: center; gap: 10px; white-space: nowrap; }
-        .voice-toast.show { display: flex; }
+        /* Interactive Voice Assistant Modal */
+        .voice-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.65); z-index: 999; justify-content: center; align-items: flex-end; backdrop-filter: blur(3px); }
+        .voice-modal-overlay.show { display: flex; }
+        .voice-modal-box { width: 100%; background: #ffffff; border-radius: 26px 26px 0 0; padding: 26px 20px; text-align: center; animation: slideUp 0.25s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .voice-wave-circle { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: #fff; display: flex; justify-content: center; align-items: center; font-size: 28px; margin: 0 auto 14px; animation: pulseMic 1.2s infinite; }
+        .voice-quick-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px; }
+        .v-chip { padding: 8px 15px; border-radius: 20px; background: #fff8eb; border: 1px solid #fdba74; color: #ff5200; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 
         /* Live Active Order Banner */
         #activeOrderBanner { display: none; margin: 0 20px 18px; border-radius: 18px; padding: 15px; background: #fffbeb; border: 1.5px solid #f59e0b; box-shadow: 0 6px 18px rgba(0,0,0,0.05); }
@@ -62,14 +64,12 @@
         .banner-order-id { font-size: 12px; font-weight: 700; opacity: 0.85; }
         .banner-btn { color: white; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
 
-        /* Quick Filters */
         .quick-filters { display: flex; overflow-x: auto; gap: 15px; padding: 0 20px 20px; }
         .filter-item { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 66px; }
         .filter-circle { width: 66px; height: 66px; border-radius: 50%; background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.06); display: flex; justify-content: center; align-items: center; overflow: hidden; border: 2px solid #fff; }
         .filter-circle img { width: 100%; height: 100%; object-fit: cover; }
         .filter-item span { font-size: 11px; font-weight: 700; color: #334155; white-space: nowrap; }
 
-        /* Main Categories (Food & Grocery) */
         .main-categories { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px 20px; }
         .category-card { position: relative; height: 145px; border-radius: 22px; overflow: hidden; color: white; padding: 15px; display: flex; flex-direction: column; justify-content: flex-end; box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
         .category-card img.bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
@@ -81,14 +81,12 @@
         .cat-content h3 { font-size: 21px; font-weight: 800; }
         .cat-content p { font-size: 11px; font-weight: 500; opacity: 0.9; }
 
-        /* --- AUTO-SLIDING BANNERS CAROUSEL --- */
         .banner-carousel-wrapper { margin: 0 20px 22px; position: relative; }
         .banner-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; gap: 12px; border-radius: 20px; scrollbar-width: none; -ms-overflow-style: none; }
         .banner-slider::-webkit-scrollbar { display: none; }
         .banner-slide { flex: 0 0 100%; scroll-snap-align: center; height: 155px; border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 6px 18px rgba(0,0,0,0.07); background: linear-gradient(135deg, #fff8eb 0%, #ffedd5 100%); }
         .banner-slide img.full-banner-img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Fallback Promo Slide Style */
         .promo-fallback { display: flex; justify-content: space-between; align-items: center; padding: 20px; height: 100%; position: relative; }
         .promo-content { z-index: 2; max-width: 62%; }
         .promo-tag { display: inline-block; background: white; color: #ff5200; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; margin-bottom: 8px; }
@@ -100,14 +98,23 @@
         .b-dot { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; transition: all 0.3s; }
         .b-dot.active { width: 18px; border-radius: 10px; background: #ff5200; }
 
-        /* Section Header & Restaurant Cards */
         .section-header { padding: 0 20px 15px; display: flex; justify-content: space-between; align-items: center; }
         .section-header h2 { font-size: 19px; font-weight: 800; color: #0f172a; }
 
         .restaurant-list { display: flex; flex-direction: column; gap: 18px; padding: 0 20px 20px; }
         .rest-card { width: 100%; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative; border: 1px solid #f1f5f9; display: block; }
-        .rest-img-container { position: relative; height: 175px; background: #f1f5f9; }
+        .rest-img-container { position: relative; height: 180px; background: #f1f5f9; }
         .rest-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .rest-img-container::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(0,0,0,0.75), transparent); z-index: 2; pointer-events: none; }
+
+        /* Swiggy Style Percentage Offer Badge on Restaurant Image */
+        .rest-offer-badge {
+            position: absolute; bottom: 12px; left: 14px; z-index: 6;
+            background: linear-gradient(135deg, #ff6a00, #ff5200); color: #ffffff;
+            padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 800;
+            letter-spacing: 0.3px; box-shadow: 0 4px 12px rgba(255, 82, 0, 0.35);
+            display: flex; align-items: center; gap: 5px;
+        }
         
         .open-tag { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 12px; display: flex; align-items: center; gap: 4px; z-index: 6; }
         .open-tag i { color: #10b981; font-size: 8px; }
@@ -125,7 +132,6 @@
         .rating { background: #ecfdf5; color: #10b981; padding: 3px 7px; border-radius: 6px; font-weight: 800; display: flex; align-items: center; gap: 3px; }
         .rest-desc { font-size: 12px; color: #64748b; font-weight: 500; }
 
-        /* Floating Cart & Bottom Nav */
         .cart-footer { position: fixed; bottom: 70px; left: 0; width: 100%; padding: 0 15px 12px; transform: translateY(200%); transition: transform 0.3s ease; z-index: 99; }
         .cart-footer.show { transform: translateY(0); }
         .cart-banner { background: #ff5200; border-radius: 14px; padding: 13px 20px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.3); cursor: pointer; }
@@ -153,26 +159,36 @@
         <a href="profile.html" class="profile-icon clickable" id="headerProfileIcon">LB</a>
     </header>
 
-    <!-- Search Bar with Direct Voice Mic Button -->
     <div class="search-container">
         <div class="search-box">
             <div class="search-click-area" onclick="window.location.href='search.html'">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
                 <span id="searchPlaceholderText">Search biryani, pizza, milk & more...</span>
             </div>
-            <div class="mic-btn-home clickable" id="homeMicBtn" onclick="triggerHomeVoiceSearch(event)" title="Voice Search">
+            <div class="mic-btn-home clickable" id="homeMicBtn" onclick="triggerHomeVoiceSearch(event)">
                 <i class="fa-solid fa-microphone"></i>
             </div>
         </div>
     </div>
 
-    <!-- Voice Listening Toast -->
-    <div class="voice-toast" id="voiceToast">
-        <i class="fa-solid fa-microphone-lines" style="color: #ff5200;"></i>
-        <span id="voiceToastText">Listening... Speak food or grocery name</span>
+    <!-- Voice Search Assistant Modal (Works in both Browser & Android WebView APK) -->
+    <div class="voice-modal-overlay" id="voiceModalOverlay" onclick="closeVoiceModal()">
+        <div class="voice-modal-box" onclick="event.stopPropagation()">
+            <div class="voice-wave-circle"><i class="fa-solid fa-microphone-lines"></i></div>
+            <h3 style="font-size:17px; font-weight:800; color:#0f172a;" id="voiceModalTitle">Listening... Speak Now</h3>
+            <p style="font-size:12px; color:#64748b; margin-top:4px;" id="voiceModalSub">Say "Biryani", "Pizza", "Milk" or tap below:</p>
+            <div class="voice-quick-chips">
+                <div class="v-chip" onclick="quickVoiceGo('Biryani')">🍗 Biryani</div>
+                <div class="v-chip" onclick="quickVoiceGo('Fry Piece')">🔥 Fry Piece</div>
+                <div class="v-chip" onclick="quickVoiceGo('Pizza')">🍕 Pizza</div>
+                <div class="v-chip" onclick="quickVoiceGo('Burger')">🍔 Burger</div>
+                <div class="v-chip" onclick="quickVoiceGo('Milk')">🥛 Milk</div>
+                <div class="v-chip" onclick="quickVoiceGo('Vegetables')">🥦 Vegetables</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Live Active Order Banner (With Delivery Boy Info) -->
+    <!-- Live Active Order Banner -->
     <div id="activeOrderBanner">
         <a href="track.html" id="activeBannerTrackLink">
             <div class="banner-header">
@@ -180,7 +196,6 @@
                 <span class="banner-eta" id="bannerEta">-- ETA</span>
             </div>
         </a>
-        <!-- Delivery Partner Strip -->
         <div class="banner-rider-strip" id="bannerRiderStrip">
             <div>
                 <i class="fa-solid fa-motorcycle" style="color:#ff5200; margin-right:5px;"></i>
@@ -199,7 +214,6 @@
         <p style="font-size: 12.5px; color: #64748b; font-weight: 500;">What would you like to order today?</p>
     </div>
 
-    <!-- Quick Category Filters -->
     <div class="quick-filters hide-scrollbar">
         <a href="restaurants.html?category=biryani" class="filter-item clickable">
             <div class="filter-circle"><img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=200&auto=format&fit=crop" alt="Biryani"></div>
@@ -223,7 +237,6 @@
         </a>
     </div>
 
-    <!-- Main 2 Pillars -->
     <div class="main-categories">
         <a href="restaurants.html" class="category-card clickable">
             <img src="https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?q=80&w=400&auto=format&fit=crop" class="bg-img" alt="Food">
@@ -240,21 +253,8 @@
         </a>
     </div>
 
-    <!-- AUTO-SLIDING BANNERS CAROUSEL (Connected to Admin Banners) -->
     <div class="banner-carousel-wrapper">
-        <div class="banner-slider" id="homeBannerSlider">
-            <!-- Default fallback banner until Admin banners load -->
-            <div class="banner-slide">
-                <div class="promo-fallback">
-                    <div class="promo-content">
-                        <div class="promo-tag"><i class="fa-solid fa-tag"></i> FLAT DEALS</div>
-                        <h3>Hot & Fresh Biryani Near You</h3>
-                        <p>Fast doorstep delivery in Tenali</p>
-                    </div>
-                    <img src="https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop" alt="Promo" class="promo-img">
-                </div>
-            </div>
-        </div>
+        <div class="banner-slider" id="homeBannerSlider"></div>
         <div class="banner-dots" id="homeBannerDots"></div>
     </div>
 
@@ -284,7 +284,6 @@
     </div>
 
     <script>
-        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -298,61 +297,66 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
-        // Safe Image Helper (Never breaks Base64 or Firebase Storage images)
+        let activeRecog = null;
+        let menuMaxDiscounts = {};
+        let globalPromoText = "";
+
         function getSafeImage(url, fallback) {
             if (!url) return fallback || "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=400&auto=format&fit=crop";
-            if (url.startsWith('data:image') || url.includes('firebasestorage')) return url;
             return url;
         }
 
-        // --- 1. DIRECT VOICE SEARCH FROM HOME MIC ---
-        function triggerHomeVoiceSearch(event) {
+        // --- VOICE SEARCH WITH ANDROID WEBVIEW PERMISSION & INTERACTIVE FALLBACK ---
+        window.triggerHomeVoiceSearch = async function(event) {
             event.stopPropagation();
             event.preventDefault();
 
-            const micBtn = document.getElementById('homeMicBtn');
-            const toast = document.getElementById('voiceToast');
-            const toastText = document.getElementById('voiceToastText');
+            const modal = document.getElementById('voiceModalOverlay');
+            const titleEl = document.getElementById('voiceModalTitle');
+            modal.classList.add('show');
+            titleEl.innerText = "Listening... Speak Now";
+
+            // Trigger Mic Permission in Android WebView if supported
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(t => t.stop());
+                } catch (e) {}
+            }
 
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'en-IN';
-                recognition.interimResults = false;
-                recognition.maxAlternatives = 1;
+                try {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    activeRecog = new SpeechRecognition();
+                    activeRecog.lang = 'en-IN';
+                    activeRecog.interimResults = false;
 
-                recognition.onstart = function() {
-                    micBtn.classList.add('listening');
-                    toastText.innerText = "Listening... Speak dish or item name";
-                    toast.classList.add('show');
-                };
-
-                recognition.onresult = function(e) {
-                    const spokenWord = e.results[0][0].transcript.trim();
-                    toastText.innerText = `Searching "${spokenWord}"...`;
-                    setTimeout(() => {
-                        window.location.href = `search.html?query=${encodeURIComponent(spokenWord)}`;
-                    }, 300);
-                };
-
-                recognition.onerror = function() {
-                    micBtn.classList.remove('listening');
-                    toast.classList.remove('show');
-                    window.location.href = "search.html?voice=true";
-                };
-
-                recognition.onend = function() {
-                    micBtn.classList.remove('listening');
-                    setTimeout(() => toast.classList.remove('show'), 1000);
-                };
-
-                recognition.start();
-            } else {
-                window.location.href = "search.html?voice=true";
+                    activeRecog.onresult = function(e) {
+                        const word = e.results[0][0].transcript.trim();
+                        titleEl.innerText = `Searching "${word}"...`;
+                        setTimeout(() => quickVoiceGo(word), 250);
+                    };
+                    activeRecog.onerror = function() {
+                        titleEl.innerText = "Tap a popular dish below or search:";
+                    };
+                    activeRecog.start();
+                } catch (err) {
+                    titleEl.innerText = "Tap a popular dish below:";
+                }
             }
-        }
+        };
 
-        // --- 2. AUTO-SLIDING MULTIPLE BANNERS ---
+        window.closeVoiceModal = function() {
+            document.getElementById('voiceModalOverlay').classList.remove('show');
+            if (activeRecog) { try { activeRecog.stop(); } catch(e){} }
+        };
+
+        window.quickVoiceGo = function(term) {
+            closeVoiceModal();
+            window.location.href = `search.html?query=${encodeURIComponent(term)}`;
+        };
+
+        // --- AUTO-SLIDING BANNERS ---
         let bannerInterval = null;
         let currentBannerIdx = 0;
         let totalBannersCount = 1;
@@ -362,10 +366,9 @@
             const dotsBox = document.getElementById('homeBannerDots');
 
             if (!bannersList || bannersList.length === 0) {
-                // Default 2 attractive banners if Admin hasn't added any
                 bannersList = [
-                    { type: 'fallback1', tag: 'FLAT DEALS', title: 'Hot & Fresh Biryani', sub: 'Fast delivery from top hotels', img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop', link: 'restaurants.html?category=biryani' },
-                    { type: 'fallback2', tag: '15 MINS DELIVERY', title: 'Fresh Daily Groceries', sub: 'Vegetables, milk & essentials', img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=300&auto=format&fit=crop', link: 'groceries.html' }
+                    { tag: 'FLAT 30% OFF', title: 'Hot & Fresh Biryani', sub: 'Fast delivery from top hotels', img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?q=80&w=300&auto=format&fit=crop', link: 'restaurants.html?category=biryani' },
+                    { tag: '15 MINS DELIVERY', title: 'Fresh Daily Groceries', sub: 'Vegetables, milk & essentials', img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=300&auto=format&fit=crop', link: 'groceries.html' }
                 ];
             }
 
@@ -376,12 +379,7 @@
             bannersList.forEach((b, idx) => {
                 const targetLink = b.link || b.redirectUrl || 'restaurants.html';
                 if (b.image || b.imageUrl) {
-                    const imgSrc = b.image || b.imageUrl;
-                    slider.innerHTML += `
-                        <a href="${targetLink}" class="banner-slide clickable">
-                            <img src="${imgSrc}" class="full-banner-img" alt="Offer Banner">
-                        </a>
-                    `;
+                    slider.innerHTML += `<a href="${targetLink}" class="banner-slide clickable"><img src="${b.image || b.imageUrl}" class="full-banner-img" alt="Offer Banner"></a>`;
                 } else {
                     slider.innerHTML += `
                         <a href="${targetLink}" class="banner-slide clickable">
@@ -396,48 +394,28 @@
                         </a>
                     `;
                 }
-
                 if (totalBannersCount > 1) {
-                    dotsBox.innerHTML += `<div class="b-dot ${idx === 0 ? 'active' : ''}" data-idx="${idx}"></div>`;
+                    dotsBox.innerHTML += `<div class="b-dot ${idx === 0 ? 'active' : ''}"></div>`;
                 }
             });
 
-            setupBannerAutoSlide();
-        }
-
-        function setupBannerAutoSlide() {
-            const slider = document.getElementById('homeBannerSlider');
             if (bannerInterval) clearInterval(bannerInterval);
-            if (totalBannersCount <= 1) return;
-
-            // Update active dot on manual touch swipe
-            slider.onscroll = () => {
-                const slideWidth = slider.clientWidth;
-                if (slideWidth > 0) {
-                    currentBannerIdx = Math.round(slider.scrollLeft / slideWidth);
-                    document.querySelectorAll('.b-dot').forEach((d, i) => {
-                        d.classList.toggle('active', i === currentBannerIdx);
-                    });
-                }
-            };
-
-            // Auto slide right-to-left every 3.5 seconds
-            bannerInterval = setInterval(() => {
-                currentBannerIdx = (currentBannerIdx + 1) % totalBannersCount;
-                slider.scrollTo({
-                    left: currentBannerIdx * slider.clientWidth,
-                    behavior: 'smooth'
-                });
-            }, 3500);
+            if (totalBannersCount > 1) {
+                slider.onscroll = () => {
+                    const w = slider.clientWidth;
+                    if (w > 0) {
+                        currentBannerIdx = Math.round(slider.scrollLeft / w);
+                        document.querySelectorAll('.b-dot').forEach((d, i) => d.classList.toggle('active', i === currentBannerIdx));
+                    }
+                };
+                bannerInterval = setInterval(() => {
+                    currentBannerIdx = (currentBannerIdx + 1) % totalBannersCount;
+                    slider.scrollTo({ left: currentBannerIdx * slider.clientWidth, behavior: 'smooth' });
+                }, 3500);
+            }
         }
 
         function loadLiveBanners() {
-            // Instant load from cache first
-            const cachedBanners = localStorage.getItem('lb_cached_banners');
-            if (cachedBanners) {
-                try { renderBannersUI(JSON.parse(cachedBanners)); } catch(e) {}
-            }
-
             database.ref('banners').on('value', (snap) => {
                 let arr = [];
                 if (snap.exists()) {
@@ -446,22 +424,18 @@
                         if (b.status !== 'Inactive' && b.is_active !== false) arr.push(b);
                     });
                 }
-                localStorage.setItem('lb_cached_banners', JSON.stringify(arr));
                 renderBannersUI(arr);
             });
         }
 
-        // --- 3. PROFILE & SAVED LOCATION ---
         function displayAddressOnHeader(fullStr) {
             const typeElem = document.getElementById("header-loc-type");
             const addressTextElem = document.getElementById("header-address");
-            
             if (!fullStr) {
                 typeElem.innerHTML = 'Location <i class="fa-solid fa-chevron-down"></i>';
                 addressTextElem.innerText = "Tap to set delivery location";
                 return;
             }
-
             if (fullStr.includes('|')) {
                 let parts = fullStr.split('|');
                 typeElem.innerHTML = parts[0] + ' <i class="fa-solid fa-chevron-down"></i>';
@@ -477,7 +451,6 @@
             const userNameElem = document.getElementById("userName");
             const headerProfileIcon = document.getElementById("headerProfileIcon");
             
-            // Instant render from localStorage first
             const localProf = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (localProf.firstName) {
                 userNameElem.innerText = localProf.firstName;
@@ -492,29 +465,21 @@
                         localStorage.setItem('userProfileData', JSON.stringify(profileData));
                         if (profileData.firstName) {
                             userNameElem.innerText = profileData.firstName;
-                            let initial = profileData.firstName.charAt(0).toUpperCase();
-                            if (profileData.lastName) initial += profileData.lastName.charAt(0).toUpperCase();
-                            headerProfileIcon.innerText = initial;
+                            headerProfileIcon.innerText = (profileData.firstName.charAt(0) + (profileData.lastName ? profileData.lastName.charAt(0) : '')).toUpperCase();
                         }
                         if (profileData.address) {
                             displayAddressOnHeader(profileData.address);
                             localStorage.setItem('userSavedAddress', profileData.address);
-                        }
-                        if (profileData.latitude && profileData.longitude) {
-                            localStorage.setItem('userLat', profileData.latitude);
-                            localStorage.setItem('userLng', profileData.longitude);
                         }
                     }
                 });
             }
         }
 
-        // --- 4. FAST RESTAURANTS RENDERING (Cache + Live Sync) ---
-        function toggleHomeFav(event, element, restName, restImg, restUrl) {
+        window.toggleHomeFav = function(event, element, restName, restImg, restUrl) {
             event.preventDefault();
             event.stopPropagation();
             let favs = JSON.parse(localStorage.getItem('localBoyFavorites')) || [];
-
             if (element.classList.contains('fa-regular')) {
                 element.className = 'fa-solid fa-heart fav-icon';
                 element.style.color = '#e53e3e';
@@ -528,7 +493,9 @@
                 favs = favs.filter(f => f.name !== restName);
                 localStorage.setItem('localBoyFavorites', JSON.stringify(favs));
             }
-        }
+        };
+
+        let cachedRestaurantsList = [];
 
         function renderRestaurantsList(restaurantsArray) {
             const container = document.getElementById('topRestaurantsContainer');
@@ -548,7 +515,7 @@
             });
 
             restaurantsArray.forEach(res => {
-                if (res.is_active === false) return; // Hide blocked restaurants
+                if (res.is_active === false) return;
                 let rId = res.key;
                 let isFav = favs.some(f => f.name === res.name);
                 let heartClass = isFav ? 'fa-solid fa-heart fav-icon' : 'fa-regular fa-heart fav-icon';
@@ -564,18 +531,30 @@
                 let linkHref = isOpen ? `restaurant-details.html?id=${rId}` : `javascript:void(0)`;
                 let imgUrl = getSafeImage(res.image);
 
+                // Calculate Percentage Offer Badge for this Restaurant
+                let offerPct = menuMaxDiscounts[rId] || parseInt(res.discount) || parseInt(res.offerPercentage) || parseInt(res.commission) || 0;
+                let offerBadgeText = "";
+                if (offerPct > 0) {
+                    offerBadgeText = `FLAT ${offerPct}% OFF`;
+                } else if (globalPromoText) {
+                    offerBadgeText = globalPromoText;
+                } else {
+                    offerBadgeText = `FLAT 20% OFF`;
+                }
+
                 container.innerHTML += `
                 <a href="${linkHref}" class="${cardClass}">
                     <div class="rest-img-container">
                         <img src="${imgUrl}" alt="${res.name}" loading="lazy">
                         ${closedOverlay}
                         ${statusTag}
+                        <div class="rest-offer-badge"><i class="fa-solid fa-percent"></i> ${offerBadgeText}</div>
                         <i class="${heartClass}" style="color:${heartColor};" onclick="toggleHomeFav(event, this, '${res.name.replace(/'/g, "\\'")}', '', 'restaurant-details.html?id=${rId}')"></i>
                     </div>
                     <div class="rest-details">
                         <h3>${res.name}</h3>
                         <div class="rest-stats">
-                            <span class="rating"><i class="fa-solid fa-star"></i> ${res.rating || '4.2'}</span>
+                            <span class="rating"><i class="fa-solid fa-star"></i> ${res.rating || '4.3'}</span>
                             <span><i class="fa-regular fa-clock"></i> 25-30 mins</span>
                         </div>
                         <div class="rest-desc"><span><i class="fa-solid fa-utensils" style="width: 15px; color:#ff5200;"></i> ${res.cuisine || 'Biryani, Fast Food, Meals'}</span></div>
@@ -584,27 +563,51 @@
             });
         }
 
-        function loadLiveRestaurants() {
-            const cachedRests = localStorage.getItem('lb_cached_restaurants');
-            if (cachedRests) {
-                try { renderRestaurantsList(JSON.parse(cachedRests)); } catch(e) {}
-            }
+        function loadLiveRestaurantsAndOffers() {
+            // 1. Scan restaurant_menus for highest item discount % per restaurant
+            database.ref('restaurant_menus').on('value', mSnap => {
+                menuMaxDiscounts = {};
+                if (mSnap.exists()) {
+                    mSnap.forEach(rChild => {
+                        let maxD = 0;
+                        const items = rChild.val() || {};
+                        for (let k in items) {
+                            const d = parseInt(items[k].discount) || 0;
+                            if (d > maxD) maxD = d;
+                        }
+                        if (maxD > 0) menuMaxDiscounts[rChild.key] = maxD;
+                    });
+                }
+                if (cachedRestaurantsList.length > 0) renderRestaurantsList(cachedRestaurantsList);
+            });
 
+            // 2. Check promocodes for active percentage offer
+            database.ref('promocodes').once('value').then(pSnap => {
+                if (pSnap.exists()) {
+                    pSnap.forEach(c => {
+                        const p = c.val();
+                        if (p.status !== 'Inactive') {
+                            const val = p.discountValue || p.discount || 20;
+                            globalPromoText = (p.discountType || '').includes('percent') ? `FLAT ${val}% OFF` : `FLAT ₹${val} OFF`;
+                        }
+                    });
+                }
+            });
+
+            // 3. Load Restaurant Profiles
             database.ref('restaurant_profiles').on('value', (snapshot) => {
-                let restaurantsArray = [];
+                cachedRestaurantsList = [];
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
                         let res = child.val();
                         res.key = child.key;
-                        restaurantsArray.push(res);
+                        cachedRestaurantsList.push(res);
                     });
                 }
-                try { localStorage.setItem('lb_cached_restaurants', JSON.stringify(restaurantsArray)); } catch(e) {}
-                renderRestaurantsList(restaurantsArray);
+                renderRestaurantsList(cachedRestaurantsList);
             });
         }
 
-        // --- 5. CART FOOTER & LIVE ACTIVE ORDER WITH DELIVERY PARTNER DETAILS ---
         function updateHomeCartUI() {
             const cartData = JSON.parse(localStorage.getItem('localBoyCart'));
             const cartBadge = document.getElementById('bottomNavCartBadge');
@@ -635,9 +638,7 @@
                     let list = [];
                     snapshot.forEach(c => {
                         const o = c.val();
-                        if (o.status !== 'Delivered' && o.status !== 'Cancelled' && o.status !== 'Rejected') {
-                            list.push(o);
-                        }
+                        if (o.status !== 'Delivered' && o.status !== 'Cancelled' && o.status !== 'Rejected') list.push(o);
                     });
                     list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                     if (list.length > 0) latestActive = list[0];
@@ -655,53 +656,20 @@
                     const btnEl = document.getElementById('bannerBtn');
                     const riderStrip = document.getElementById('bannerRiderStrip');
 
-                    // Show Delivery Boy details as soon as assigned!
                     if (latestActive.deliveryPartnerId && latestActive.deliveryPartnerName) {
                         riderStrip.style.display = 'flex';
-                        let riderStep = 'Assigned to your order';
-                        if (latestActive.reachedCustomer) riderStep = 'Reached your location!';
-                        else if (latestActive.status === 'On the Way') riderStep = 'On the way to you';
-                        else if (latestActive.reachedRestaurant) riderStep = 'At restaurant picking up';
-
-                        document.getElementById('bannerRiderName').innerText = `${latestActive.deliveryPartnerName} (${riderStep})`;
+                        document.getElementById('bannerRiderName').innerText = `${latestActive.deliveryPartnerName}`;
                         const callBtn = document.getElementById('bannerRiderCall');
                         if (latestActive.deliveryPartnerPhone) {
                             callBtn.href = `tel:${latestActive.deliveryPartnerPhone}`;
                             callBtn.style.display = 'inline-block';
-                        } else {
-                            callBtn.style.display = 'none';
-                        }
-                    } else {
-                        riderStrip.style.display = 'none';
-                    }
+                        } else callBtn.style.display = 'none';
+                    } else riderStrip.style.display = 'none';
 
                     let calculatedMins = latestActive.distance ? Math.max(10, Math.ceil(latestActive.distance * 4)) : 15;
-
-                    if (latestActive.status === 'Placed') {
-                        banner.style.background = '#fffbeb'; banner.style.borderColor = '#f59e0b';
-                        titleEl.innerHTML = '<i class="fa-solid fa-clock-rotate-left fa-spin-pulse"></i> Order Placed';
-                        titleEl.style.color = '#d97706';
-                        etaEl.innerText = 'Confirming...'; etaEl.style.color = '#d97706';
-                        btnEl.style.background = '#f59e0b';
-                    } else if (latestActive.status === 'Preparing') {
-                        banner.style.background = '#eff6ff'; banner.style.borderColor = '#3b82f6';
-                        titleEl.innerHTML = '<i class="fa-solid fa-fire-burner fa-bounce"></i> Preparing Your Order';
-                        titleEl.style.color = '#2563eb';
-                        etaEl.innerText = `${calculatedMins + 10} mins`; etaEl.style.color = '#2563eb';
-                        btnEl.style.background = '#3b82f6';
-                    } else if (latestActive.status === 'Ready') {
-                        banner.style.background = '#ecfdf5'; banner.style.borderColor = '#10b981';
-                        titleEl.innerHTML = '<i class="fa-solid fa-bag-shopping fa-bounce"></i> Order Packed & Ready';
-                        titleEl.style.color = '#059669';
-                        etaEl.innerText = `${calculatedMins} mins`; etaEl.style.color = '#059669';
-                        btnEl.style.background = '#10b981';
-                    } else if (latestActive.status === 'On the Way') {
-                        banner.style.background = '#ecfdf5'; banner.style.borderColor = '#10b981';
-                        titleEl.innerHTML = '<i class="fa-solid fa-motorcycle fa-bounce"></i> Out for Delivery';
-                        titleEl.style.color = '#059669';
-                        etaEl.innerText = `${calculatedMins} mins`; etaEl.style.color = '#059669';
-                        btnEl.style.background = '#10b981';
-                    }
+                    titleEl.innerHTML = `<i class="fa-solid fa-motorcycle fa-bounce"></i> Order is ${latestActive.status}`;
+                    etaEl.innerText = `${calculatedMins} mins`;
+                    btnEl.style.background = '#10b981';
                 } else {
                     banner.style.display = 'none';
                 }
@@ -713,7 +681,7 @@
                 updateHomeCartUI();
                 loadInitialData();
                 loadLiveBanners();
-                loadLiveRestaurants(); 
+                loadLiveRestaurantsAndOffers(); 
                 checkActiveOrder();
             }
         });
