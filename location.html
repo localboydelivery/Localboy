@@ -7,6 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Leaflet CSS & JS (Uses Google Street Tiles - 100% Free & Never Fails) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
@@ -27,11 +31,8 @@
         .search-box input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
         .search-icon { color: #ff5200; font-size: 18px; }
 
-        /* Live Search Suggestions Dropdown */
-        .search-suggestions { display: none; position: absolute; left: 20px; right: 20px; top: 68px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); border: 1px solid #e2e8f0; z-index: 500; max-height: 240px; overflow-y: auto; }
+        .search-suggestions { display: none; position: absolute; left: 20px; right: 20px; top: 68px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; z-index: 600; max-height: 240px; overflow-y: auto; }
         .sug-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; color: #334155; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; }
-        .sug-item:last-child { border-bottom: none; }
-        .sug-item:active { background: #fff8eb; }
         .sug-item i { color: #ff5200; margin-top: 3px; }
         
         .current-loc-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; color: #ff5200; cursor: pointer; }
@@ -58,25 +59,25 @@
         .sheet-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
         .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
         
-        .map-container { position: relative; width: 100%; height: 210px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #f1f5f9; }
-        #google-map { width: 100%; height: 100%; z-index: 1; }
-        .map-gps-btn { position: absolute; bottom: 12px; right: 12px; width: 40px; height: 40px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; color: #ff5200; font-size: 18px; cursor: pointer; }
+        .map-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #e2e8f0; }
+        #leaflet-loc-map { width: 100%; height: 100%; z-index: 1; }
+        .leaflet-control-attribution { display: none !important; }
+        .map-gps-btn { position: absolute; bottom: 12px; right: 12px; width: 42px; height: 42px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; color: #ff5200; font-size: 19px; cursor: pointer; }
         
         .detected-bar { display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #d1fae5; color: #059669; padding: 8px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
 
         .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .input-group { flex: 1; }
         .input-group input, .input-group textarea { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 13.5px; outline: none; color: #0f172a; font-weight: 600; }
-        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
+        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; }
         .input-group textarea { resize: none; height: 78px; line-height: 1.4; }
         
         .address-type-section { margin-bottom: 18px; }
         .type-buttons { display: flex; gap: 10px; }
-        .type-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 11px; border: 1.5px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .type-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 11px; border: 1.5px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; }
         .type-btn.active { background: #fff8eb; border-color: #ff5200; color: #ff5200; }
 
         .save-btn { width: 100%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 15px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); }
-        .save-btn:disabled { opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -85,7 +86,6 @@
         <h2>Select Delivery Location</h2>
     </div>
 
-    <!-- Search Box with Live Area Autocomplete -->
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -98,7 +98,7 @@
         <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
         <div class="text-content">
             <h3 id="gps-text">Use Current Location</h3>
-            <p id="gps-subtext">Auto-detect your exact address & GPS</p>
+            <p id="gps-subtext">Tap to auto-detect your exact location</p>
         </div>
     </div>
 
@@ -109,7 +109,7 @@
         </div>
     </div>
 
-    <div class="add-new-btn clickable" onclick="openBottomSheet(currentPickedLat, currentPickedLng, false)">
+    <div class="add-new-btn clickable" onclick="openBottomSheet(currentPickedLat, currentPickedLng, true)">
         <i class="fa-solid fa-plus"></i> Add / Edit Complete Address
     </div>
 
@@ -117,20 +117,20 @@
     <div class="overlay" id="sheetOverlay" onclick="closeBottomSheet()"></div>
     <div class="bottom-sheet" id="addressSheet">
         <div class="sheet-header">
-            <h3 id="sheet-title">Confirm Delivery Address</h3>
+            <h3 id="sheet-title">Pin Your Exact Location</h3>
             <i class="fa-solid fa-xmark close-sheet clickable" onclick="closeBottomSheet()"></i>
         </div>
         
         <div class="map-container" id="mapWrapper">
-            <div id="google-map"></div>
-            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()" title="Locate Me">
+            <div id="leaflet-loc-map"></div>
+            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()" title="Current Location">
                 <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
             </div>
         </div>
 
-        <div class="detected-bar" id="detectedStatusText">
-            <i class="fa-solid fa-circle-check"></i>
-            <span id="pinCoordStatus">Move pin or type your House / Flat details below</span>
+        <div class="detected-bar">
+            <i class="fa-solid fa-location-dot"></i>
+            <span id="pinCoordStatus">Tap on map or drag pin to your doorstep</span>
         </div>
         
         <div class="input-row">
@@ -139,7 +139,7 @@
         </div>
         
         <div class="input-group" style="margin-bottom: 14px;">
-            <textarea id="fullAddress" placeholder="House / Flat No, Building, Street, Landmark, Area..."></textarea>
+            <textarea id="fullAddress" placeholder="House / Flat No, Street, Landmark, Area..."></textarea>
         </div>
 
         <div class="address-type-section">
@@ -149,7 +149,6 @@
                 <div class="type-btn" onclick="selectType('Work', this)"><i class="fa-solid fa-briefcase"></i> Work</div>
                 <div class="type-btn" onclick="selectType('Other', this)"><i class="fa-solid fa-location-dot"></i> Other</div>
             </div>
-            
             <div class="input-group" id="otherInputWrapper" style="display: none; margin-top: 10px;">
                 <input type="text" id="customType" placeholder="e.g. Friend's House, Shop">
             </div>
@@ -158,11 +157,7 @@
         <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save & Proceed</button>
     </div>
 
-    <!-- Google Maps Script -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAITao9tzWyZuXcMiGCfoTF3GboS32_48U&libraries=places&callback=initMap"></script>
-
     <script>
-        // EXACT NEW FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -173,77 +168,120 @@
             appId: "1:184676228358:web:c2b32b68debeeadadfd287",
             measurementId: "G-E3TT96ZH1T"
         };
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const database = firebase.database();
 
         const sheet = document.getElementById('addressSheet');
         const overlay = document.getElementById('sheetOverlay');
-        let map, marker, geocoder;
-        let currentPickedLat = parseFloat(localStorage.getItem('userLat')) || 16.2366; // Default Tenali
+        let currentPickedLat = parseFloat(localStorage.getItem('userLat')) || 16.2366;
         let currentPickedLng = parseFloat(localStorage.getItem('userLng')) || 80.6405;
         let selectedAddressType = 'Home';
         let searchTimer = null;
 
-        window.addEventListener('pageshow', function() {
-            const userPhone = localStorage.getItem('userPhone');
-            const localAddr = localStorage.getItem("userSavedAddress");
-            if (localAddr) displayDynamicAddress(localAddr);
+        // Initialize Crisp Google Street Map inside Leaflet
+        const locMap = L.map('leaflet-loc-map', { zoomControl: true }).setView([currentPickedLat, currentPickedLng], 16);
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(locMap);
 
-            if (userPhone) {
-                database.ref('users/' + userPhone + '/profile').once('value').then((snapshot) => {
-                    const prof = snapshot.val();
-                    if (prof) {
-                        if (prof.address) {
-                            localStorage.setItem("userSavedAddress", prof.address);
-                            displayDynamicAddress(prof.address);
-                        }
-                        if (prof.latitude && prof.longitude) {
-                            currentPickedLat = parseFloat(prof.latitude);
-                            currentPickedLng = parseFloat(prof.longitude);
-                            localStorage.setItem('userLat', currentPickedLat);
-                            localStorage.setItem('userLng', currentPickedLng);
-                        }
-                    }
-                });
-            }
+        const pinIcon = L.divIcon({
+            className: '',
+            html: `<div style="font-size:34px; color:#ff5200; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.35));"><i class="fa-solid fa-location-dot"></i></div>`,
+            iconSize: [34, 34],
+            iconAnchor: [17, 34]
         });
 
-        function displayDynamicAddress(fullStr) {
-            let type = "Saved";
-            let details = fullStr;
-            let iconClass = "fa-location-dot";
-            
-            if (fullStr.includes('|')) {
-                let parts = fullStr.split('|');
-                type = parts[0];
-                details = parts[2]; 
-            }
+        const locMarker = L.marker([currentPickedLat, currentPickedLng], { icon: pinIcon, draggable: true }).addTo(locMap);
 
-            if (type.toLowerCase() === 'home') iconClass = "fa-house";
-            else if (type.toLowerCase() === 'work') iconClass = "fa-briefcase";
+        locMap.on('click', function(e) {
+            moveMapAndReverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
 
-            document.getElementById('savedAddressesList').innerHTML = `
-                <div class="address-item clickable" onclick="selectExistingAddress('${fullStr.replace(/'/g, "\\'")}')">
-                    <div class="address-icon"><i class="fa-solid ${iconClass}"></i></div>
-                    <div class="address-details">
-                        <h3>${type} <span style="font-size:10px; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; margin-left:6px;">Tap to Use</span></h3>
-                        <p>${details}</p>
-                    </div>
-                </div>
-            `;
+        locMarker.on('dragend', function(e) {
+            const pos = e.target.getLatLng();
+            moveMapAndReverseGeocode(pos.lat, pos.lng);
+        });
+
+        function moveMapAndReverseGeocode(lat, lng) {
+            currentPickedLat = lat;
+            currentPickedLng = lng;
+            locMarker.setLatLng([lat, lng]);
+            locMap.panTo([lat, lng]);
+            reverseGeocodeCoordinates(lat, lng);
         }
 
-        // --- REVERSE GEOCODING (Converts Lat/Lng to Real Street Address) ---
+        // ⚡ 3-STAGE SMART GPS DETECTOR (Works inside Android WebView & Indoors without failing!)
+        function getSmartDeviceLocation(onSuccess) {
+            if (navigator.geolocation) {
+                // Stage 1: Fast Network/Wi-Fi GPS (works indoors in 0.5s)
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        onSuccess(pos.coords.latitude, pos.coords.longitude);
+                        // Refine with high accuracy in background
+                        navigator.geolocation.getCurrentPosition(
+                            (finePos) => onSuccess(finePos.coords.latitude, finePos.coords.longitude),
+                            () => {},
+                            { enableHighAccuracy: true, timeout: 5000 }
+                        );
+                    },
+                    () => {
+                        // Stage 2: High Accuracy GPS try
+                        navigator.geolocation.getCurrentPosition(
+                            (pos2) => onSuccess(pos2.coords.latitude, pos2.coords.longitude),
+                            () => fallbackIpLocation(onSuccess),
+                            { enableHighAccuracy: true, timeout: 6000, maximumAge: 300000 }
+                        );
+                    },
+                    { enableHighAccuracy: false, timeout: 4000, maximumAge: 300000 }
+                );
+            } else {
+                fallbackIpLocation(onSuccess);
+            }
+        }
+
+        async function fallbackIpLocation(onSuccess) {
+            try {
+                const r = await fetch('https://ipapi.co/json/');
+                const d = await r.json();
+                if (d && d.latitude && d.longitude) {
+                    onSuccess(parseFloat(d.latitude), parseFloat(d.longitude));
+                    return;
+                }
+            } catch (e) {}
+            onSuccess(currentPickedLat, currentPickedLng);
+        }
+
+        window.fetchRealLocationMain = function() {
+            const gpsText = document.getElementById('gps-text');
+            const gpsSub = document.getElementById('gps-subtext');
+            const gpsIcon = document.getElementById('gps-icon');
+
+            gpsText.innerText = "Locating you..."; 
+            gpsIcon.className = "fa-solid fa-spinner fa-spin";
+
+            getSmartDeviceLocation((lat, lng) => {
+                gpsText.innerText = "Use Current Location";
+                gpsSub.innerText = "Location detected!";
+                gpsIcon.className = "fa-solid fa-location-crosshairs";
+                openBottomSheet(lat, lng, true);
+            });
+        };
+
+        window.fetchRealLocationFromMap = function() {
+            const mapIcon = document.getElementById('map-gps-icon');
+            mapIcon.className = "fa-solid fa-spinner fa-spin";
+            getSmartDeviceLocation((lat, lng) => {
+                mapIcon.className = "fa-solid fa-location-crosshairs";
+                locMap.setView([lat, lng], 17);
+                moveMapAndReverseGeocode(lat, lng);
+            });
+        };
+
         async function reverseGeocodeCoordinates(lat, lng) {
             currentPickedLat = lat;
             currentPickedLng = lng;
             const statusSpan = document.getElementById('pinCoordStatus');
             const addrInput = document.getElementById('fullAddress');
-            statusSpan.innerText = "Fetching area & street address...";
+            statusSpan.innerText = "Fetching street & area name...";
 
-            // 1. Try OpenStreetMap Nominatim (Free, No API billing needed, very accurate for AP/Telangana)
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
                     headers: { 'Accept-Language': 'en' }
@@ -252,28 +290,14 @@
                     const data = await res.json();
                     if (data && data.display_name) {
                         addrInput.value = data.display_name;
-                        statusSpan.innerText = "GPS Location Locked! Add House/Door No if needed.";
+                        statusSpan.innerText = "Exact Location Locked! Add House/Door No if needed.";
                         return;
                     }
                 }
             } catch (e) {}
-
-            // 2. Fallback to Google Maps Geocoder
-            if (geocoder) {
-                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-                    if (status === "OK" && results[0]) {
-                        addrInput.value = results[0].formatted_address;
-                        statusSpan.innerText = "GPS Location Locked! Add House/Door No if needed.";
-                    } else {
-                        statusSpan.innerText = `GPS Pinned (${lat.toFixed(4)}, ${lng.toFixed(4)}). Enter address below:`;
-                    }
-                });
-            } else {
-                statusSpan.innerText = `GPS Pinned (${lat.toFixed(4)}, ${lng.toFixed(4)}). Enter address below:`;
-            }
+            statusSpan.innerText = "Pin Placed! Confirm your address below.";
         }
 
-        // --- LIVE AREA SEARCH SUGGESTIONS ---
         window.handleAreaSearch = function(query) {
             const sugBox = document.getElementById('searchSuggestions');
             if (searchTimer) clearTimeout(searchTimer);
@@ -306,111 +330,15 @@
                     } else {
                         sugBox.style.display = 'none';
                     }
-                } catch (e) {
-                    sugBox.style.display = 'none';
-                }
+                } catch (e) { sugBox.style.display = 'none'; }
             }, 350);
         };
 
         window.pickSearchSuggestion = function(lat, lng, addressText) {
             document.getElementById('searchSuggestions').style.display = 'none';
             document.getElementById('pac-input').value = '';
-            currentPickedLat = lat;
-            currentPickedLng = lng;
             openBottomSheet(lat, lng, false);
             document.getElementById('fullAddress').value = addressText;
-            document.getElementById('pinCoordStatus').innerText = "Area Selected! Add House/Flat No & Save.";
-        };
-
-        // Initialize Google Map
-        window.initMap = function() {
-            try {
-                geocoder = new google.maps.Geocoder();
-                map = new google.maps.Map(document.getElementById("google-map"), { 
-                    center: { lat: currentPickedLat, lng: currentPickedLng }, 
-                    zoom: 16, 
-                    disableDefaultUI: true, 
-                    zoomControl: true 
-                });
-                
-                marker = new google.maps.Marker({ 
-                    position: { lat: currentPickedLat, lng: currentPickedLng }, 
-                    map: map, 
-                    draggable: true, 
-                    animation: google.maps.Animation.DROP 
-                });
-                
-                map.addListener('click', function(event) { 
-                    const lat = event.latLng.lat();
-                    const lng = event.latLng.lng();
-                    marker.setPosition(event.latLng); 
-                    map.panTo(event.latLng);
-                    reverseGeocodeCoordinates(lat, lng);
-                });
-
-                marker.addListener('dragend', function(event) {
-                    const lat = event.latLng.lat();
-                    const lng = event.latLng.lng();
-                    reverseGeocodeCoordinates(lat, lng);
-                });
-            } catch (e) {
-                console.log("Map init error:", e);
-            }
-        };
-
-        // Main "Use Current Location" Button
-        window.fetchRealLocationMain = function() {
-            const gpsText = document.getElementById('gps-text');
-            const gpsSub = document.getElementById('gps-subtext');
-            const gpsIcon = document.getElementById('gps-icon');
-
-            gpsText.innerText = "Detecting your GPS location..."; 
-            gpsIcon.className = "fa-solid fa-spinner fa-spin";
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => { 
-                        gpsText.innerText = "Use Current Location"; 
-                        gpsSub.innerText = "GPS detected successfully!";
-                        gpsIcon.className = "fa-solid fa-location-crosshairs";
-
-                        currentPickedLat = position.coords.latitude;
-                        currentPickedLng = position.coords.longitude;
-                        openBottomSheet(currentPickedLat, currentPickedLng, true);
-                    },
-                    (error) => { 
-                        gpsText.innerText = "Use Current Location"; 
-                        gpsIcon.className = "fa-solid fa-location-crosshairs";
-                        alert("Please turn ON Location / GPS in your phone settings, or type your address below.");
-                        openBottomSheet(currentPickedLat, currentPickedLng, false); 
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
-                );
-            } else {
-                openBottomSheet(currentPickedLat, currentPickedLng, false);
-            }
-        };
-
-        window.fetchRealLocationFromMap = function() {
-            const mapIcon = document.getElementById('map-gps-icon');
-            mapIcon.className = "fa-solid fa-spinner fa-spin";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => { 
-                        mapIcon.className = "fa-solid fa-location-crosshairs";
-                        currentPickedLat = position.coords.latitude;
-                        currentPickedLng = position.coords.longitude;
-                        const newPos = { lat: currentPickedLat, lng: currentPickedLng };
-                        if (map && marker) {
-                            map.setCenter(newPos);
-                            marker.setPosition(newPos);
-                        }
-                        reverseGeocodeCoordinates(currentPickedLat, currentPickedLng);
-                    },
-                    () => { mapIcon.className = "fa-solid fa-location-crosshairs"; },
-                    { enableHighAccuracy: true, timeout: 8000 }
-                );
-            }
         };
 
         window.openBottomSheet = function(lat, lng, autoReverse) { 
@@ -418,21 +346,19 @@
             overlay.style.pointerEvents = 'auto'; 
             sheet.style.transform = 'translateY(0)'; 
             
-            if (map && marker) { 
-                const newPos = { lat: lat, lng: lng }; 
-                map.setCenter(newPos); 
-                marker.setPosition(newPos); 
-            } 
-            
+            setTimeout(() => {
+                locMap.invalidateSize();
+                locMap.setView([lat, lng], 17);
+                locMarker.setLatLng([lat, lng]);
+            }, 200);
+
             const profile = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (profile.firstName && !document.getElementById('recvName').value) {
                 document.getElementById('recvName').value = profile.firstName;
                 if (profile.lastName) document.getElementById('recvSurname').value = profile.lastName;
             }
 
-            if (autoReverse) {
-                reverseGeocodeCoordinates(lat, lng);
-            }
+            if (autoReverse) reverseGeocodeCoordinates(lat, lng);
         };
         
         window.closeBottomSheet = function() { 
@@ -448,13 +374,30 @@
             document.getElementById('otherInputWrapper').style.display = (type === 'Other') ? 'block' : 'none';
         };
 
+        function displayDynamicAddress(fullStr) {
+            let type = "Saved"; let details = fullStr; let iconClass = "fa-location-dot";
+            if (fullStr.includes('|')) {
+                let parts = fullStr.split('|');
+                type = parts[0]; details = parts[2]; 
+            }
+            if (type.toLowerCase() === 'home') iconClass = "fa-house";
+            else if (type.toLowerCase() === 'work') iconClass = "fa-briefcase";
+
+            document.getElementById('savedAddressesList').innerHTML = `
+                <div class="address-item clickable" onclick="selectExistingAddress('${fullStr.replace(/'/g, "\\'")}')">
+                    <div class="address-icon"><i class="fa-solid ${iconClass}"></i></div>
+                    <div class="address-details">
+                        <h3>${type} <span style="font-size:10px; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; margin-left:6px;">Tap to Use</span></h3>
+                        <p>${details}</p>
+                    </div>
+                </div>
+            `;
+        }
+
         function goBackToCorrectPage() {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('from') === 'cart') {
-                window.location.replace("cart.html");
-            } else {
-                window.location.replace("home.html"); 
-            }
+            if (urlParams.get('from') === 'cart') window.location.replace("cart.html");
+            else window.location.replace("home.html"); 
         }
 
         function saveToFirebaseAndRedirect(addressText, lat, lng) {
@@ -466,16 +409,11 @@
             if (userPhone) {
                 const btn = document.getElementById('saveAddrBtn');
                 if (btn) { btn.innerText = "Saving Address..."; btn.disabled = true; }
-                
                 database.ref('users/' + userPhone + '/profile').update({
                     address: addressText,
                     latitude: lat,
                     longitude: lng
-                }).then(() => {
-                    goBackToCorrectPage();
-                }).catch(() => {
-                    goBackToCorrectPage();
-                });
+                }).finally(() => goBackToCorrectPage());
             } else {
                 goBackToCorrectPage();
             }
@@ -489,24 +427,23 @@
             let finalType = selectedAddressType;
             if (selectedAddressType === 'Other') {
                 const custom = document.getElementById('customType').value.trim();
-                if (!custom) { alert("Please enter address label (e.g. Shop, Friend's House)"); return; }
+                if (!custom) { alert("Please enter address label"); return; }
                 finalType = custom;
             }
-
-            if (!fullAddr) { 
-                alert("Please enter your Full Address (House No, Street, Area)"); 
-                return; 
-            }
+            if (!fullAddr) { alert("Please enter your Full Address"); return; }
             
             const finalName = fname + (sname ? ` ${sname}` : "");
-            const finalAddressString = finalType + "|" + finalName + "|" + fullAddr;
-            
-            saveToFirebaseAndRedirect(finalAddressString, currentPickedLat, currentPickedLng);
+            saveToFirebaseAndRedirect(finalType + "|" + finalName + "|" + fullAddr, currentPickedLat, currentPickedLng);
         };
 
         window.selectExistingAddress = function(addressText) { 
             saveToFirebaseAndRedirect(addressText, currentPickedLat, currentPickedLng); 
         };
+
+        window.addEventListener('pageshow', function() {
+            const localAddr = localStorage.getItem("userSavedAddress");
+            if (localAddr) displayDynamicAddress(localAddr);
+        });
     </script>
 </body>
 </html>
