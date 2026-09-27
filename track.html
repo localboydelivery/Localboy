@@ -17,36 +17,36 @@
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f1f5f9; color: #0f172a; overflow-x: hidden; padding-bottom: 35px; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: #f1f5f9; color: #0f172a; padding-bottom: 35px; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.96); }
 
-        /* --- SWIGGY STYLE TOP GREEN STATUS HEADER --- */
+        /* --- SWIGGY STYLE TOP GREEN HEADER --- */
         .swiggy-top-header {
-            background: linear-gradient(135deg, #065f46, #059669);
+            background: linear-gradient(135deg, #047857, #10b981);
             color: #ffffff;
-            padding: 16px 18px 20px;
+            padding: 14px 16px 18px;
             position: sticky;
             top: 0;
             z-index: 600;
             box-shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
-        .st-nav-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .st-back-btn { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.18); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 16px; cursor: pointer; }
-        .st-order-pill { font-size: 11.5px; font-weight: 700; background: rgba(0,0,0,0.25); padding: 4px 12px; border-radius: 20px; letter-spacing: 0.3px; }
-        .st-main-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .st-status-info h1 { font-size: 20px; font-weight: 800; line-height: 1.2; }
-        .st-status-info p { font-size: 12px; opacity: 0.9; font-weight: 500; margin-top: 3px; }
-        .st-eta-pill { background: #ffffff; color: #059669; padding: 8px 14px; border-radius: 14px; text-align: center; min-width: 78px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .st-eta-pill strong { display: block; font-size: 18px; font-weight: 800; line-height: 1.1; }
-        .st-eta-pill span { font-size: 9.5px; font-weight: 800; text-transform: uppercase; }
+        .st-nav-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .st-back-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 15px; cursor: pointer; }
+        .st-order-pill { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.25); padding: 4px 12px; border-radius: 20px; }
+        .st-main-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .st-status-info h1 { font-size: 19px; font-weight: 800; line-height: 1.2; }
+        .st-status-info p { font-size: 11.5px; opacity: 0.92; font-weight: 500; margin-top: 2px; }
+        .st-eta-pill { background: #ffffff; color: #047857; padding: 7px 13px; border-radius: 14px; text-align: center; min-width: 74px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); flex-shrink: 0; }
+        .st-eta-pill strong { display: block; font-size: 17px; font-weight: 800; line-height: 1.1; }
+        .st-eta-pill span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
 
-        /* --- FULL COLOR GOOGLE STREET MAP --- */
+        /* --- CLEAN SWIGGY/ZOMATO MAP VIEW (NO THIRD-PARTY SHOP CLUTTER) --- */
         .map-hero-wrapper {
             position: relative;
             width: 100%;
-            height: 45vh;
-            min-height: 310px;
+            height: 42vh;
+            min-height: 290px;
             background: #e2e8f0;
             z-index: 1;
         }
@@ -54,36 +54,35 @@
         .leaflet-control-attribution { display: none !important; }
 
         .recenter-btn-float {
-            position: absolute; bottom: 25px; right: 14px; padding: 8px 14px;
+            position: absolute; bottom: 24px; right: 14px; padding: 7px 13px;
             background: #ffffff; border-radius: 20px; display: flex; align-items: center; gap: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 500; font-size: 12px; font-weight: 800; color: #ff5200; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.18); z-index: 500; font-size: 11.5px; font-weight: 800; color: #0f172a; cursor: pointer;
         }
-        .live-gps-badge {
-            position: absolute; top: 12px; left: 14px; padding: 5px 12px;
-            background: rgba(15, 23, 42, 0.85); color: #fff;
-            border-radius: 20px; font-size: 11px; font-weight: 700; z-index: 500;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: blinkDot 1s infinite; }
-        @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .recenter-btn-float i { color: #ff5200; }
 
-        /* Custom Map Markers with Labels */
-        .map-pin-wrap { position: relative; display: flex; flex-direction: column; align-items: center; }
-        .pin-label { background: #0f172a; color: #fff; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap; margin-bottom: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-        .custom-pin {
-            display: flex; justify-content: center; align-items: center;
-            border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.35);
-            border: 2.5px solid #ffffff; font-size: 15px; color: #ffffff;
+        /* Swiggy Style Clean Floating Map Pins */
+        .swiggy-pin-box { display: flex; flex-direction: column; align-items: center; transform: translateY(-10px); }
+        .swiggy-pin-tag {
+            background: #0f172a; color: #ffffff; font-size: 10px; font-weight: 800;
+            padding: 3px 9px; border-radius: 12px; white-space: nowrap;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25); margin-bottom: 4px;
+            border: 1.5px solid #ffffff;
         }
-        .pin-store { background: #ff5200; width: 38px; height: 38px; }
-        .pin-home { background: #10b981; width: 38px; height: 38px; }
-        .pin-rider {
-            background: #1e293b; width: 46px; height: 46px; font-size: 20px; color: #ff5200;
-            border: 3px solid #ff5200;
+        .swiggy-pin-circle {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            color: #ffffff; font-size: 15px; border: 3px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .circle-store { background: #ff5200; }
+        .circle-home { background: #10b981; }
+        .circle-rider {
+            width: 44px; height: 44px; background: #0f172a; color: #ff5200;
+            border: 3px solid #ff5200; font-size: 19px;
             animation: riderPulse 1.5s infinite;
         }
         @keyframes riderPulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.6); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0.55); }
             70% { box-shadow: 0 0 0 14px rgba(255, 82, 0, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 82, 0, 0); }
         }
@@ -98,19 +97,27 @@
         /* --- DELIVERY PARTNER LIVE CARD --- */
         .rider-card {
             background: #ffffff; border-radius: 20px; padding: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05); border: 1.5px solid #fed7aa;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.04); border: 1.5px solid #e2e8f0;
             margin-bottom: 14px;
         }
+        .rider-card.assigned { border-color: #fdba74; background: linear-gradient(to bottom right, #ffffff, #fffaf5); }
         .rider-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .rider-profile { display: flex; align-items: center; gap: 12px; }
-        .rider-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid #ff5200; background: #fff8eb; flex-shrink: 0; }
-        .rider-info h3 { font-size: 15px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .bike-pill { background: #fff8eb; color: #ff5200; border: 1px solid #fdba74; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 6px; }
-        .rider-info p { font-size: 12px; color: #059669; font-weight: 700; margin-top: 2px; }
+        .rider-profile { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .rider-icon-avatar {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(135deg, #fff8eb, #ffedd5); color: #ff5200;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 22px; border: 1.5px solid #fdba74; flex-shrink: 0; overflow: hidden;
+        }
+        .rider-icon-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .rider-info { flex: 1; min-width: 0; }
+        .rider-info h3 { font-size: 14.5px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .bike-pill { background: #0f172a; color: #ffffff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+        .rider-info p { font-size: 11.5px; color: #059669; font-weight: 700; margin-top: 2px; }
         
         .call-rider-btn {
-            width: 44px; height: 44px; border-radius: 50%; background: #10b981; color: #ffffff;
-            display: flex; justify-content: center; align-items: center; font-size: 18px;
+            width: 42px; height: 42px; border-radius: 50%; background: #10b981; color: #ffffff;
+            display: flex; justify-content: center; align-items: center; font-size: 17px;
             box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); flex-shrink: 0;
         }
         .rider-dist-bar {
@@ -119,7 +126,7 @@
         }
         .rider-dist-bar strong { color: #10b981; font-weight: 800; }
 
-        /* Horizontal 4-Step Progress Bar (Swiggy Style) */
+        /* Timeline & Summary Cards */
         .section-card {
             background: #ffffff; border-radius: 20px; padding: 18px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; margin-bottom: 14px;
@@ -127,9 +134,9 @@
         .card-heading { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
 
         .timeline { padding-left: 6px; }
-        .timeline-item { display: flex; gap: 14px; margin-bottom: 22px; position: relative; }
+        .timeline-item { display: flex; gap: 14px; margin-bottom: 20px; position: relative; }
         .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-item::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: -24px; width: 2.5px; background: #e2e8f0; }
+        .timeline-item::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: -22px; width: 2.5px; background: #e2e8f0; }
         .timeline-item:last-child::before { display: none; }
         .timeline-icon { width: 24px; height: 24px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; z-index: 1; color: #94a3b8; font-size: 10px; flex-shrink: 0; }
         .timeline-content h4 { font-size: 13.5px; font-weight: 700; color: #94a3b8; }
@@ -157,7 +164,7 @@
 <body>
 
     <!-- SWIGGY STYLE TOP GREEN BAR -->
-    <div class="swiggy-top-header" id="topStatusBanner">
+    <div class="swiggy-top-header">
         <div class="st-nav-row">
             <a href="orders.html" class="st-back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
             <div class="st-order-pill" id="order-id-display">Order #Loading...</div>
@@ -165,7 +172,7 @@
         <div class="st-main-row">
             <div class="st-status-info">
                 <h1 id="eta-text">Locating Order...</h1>
-                <p id="eta-subtext">Connecting to live kitchen & rider GPS</p>
+                <p id="eta-subtext">Live tracking your order</p>
             </div>
             <div class="st-eta-pill">
                 <strong id="etaMinsVal">15</strong>
@@ -174,29 +181,30 @@
         </div>
     </div>
 
-    <!-- FULL COLOR GOOGLE ROAD MAP -->
+    <!-- CLEAN MINIMALIST DELIVERY MAP (Zero Business Clutter!) -->
     <div class="map-hero-wrapper">
-        <div class="live-gps-badge">
-            <span class="live-dot"></span>
-            <span>Live Street Map</span>
-        </div>
         <div id="liveTrackMap"></div>
         <div class="recenter-btn-float clickable" onclick="fitMapBounds()">
-            <i class="fa-solid fa-location-crosshairs"></i> Center Map
+            <i class="fa-solid fa-location-crosshairs"></i> Recenter
         </div>
     </div>
 
     <!-- BOTTOM DETAILS SHEET -->
     <div class="track-sheet">
 
-        <!-- Delivery Partner Card (Visible when assigned or searching) -->
+        <!-- Delivery Partner Card -->
         <div class="rider-card" id="riderLiveCard">
             <div class="rider-top">
                 <div class="rider-profile">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" id="riderAvatar" class="rider-avatar">
+                    <div class="rider-icon-avatar" id="riderAvatarBox">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
                     <div class="rider-info">
-                        <h3><span id="riderNameText">Assigning Delivery Partner...</span> <span class="bike-pill" id="riderBikeText" style="display:none;">BIKE</span></h3>
-                        <p id="riderStepText">A nearby delivery partner will be assigned shortly</p>
+                        <h3>
+                            <span id="riderNameText">Assigning Delivery Partner...</span>
+                            <span class="bike-pill" id="riderBikeText" style="display:none;">AP</span>
+                        </h3>
+                        <p id="riderStepText">Connecting to nearby delivery partner...</p>
                     </div>
                 </div>
                 <a href="#" id="riderCallBtn" class="call-rider-btn clickable" style="display:none;">
@@ -204,8 +212,8 @@
                 </a>
             </div>
             <div class="rider-dist-bar">
-                <span id="riderLiveDistText"><i class="fa-solid fa-route" style="color:#ff5200;"></i> Live route tracking active</span>
-                <strong id="riderGpsUpdatedText">● LIVE</strong>
+                <span id="riderLiveDistText"><i class="fa-solid fa-route" style="color:#ff5200;"></i> Calculating route distance...</span>
+                <strong id="riderGpsUpdatedText">● LIVE GPS</strong>
             </div>
         </div>
 
@@ -234,7 +242,7 @@
                 </div>
                 <div class="timeline-item" id="step-delivered">
                     <div class="timeline-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                    <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your meal!</p></div>
+                    <div class="timeline-content"><h4>Delivered</h4><p>Enjoy your order!</p></div>
                 </div>
             </div>
         </div>
@@ -270,35 +278,44 @@
         const urlParams = new URLSearchParams(window.location.search);
         let trackingId = urlParams.get('id') || localStorage.getItem('lastOrderId');
 
-        let storeLat = 16.2366, storeLng = 80.6405;
-        let custLat = parseFloat(localStorage.getItem('userLat')) || 16.2430;
-        let custLng = parseFloat(localStorage.getItem('userLng')) || 80.6480;
+        let storeLat = 16.2375, storeLng = 80.6440;
+        let custLat = parseFloat(localStorage.getItem('userLat')) || 16.2445;
+        let custLng = parseFloat(localStorage.getItem('userLng')) || 80.6510;
         let riderLat = null, riderLng = null;
+        let storeLabelName = "Store";
 
         let currentOrder = null;
         let currentPartnerListenerId = null;
         let restMenuMap = {};
         let groceriesMap = {};
 
-        // ⚡ GOOGLE MAPS STANDARD ROAD TILES (100% Free, Full Color Streets, NEVER shows "API KEY REQUIRED")
+        // ⚡ CLEAN NAVIGATION MAP (Shows clean roads & street names WITHOUT random restaurant/shop ads!)
         const map = L.map('liveTrackMap', { zoomControl: false }).setView([storeLat, storeLng], 15);
-        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-            maxZoom: 20
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 19
         }).addTo(map);
 
-        function createLabeledPin(label, pinClass, iconClass) {
+        function createSwiggyPin(label, circleClass, iconClass) {
             return L.divIcon({
                 className: '',
-                html: `<div class="map-pin-wrap"><div class="pin-label">${label}</div><div class="custom-pin ${pinClass}"><i class="fa-solid ${iconClass}"></i></div></div>`,
-                iconSize: [80, 58],
-                iconAnchor: [40, 54]
+                html: `
+                    <div class="swiggy-pin-box">
+                        <div class="swiggy-pin-tag">${label}</div>
+                        <div class="swiggy-pin-circle ${circleClass}"><i class="fa-solid ${iconClass}"></i></div>
+                    </div>
+                `,
+                iconSize: [110, 62],
+                iconAnchor: [55, 52]
             });
         }
 
-        let storeMarker = L.marker([storeLat, storeLng], { icon: createLabeledPin('Store', 'pin-store', 'fa-utensils') }).addTo(map);
-        let homeMarker = L.marker([custLat, custLng], { icon: createLabeledPin('You', 'pin-home', 'fa-house') }).addTo(map);
+        let storeMarker = L.marker([storeLat, storeLng], { icon: createSwiggyPin('Store', 'circle-store', 'fa-utensils') }).addTo(map);
+        let homeMarker = L.marker([custLat, custLng], { icon: createSwiggyPin('Your Location', 'circle-home', 'fa-house') }).addTo(map);
         let riderMarker = null;
-        let routeLine = L.polyline([], { color: '#ff5200', weight: 5, opacity: 0.9 }).addTo(map);
+
+        // Dual-layer Route Line (Dark border + Bright Orange inner line like Swiggy)
+        let routeOutline = L.polyline([], { color: '#0f172a', weight: 7, opacity: 0.25 }).addTo(map);
+        let routeLine = L.polyline([], { color: '#ff5200', weight: 4.5, opacity: 0.95 }).addTo(map);
 
         function getDistanceKm(lat1, lon1, lat2, lon2) {
             if (!lat1 || !lon1 || !lat2 || !lon2) return 1.2;
@@ -314,10 +331,35 @@
         window.fitMapBounds = function() {
             const pts = [[storeLat, storeLng], [custLat, custLng]];
             if (riderLat && riderLng) pts.push([riderLat, riderLng]);
-            map.fitBounds(pts, { padding: [55, 55] });
+            map.fitBounds(pts, { padding: [55, 55], maxZoom: 16 });
         };
 
-        // Draw Real Street Route using OSRM Free Road Router
+        // Geocode text address if exact coordinates were missing
+        async function geocodeAddressString(addrStr) {
+            if (!addrStr) return null;
+            let clean = addrStr.includes('|') ? addrStr.split('|')[2] : addrStr;
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=in&q=${encodeURIComponent(clean)}&limit=1`);
+                const arr = await res.json();
+                if (arr && arr.length > 0) {
+                    return { lat: parseFloat(arr[0].lat), lng: parseFloat(arr[0].lon) };
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        // Also try live device GPS for customer's own pin if not saved
+        if (!localStorage.getItem('userLat') && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                custLat = pos.coords.latitude;
+                custLng = pos.coords.longitude;
+                localStorage.setItem('userLat', custLat);
+                localStorage.setItem('userLng', custLng);
+                updateMapMarkersAndRoute();
+                fitMapBounds();
+            }, () => {}, { enableHighAccuracy: false, timeout: 4000 });
+        }
+
         async function drawRealRoadRoute(fromLat, fromLng, toLat, toLng) {
             try {
                 const url = `https://router.project-osrm.org/route/v1/driving/${fromLng},${fromLat};${toLng},${toLat}?overview=full&geometries=geojson`;
@@ -325,27 +367,32 @@
                 const data = await res.json();
                 if (data.routes && data.routes[0] && data.routes[0].geometry) {
                     const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    routeOutline.setLatLngs(coords);
                     routeLine.setLatLngs(coords);
                     return;
                 }
             } catch (e) {}
-            // Smooth fallback line if offline
+            routeOutline.setLatLngs([[fromLat, fromLng], [toLat, toLng]]);
             routeLine.setLatLngs([[fromLat, fromLng], [toLat, toLng]]);
         }
 
         function updateMapMarkersAndRoute() {
             storeMarker.setLatLng([storeLat, storeLng]);
+            storeMarker.setIcon(createSwiggyPin(storeLabelName, 'circle-store', 'fa-utensils'));
             homeMarker.setLatLng([custLat, custLng]);
 
+            const totalDistKm = getDistanceKm(storeLat, storeLng, custLat, custLng).toFixed(1);
+
             if (riderLat && riderLng && currentOrder && currentOrder.status !== 'Delivered') {
-                const rName = currentOrder.deliveryPartnerName || 'Rider';
+                const rName = currentOrder.deliveryPartnerName || 'Delivery Partner';
                 if (!riderMarker) {
                     riderMarker = L.marker([riderLat, riderLng], {
-                        icon: createLabeledPin(rName, 'pin-rider', 'fa-motorcycle'),
+                        icon: createSwiggyPin(rName, 'circle-rider', 'fa-motorcycle'),
                         zIndexOffset: 1000
                     }).addTo(map);
                 } else {
                     riderMarker.setLatLng([riderLat, riderLng]);
+                    riderMarker.setIcon(createSwiggyPin(rName, 'circle-rider', 'fa-motorcycle'));
                 }
 
                 if (currentOrder.status === 'On the Way') {
@@ -355,6 +402,7 @@
                 }
             } else {
                 drawRealRoadRoute(storeLat, storeLng, custLat, custLng);
+                document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-route" style="color:#ff5200;"></i> Distance from ${storeLabelName}: <strong>${totalDistKm} km</strong>`;
             }
         }
 
@@ -364,27 +412,34 @@
             currentPartnerListenerId = dpId;
 
             database.ref('delivery_partners/' + dpId).on('value', (snap) => {
-                if (!snap.exists() || !currentOrder) return;
-                const dp = snap.val();
+                if (!currentOrder) return;
+                const dp = snap.val() || {};
 
-                document.getElementById('riderNameText').innerText = dp.name || currentOrder.deliveryPartnerName || 'Delivery Partner';
+                document.getElementById('riderLiveCard').classList.add('assigned');
+                const pName = dp.name || currentOrder.deliveryPartnerName || currentOrder.riderName || 'Delivery Partner';
+                document.getElementById('riderNameText').innerText = pName;
+                currentOrder.deliveryPartnerName = pName;
+
                 const bikeEl = document.getElementById('riderBikeText');
-                if (dp.vehicleNumber) {
-                    bikeEl.innerText = dp.vehicleNumber;
+                const vNum = dp.vehicleNumber || dp.bikeNumber || currentOrder.vehicleNumber || '';
+                if (vNum) {
+                    bikeEl.innerText = vNum;
                     bikeEl.style.display = 'inline-block';
                 }
-                if (dp.image) document.getElementById('riderAvatar').src = dp.image;
 
-                const phone = dp.phone || currentOrder.deliveryPartnerPhone || '';
+                if (dp.image) {
+                    document.getElementById('riderAvatarBox').innerHTML = `<img src="${dp.image}" alt="Rider">`;
+                }
+
+                const phone = dp.phone || currentOrder.deliveryPartnerPhone || currentOrder.riderPhone || '';
                 const callBtn = document.getElementById('riderCallBtn');
                 if (phone) {
                     callBtn.href = `tel:${phone}`;
                     callBtn.style.display = 'flex';
                 }
 
-                // Rider GPS coordinates (if partner hasn't moved yet, place near store so scooter is always visible on map!)
-                riderLat = parseFloat(dp.latitude) || (storeLat + 0.0012);
-                riderLng = parseFloat(dp.longitude) || (storeLng + 0.0012);
+                riderLat = parseFloat(dp.latitude) || (storeLat + 0.0008);
+                riderLng = parseFloat(dp.longitude) || (storeLng + 0.0008);
                 updateMapMarkersAndRoute();
 
                 const isPickedUp = currentOrder.status === 'On the Way';
@@ -395,10 +450,10 @@
                 if (currentOrder.reachedCustomer) {
                     document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-location-dot" style="color:#10b981;"></i> Partner has arrived at your doorstep!`;
                 } else if (isPickedUp) {
-                    document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-motorcycle" style="color:#ff5200;"></i> <strong>${liveDist} km</strong> away from your location`;
+                    document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-motorcycle" style="color:#ff5200;"></i> Partner is <strong>${liveDist} km</strong> away from you`;
                     document.getElementById('etaMinsVal').innerText = Math.max(2, Math.ceil(liveDist * 3.5));
                 } else {
-                    document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-store" style="color:#3b82f6;"></i> Partner is <strong>${liveDist} km</strong> from store`;
+                    document.getElementById('riderLiveDistText').innerHTML = `<i class="fa-solid fa-store" style="color:#ff5200;"></i> Partner is at/near <strong>${storeLabelName}</strong>`;
                 }
             });
         }
@@ -434,14 +489,18 @@
             let currentStepIndex = 0;
             let defaultMins = ord.distance ? Math.max(8, Math.ceil(ord.distance * 4)) : 15;
 
-            if (ord.deliveryPartnerId) {
-                const stepEl = document.getElementById('riderStepText');
+            const dpId = ord.deliveryPartnerId || ord.riderId || ord.partnerId || ord.assignedTo;
+            const stepEl = document.getElementById('riderStepText');
+
+            if (dpId) {
                 if (status === 'Delivered') stepEl.innerText = "Order Delivered Successfully";
                 else if (ord.reachedCustomer) stepEl.innerText = "📍 Reached your doorstep! Please collect order";
                 else if (status === 'On the Way') stepEl.innerText = "🛵 Picked up order • On the way to you";
-                else if (ord.reachedRestaurant) stepEl.innerText = "🏪 Reached store • Waiting for food pickup";
-                else if (ord.riderAccepted) stepEl.innerText = "✅ Accepted order • Heading to store";
-                else stepEl.innerText = "Assigned to your order";
+                else if (ord.reachedRestaurant) stepEl.innerText = "🏪 Partner is at store waiting for pickup";
+                else if (ord.riderAccepted) stepEl.innerText = "✅ Partner accepted • Heading to store";
+                else stepEl.innerText = "✅ Partner assigned to your order";
+            } else {
+                stepEl.innerText = "Store is preparing • Partner will be assigned shortly";
             }
 
             if (status === 'Placed') {
@@ -457,7 +516,7 @@
             } else if (status === 'Ready') {
                 currentStepIndex = 2;
                 document.getElementById('eta-text').innerText = "Order Packed & Ready!";
-                document.getElementById('eta-subtext').innerText = "Delivery partner is picking up your order";
+                document.getElementById('eta-subtext').innerText = dpId ? "Delivery partner is picking up your order" : "Order is ready for delivery pickup";
                 document.getElementById('etaMinsVal').innerText = defaultMins;
             } else if (status === 'On the Way') {
                 currentStepIndex = 3;
@@ -482,27 +541,32 @@
         }
 
         if (trackingId) {
-            database.ref('orders/' + trackingId).on('value', (snapshot) => {
+            database.ref('orders/' + trackingId).on('value', async (snapshot) => {
                 const orderData = snapshot.val();
                 if (!orderData) return;
                 currentOrder = orderData;
 
+                // 1. Resolve Customer Coordinates accurately
                 if (orderData.customerLat && orderData.customerLng) {
                     custLat = parseFloat(orderData.customerLat);
                     custLng = parseFloat(orderData.customerLng);
+                } else if (orderData.deliveryAddress) {
+                    const geoCust = await geocodeAddressString(orderData.deliveryAddress);
+                    if (geoCust) { custLat = geoCust.lat; custLng = geoCust.lng; }
                 }
 
+                // 2. Resolve Store Coordinates & Name accurately
                 if (orderData.restaurantId === 'grocery_store') {
-                    const sName = "Local Boy Groceries";
-                    document.getElementById('order-id-display').innerText = `#${orderData.orderId} • ${sName}`;
+                    storeLabelName = "Local Boy Store";
+                    document.getElementById('order-id-display').innerText = `#${orderData.orderId} • ${storeLabelName}`;
                     database.ref('groceries').once('value').then(gSnap => {
                         groceriesMap = gSnap.val() || {};
-                        renderOrderSummary(orderData, sName);
+                        renderOrderSummary(orderData, storeLabelName);
                     });
                     updateMapMarkersAndRoute();
                     fitMapBounds();
                 } else {
-                    database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(resSnap => {
+                    database.ref('restaurant_profiles/' + orderData.restaurantId).once('value').then(async resSnap => {
                         let sName = orderData.restaurantName || "Restaurant";
                         if (resSnap.exists()) {
                             const r = resSnap.val();
@@ -510,8 +574,12 @@
                             if (r.latitude && r.longitude) {
                                 storeLat = parseFloat(r.latitude);
                                 storeLng = parseFloat(r.longitude);
+                            } else if (r.address || r.name) {
+                                const geoStore = await geocodeAddressString(`${r.name}, ${r.address || 'Tenali'}`);
+                                if (geoStore) { storeLat = geoStore.lat; storeLng = geoStore.lng; }
                             }
                         }
+                        storeLabelName = sName;
                         document.getElementById('order-id-display').innerText = `#${orderData.orderId} • ${sName}`;
                         updateMapMarkersAndRoute();
                         fitMapBounds();
@@ -523,8 +591,10 @@
                     });
                 }
 
-                if (orderData.deliveryPartnerId) {
-                    attachPartnerLiveGpsListener(orderData.deliveryPartnerId);
+                // 3. Check Delivery Partner Assignment (Supports all field names)
+                const assignedDpId = orderData.deliveryPartnerId || orderData.riderId || orderData.partnerId || orderData.assignedTo;
+                if (assignedDpId) {
+                    attachPartnerLiveGpsListener(assignedDpId);
                 }
                 updateTimelineAndRiderStatus(orderData);
             });
