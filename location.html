@@ -15,7 +15,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: #f8fafc; color: #1e293b; padding-bottom: 40px; }
         a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.97); opacity: 0.9; }
+        .clickable:active { transform: scale(0.96); opacity: 0.9; }
         
         .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
         .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
@@ -55,9 +55,19 @@
         .sheet-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
         .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
         
-        .map-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #e2e8f0; }
+        .map-container { position: relative; width: 100%; height: 235px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #e2e8f0; }
         #google-loc-map { width: 100%; height: 100%; z-index: 1; }
-        .map-gps-btn { position: absolute; bottom: 12px; right: 12px; width: 42px; height: 42px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; color: #ff5200; font-size: 19px; cursor: pointer; }
+        
+        /* Clean Unobstructed GPS Button */
+        .map-gps-btn {
+            position: absolute; bottom: 14px; right: 14px;
+            padding: 0 14px; height: 42px; background: #ffffff;
+            border-radius: 24px; display: flex; justify-content: center; align-items: center; gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 600;
+            color: #ff5200; font-size: 13px; font-weight: 800; cursor: pointer;
+            border: 1.5px solid #fed7aa;
+        }
+        .map-gps-btn i { font-size: 17px; }
         
         .detected-bar { display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #d1fae5; color: #059669; padding: 8px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
 
@@ -93,7 +103,7 @@
         <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
         <div class="text-content">
             <h3 id="gps-text">Use Current Location</h3>
-            <p id="gps-subtext">Tap to auto-detect your exact location</p>
+            <p id="gps-subtext">Using High-Accuracy Device GPS</p>
         </div>
     </div>
 
@@ -104,7 +114,7 @@
         </div>
     </div>
 
-    <div class="add-new-btn clickable" onclick="openBottomSheet(currentPickedLat, currentPickedLng, true)">
+    <div class="add-new-btn clickable" onclick="openBottomSheet(currentPickedLat, currentPickedLng, false)">
         <i class="fa-solid fa-plus"></i> Add / Edit Complete Address
     </div>
 
@@ -118,14 +128,16 @@
         
         <div class="map-container" id="mapWrapper">
             <div id="google-loc-map"></div>
-            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()" title="Current Location">
+            <!-- Unobstructed Locate Me Button -->
+            <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()">
                 <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
+                <span id="map-gps-label">Locate Me</span>
             </div>
         </div>
 
-        <div class="detected-bar">
+        <div class="detected-bar" id="detectedBarBox">
             <i class="fa-solid fa-location-dot"></i>
-            <span id="pinCoordStatus">Tap on map or drag pin to your doorstep</span>
+            <span id="pinCoordStatus">Tap 'Locate Me' or drag pin to your exact building</span>
         </div>
         
         <div class="input-row">
@@ -156,7 +168,7 @@
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0&libraries=places&callback=initLocMap"></script>
 
     <script>
-        // ⚡ FIREBASE CONFIG (Kept your exact Firebase Key so Database works 100%)
+        // ⚡ FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
@@ -179,16 +191,18 @@
 
         let locMap = null;
         let locMarker = null;
+        let blueDotCircle = null;
         let geocoder = null;
+        let activeWatchId = null;
 
         window.initLocMap = function() {
             geocoder = new google.maps.Geocoder();
             locMap = new google.maps.Map(document.getElementById('google-loc-map'), {
                 center: { lat: currentPickedLat, lng: currentPickedLng },
-                zoom: 17,
+                zoom: 18,
                 disableDefaultUI: true,
-                zoomControl: true,
-                styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
+                zoomControl: false, // Disabled so + / - buttons never block the Locate Me button!
+                gestureHandling: 'greedy'
             });
 
             locMarker = new google.maps.Marker({
@@ -196,6 +210,18 @@
                 map: locMap,
                 draggable: true,
                 animation: google.maps.Animation.DROP
+            });
+
+            // Blue accuracy dot for live GPS
+            blueDotCircle = new google.maps.Circle({
+                strokeColor: '#3b82f6',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#3b82f6',
+                fillOpacity: 0.2,
+                map: locMap,
+                center: { lat: currentPickedLat, lng: currentPickedLng },
+                radius: 25
             });
 
             locMap.addListener('click', function(e) {
@@ -210,48 +236,73 @@
         function moveMapAndReverseGeocode(lat, lng) {
             currentPickedLat = lat;
             currentPickedLng = lng;
-            if (locMarker && locMap) {
-                locMarker.setPosition({ lat, lng });
-                locMap.panTo({ lat, lng });
+            if (locMap && locMarker) {
+                const pt = { lat: parseFloat(lat), lng: parseFloat(lng) };
+                locMarker.setPosition(pt);
+                if (blueDotCircle) blueDotCircle.setCenter(pt);
+                locMap.panTo(pt);
+                locMap.setZoom(18);
             }
             reverseGeocodeCoordinates(lat, lng);
         }
 
-        function getSmartDeviceLocation(onSuccess) {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        onSuccess(pos.coords.latitude, pos.coords.longitude);
-                        navigator.geolocation.getCurrentPosition(
-                            (finePos) => onSuccess(finePos.coords.latitude, finePos.coords.longitude),
-                            () => {},
-                            { enableHighAccuracy: true, timeout: 5000 }
-                        );
-                    },
-                    () => {
-                        navigator.geolocation.getCurrentPosition(
-                            (pos2) => onSuccess(pos2.coords.latitude, pos2.coords.longitude),
-                            () => fallbackIpLocation(onSuccess),
-                            { enableHighAccuracy: true, timeout: 6000, maximumAge: 300000 }
-                        );
-                    },
-                    { enableHighAccuracy: false, timeout: 4000, maximumAge: 300000 }
-                );
-            } else {
-                fallbackIpLocation(onSuccess);
+        // ⚡ TRUE HIGH-ACCURACY SATELLITE GPS DETECTOR (Zero IP Fallback, Zero Stale Cache!)
+        function getExactHardwareGPS(onSuccess, onFail) {
+            if (!navigator.geolocation) {
+                if (onFail) onFail("Geolocation not supported");
+                return;
             }
-        }
 
-        async function fallbackIpLocation(onSuccess) {
-            try {
-                const r = await fetch('https://ipapi.co/json/');
-                const d = await r.json();
-                if (d && d.latitude && d.longitude) {
-                    onSuccess(parseFloat(d.latitude), parseFloat(d.longitude));
-                    return;
-                }
-            } catch (e) {}
-            onSuccess(currentPickedLat, currentPickedLng);
+            if (activeWatchId !== null) {
+                navigator.geolocation.clearWatch(activeWatchId);
+                activeWatchId = null;
+            }
+
+            let resolved = false;
+
+            // Force fresh hardware GPS (maximumAge: 0, enableHighAccuracy: true)
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    if (!resolved) {
+                        resolved = true;
+                        onSuccess(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+                    }
+                    // Refine further for 3 seconds if accuracy > 25m
+                    if (pos.coords.accuracy > 25) {
+                        activeWatchId = navigator.geolocation.watchPosition(
+                            (finePos) => {
+                                if (finePos.coords.accuracy < pos.coords.accuracy) {
+                                    moveMapAndReverseGeocode(finePos.coords.latitude, finePos.coords.longitude);
+                                }
+                            },
+                            () => {},
+                            { enableHighAccuracy: true, maximumAge: 0, timeout: 4000 }
+                        );
+                        setTimeout(() => {
+                            if (activeWatchId !== null) {
+                                navigator.geolocation.clearWatch(activeWatchId);
+                                activeWatchId = null;
+                            }
+                        }, 3500);
+                    }
+                },
+                (err) => {
+                    // Secondary attempt with network/Wi-Fi location if satellite takes too long indoors
+                    navigator.geolocation.getCurrentPosition(
+                        (pos2) => {
+                            if (!resolved) {
+                                resolved = true;
+                                onSuccess(pos2.coords.latitude, pos2.coords.longitude, pos2.coords.accuracy);
+                            }
+                        },
+                        (err2) => {
+                            if (!resolved && onFail) onFail(err2);
+                        },
+                        { enableHighAccuracy: false, maximumAge: 0, timeout: 6000 }
+                    );
+                },
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 7000 }
+            );
         }
 
         window.fetchRealLocationMain = function() {
@@ -259,42 +310,76 @@
             const gpsSub = document.getElementById('gps-subtext');
             const gpsIcon = document.getElementById('gps-icon');
 
-            gpsText.innerText = "Locating you..."; 
+            gpsText.innerText = "Getting Exact GPS..."; 
             gpsIcon.className = "fa-solid fa-spinner fa-spin";
 
-            getSmartDeviceLocation((lat, lng) => {
-                gpsText.innerText = "Use Current Location";
-                gpsSub.innerText = "Location detected!";
-                gpsIcon.className = "fa-solid fa-location-crosshairs";
-                openBottomSheet(lat, lng, true);
-            });
+            getExactHardwareGPS(
+                (lat, lng) => {
+                    gpsText.innerText = "Use Current Location";
+                    gpsSub.innerText = "Exact GPS Locked!";
+                    gpsIcon.className = "fa-solid fa-location-crosshairs";
+                    openBottomSheet(lat, lng, true);
+                },
+                () => {
+                    gpsText.innerText = "Use Current Location";
+                    gpsSub.innerText = "Tap on map to pin your location";
+                    gpsIcon.className = "fa-solid fa-location-crosshairs";
+                    openBottomSheet(currentPickedLat, currentPickedLng, false);
+                    document.getElementById('pinCoordStatus').innerText = "Please turn on Phone Location & tap 'Locate Me'";
+                }
+            );
         };
 
         window.fetchRealLocationFromMap = function() {
             const mapIcon = document.getElementById('map-gps-icon');
+            const mapLabel = document.getElementById('map-gps-label');
+            const statusSpan = document.getElementById('pinCoordStatus');
+
             mapIcon.className = "fa-solid fa-spinner fa-spin";
-            getSmartDeviceLocation((lat, lng) => {
-                mapIcon.className = "fa-solid fa-location-crosshairs";
-                moveMapAndReverseGeocode(lat, lng);
-            });
+            mapLabel.innerText = "Locating...";
+            statusSpan.innerText = "Locking onto your exact GPS coordinates...";
+
+            getExactHardwareGPS(
+                (lat, lng) => {
+                    mapIcon.className = "fa-solid fa-location-crosshairs";
+                    mapLabel.innerText = "Locate Me";
+                    moveMapAndReverseGeocode(lat, lng);
+                },
+                () => {
+                    mapIcon.className = "fa-solid fa-location-crosshairs";
+                    mapLabel.innerText = "Locate Me";
+                    statusSpan.innerText = "Could not lock GPS. Please check Phone Location permission or drag pin.";
+                }
+            );
         };
 
+        // Always overwrites #fullAddress with the new pinned street address!
         async function reverseGeocodeCoordinates(lat, lng) {
             currentPickedLat = lat;
             currentPickedLng = lng;
             const statusSpan = document.getElementById('pinCoordStatus');
             const addrInput = document.getElementById('fullAddress');
-            statusSpan.innerText = "Fetching street & area name...";
+            statusSpan.innerText = "Fetching exact street & area name...";
 
+            // 1. First use Google Maps Official Geocoder (with your new API Key)
             if (geocoder) {
-                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                geocoder.geocode({ location: { lat: parseFloat(lat), lng: parseFloat(lng) } }, async (results, status) => {
                     if (status === "OK" && results && results[0]) {
                         addrInput.value = results[0].formatted_address;
                         statusSpan.innerText = "Exact Location Locked! Add House/Door No if needed.";
+                    } else {
+                        // 2. Backup OpenStreetMap Reverse Geocoder
+                        await fetchNominatimAddress(lat, lng);
                     }
                 });
+            } else {
+                await fetchNominatimAddress(lat, lng);
             }
+        }
 
+        async function fetchNominatimAddress(lat, lng) {
+            const statusSpan = document.getElementById('pinCoordStatus');
+            const addrInput = document.getElementById('fullAddress');
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
                     headers: { 'Accept-Language': 'en' }
@@ -359,13 +444,19 @@
             overlay.style.pointerEvents = 'auto'; 
             sheet.style.transform = 'translateY(0)'; 
             
-            currentPickedLat = lat;
-            currentPickedLng = lng;
+            currentPickedLat = parseFloat(lat);
+            currentPickedLng = parseFloat(lng);
 
-            if (locMap && locMarker) {
-                locMap.setCenter({ lat, lng });
-                locMarker.setPosition({ lat, lng });
-            }
+            setTimeout(() => {
+                if (locMap && locMarker) {
+                    google.maps.event.trigger(locMap, 'resize');
+                    const pt = { lat: currentPickedLat, lng: currentPickedLng };
+                    locMap.setCenter(pt);
+                    locMap.setZoom(18);
+                    locMarker.setPosition(pt);
+                    if (blueDotCircle) blueDotCircle.setCenter(pt);
+                }
+            }, 150);
 
             const profile = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (profile.firstName && !document.getElementById('recvName').value) {
@@ -373,7 +464,9 @@
                 if (profile.lastName) document.getElementById('recvSurname').value = profile.lastName;
             }
 
-            if (autoReverse) reverseGeocodeCoordinates(lat, lng);
+            if (autoReverse) {
+                reverseGeocodeCoordinates(currentPickedLat, currentPickedLng);
+            }
         };
         
         window.closeBottomSheet = function() { 
