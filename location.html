@@ -7,17 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Leaflet CSS & JS (Uses Google Street Tiles - 100% Free & Never Fails) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <!-- Firebase Web SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; padding-bottom: 40px; }
+        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: #f8fafc; color: #1e293b; padding-bottom: 40px; }
         a { text-decoration: none; color: inherit; }
         .clickable:active { transform: scale(0.97); opacity: 0.9; }
         
@@ -28,7 +24,7 @@
         .search-container { padding: 16px 20px; background: #ffffff; position: relative; }
         .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 15px; border: 1.5px solid #e2e8f0; }
         .search-box:focus-within { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
-        .search-box input { flex: 1; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
+        .search-box input { flex: 1; min-width: 0; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
         .search-icon { color: #ff5200; font-size: 18px; }
 
         .search-suggestions { display: none; position: absolute; left: 20px; right: 20px; top: 68px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; z-index: 600; max-height: 240px; overflow-y: auto; }
@@ -60,8 +56,7 @@
         .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
         
         .map-container { position: relative; width: 100%; height: 220px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #e2e8f0; }
-        #leaflet-loc-map { width: 100%; height: 100%; z-index: 1; }
-        .leaflet-control-attribution { display: none !important; }
+        #google-loc-map { width: 100%; height: 100%; z-index: 1; }
         .map-gps-btn { position: absolute; bottom: 12px; right: 12px; width: 42px; height: 42px; background: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; color: #ff5200; font-size: 19px; cursor: pointer; }
         
         .detected-bar { display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #d1fae5; color: #059669; padding: 8px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
@@ -122,7 +117,7 @@
         </div>
         
         <div class="map-container" id="mapWrapper">
-            <div id="leaflet-loc-map"></div>
+            <div id="google-loc-map"></div>
             <div class="map-gps-btn clickable" onclick="fetchRealLocationFromMap()" title="Current Location">
                 <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
             </div>
@@ -157,9 +152,12 @@
         <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save & Proceed</button>
     </div>
 
+    <!-- ⚡ Google Maps JS SDK with your new key AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0 -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0&libraries=places&callback=initLocMap"></script>
+
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
+            apiKey: "AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0",
             authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
             databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
             projectId: "sri-vishnu-priya-finance-c591f",
@@ -178,44 +176,51 @@
         let selectedAddressType = 'Home';
         let searchTimer = null;
 
-        // Initialize Crisp Google Street Map inside Leaflet
-        const locMap = L.map('leaflet-loc-map', { zoomControl: true }).setView([currentPickedLat, currentPickedLng], 16);
-        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(locMap);
+        let locMap = null;
+        let locMarker = null;
+        let geocoder = null;
 
-        const pinIcon = L.divIcon({
-            className: '',
-            html: `<div style="font-size:34px; color:#ff5200; filter:drop-shadow(0 4px 6px rgba(0,0,0,0.35));"><i class="fa-solid fa-location-dot"></i></div>`,
-            iconSize: [34, 34],
-            iconAnchor: [17, 34]
-        });
+        window.initLocMap = function() {
+            geocoder = new google.maps.Geocoder();
+            locMap = new google.maps.Map(document.getElementById('google-loc-map'), {
+                center: { lat: currentPickedLat, lng: currentPickedLng },
+                zoom: 17,
+                disableDefaultUI: true,
+                zoomControl: true,
+                styles: [{ featureType: "poi.business", stylers: [{ visibility: "off" }] }]
+            });
 
-        const locMarker = L.marker([currentPickedLat, currentPickedLng], { icon: pinIcon, draggable: true }).addTo(locMap);
+            locMarker = new google.maps.Marker({
+                position: { lat: currentPickedLat, lng: currentPickedLng },
+                map: locMap,
+                draggable: true,
+                animation: google.maps.Animation.DROP
+            });
 
-        locMap.on('click', function(e) {
-            moveMapAndReverseGeocode(e.latlng.lat, e.latlng.lng);
-        });
+            locMap.addListener('click', function(e) {
+                moveMapAndReverseGeocode(e.latLng.lat(), e.latLng.lng());
+            });
 
-        locMarker.on('dragend', function(e) {
-            const pos = e.target.getLatLng();
-            moveMapAndReverseGeocode(pos.lat, pos.lng);
-        });
+            locMarker.addListener('dragend', function(e) {
+                moveMapAndReverseGeocode(e.latLng.lat(), e.latLng.lng());
+            });
+        };
 
         function moveMapAndReverseGeocode(lat, lng) {
             currentPickedLat = lat;
             currentPickedLng = lng;
-            locMarker.setLatLng([lat, lng]);
-            locMap.panTo([lat, lng]);
+            if (locMarker && locMap) {
+                locMarker.setPosition({ lat, lng });
+                locMap.panTo({ lat, lng });
+            }
             reverseGeocodeCoordinates(lat, lng);
         }
 
-        // ⚡ 3-STAGE SMART GPS DETECTOR (Works inside Android WebView & Indoors without failing!)
         function getSmartDeviceLocation(onSuccess) {
             if (navigator.geolocation) {
-                // Stage 1: Fast Network/Wi-Fi GPS (works indoors in 0.5s)
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
                         onSuccess(pos.coords.latitude, pos.coords.longitude);
-                        // Refine with high accuracy in background
                         navigator.geolocation.getCurrentPosition(
                             (finePos) => onSuccess(finePos.coords.latitude, finePos.coords.longitude),
                             () => {},
@@ -223,7 +228,6 @@
                         );
                     },
                     () => {
-                        // Stage 2: High Accuracy GPS try
                         navigator.geolocation.getCurrentPosition(
                             (pos2) => onSuccess(pos2.coords.latitude, pos2.coords.longitude),
                             () => fallbackIpLocation(onSuccess),
@@ -270,7 +274,6 @@
             mapIcon.className = "fa-solid fa-spinner fa-spin";
             getSmartDeviceLocation((lat, lng) => {
                 mapIcon.className = "fa-solid fa-location-crosshairs";
-                locMap.setView([lat, lng], 17);
                 moveMapAndReverseGeocode(lat, lng);
             });
         };
@@ -282,13 +285,22 @@
             const addrInput = document.getElementById('fullAddress');
             statusSpan.innerText = "Fetching street & area name...";
 
+            if (geocoder) {
+                geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                    if (status === "OK" && results && results[0]) {
+                        addrInput.value = results[0].formatted_address;
+                        statusSpan.innerText = "Exact Location Locked! Add House/Door No if needed.";
+                    }
+                });
+            }
+
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
                     headers: { 'Accept-Language': 'en' }
                 });
                 if (res.ok) {
                     const data = await res.json();
-                    if (data && data.display_name) {
+                    if (data && data.display_name && !addrInput.value) {
                         addrInput.value = data.display_name;
                         statusSpan.innerText = "Exact Location Locked! Add House/Door No if needed.";
                         return;
@@ -346,11 +358,13 @@
             overlay.style.pointerEvents = 'auto'; 
             sheet.style.transform = 'translateY(0)'; 
             
-            setTimeout(() => {
-                locMap.invalidateSize();
-                locMap.setView([lat, lng], 17);
-                locMarker.setLatLng([lat, lng]);
-            }, 200);
+            currentPickedLat = lat;
+            currentPickedLng = lng;
+
+            if (locMap && locMarker) {
+                locMap.setCenter({ lat, lng });
+                locMarker.setPosition({ lat, lng });
+            }
 
             const profile = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (profile.firstName && !document.getElementById('recvName').value) {
