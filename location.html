@@ -1,593 +1,1666 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LOCAL BOY - Select Location</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Firebase Web SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>LOCAL BOY - Select Location</title>
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
-        html, body { width: 100%; max-width: 100vw; overflow-x: hidden; background-color: #f8fafc; color: #1e293b; padding-bottom: 40px; }
-        a { text-decoration: none; color: inherit; }
-        .clickable:active { transform: scale(0.96); opacity: 0.9; }
-        
-        .top-bar { display: flex; align-items: center; padding: 16px 20px; background: #ffffff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
-        .back-btn { font-size: 18px; margin-right: 15px; width: 38px; height: 38px; display: flex; justify-content: center; align-items: center; border-radius: 50%; background: #f1f5f9; cursor: pointer; color: #0f172a; }
-        .top-bar h2 { font-size: 18px; font-weight: 800; color: #0f172a; }
-        
-        .search-container { padding: 16px 20px; background: #ffffff; position: relative; }
-        .search-box { display: flex; align-items: center; background: #f8fafc; border-radius: 14px; padding: 12px 15px; border: 1.5px solid #e2e8f0; }
-        .search-box:focus-within { border-color: #ff5200; background: #fff; box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.1); }
-        .search-box input { flex: 1; min-width: 0; border: none; background: transparent; outline: none; font-size: 14px; padding: 0 10px; color: #0f172a; font-weight: 500; }
-        .search-icon { color: #ff5200; font-size: 18px; }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        .search-suggestions { display: none; position: absolute; left: 20px; right: 20px; top: 68px; background: #ffffff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; z-index: 600; max-height: 240px; overflow-y: auto; }
-        .sug-item { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 12.5px; color: #334155; cursor: pointer; display: flex; align-items: flex-start; gap: 10px; }
-        .sug-item i { color: #ff5200; margin-top: 3px; }
-        
-        .current-loc-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: #ffffff; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; color: #ff5200; cursor: pointer; }
-        .current-loc-btn i { font-size: 22px; }
-        .current-loc-btn .text-content { display: flex; flex-direction: column; }
-        .current-loc-btn h3 { font-size: 15px; font-weight: 800; }
-        .current-loc-btn p { font-size: 12px; color: #64748b; margin-top: 2px; font-weight: 500; }
-        
-        .section-container { padding: 20px; }
-        .section-title { font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700; margin-bottom: 14px; letter-spacing: 0.5px; }
-        .address-list { display: flex; flex-direction: column; gap: 14px; }
-        .address-item { display: flex; align-items: flex-start; gap: 14px; padding: 16px; background: #ffffff; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; }
-        .address-icon { width: 42px; height: 42px; border-radius: 50%; background: #fff8eb; color: #ff5200; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; }
-        .address-details { flex: 1; }
-        .address-details h3 { font-size: 15px; font-weight: 800; margin-bottom: 3px; color: #0f172a; }
-        .address-details p { font-size: 12px; color: #64748b; line-height: 1.45; font-weight: 500; }
-        
-        .add-new-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 20px 20px; padding: 15px; border-radius: 14px; border: 1.5px dashed #ff5200; color: #ff5200; font-size: 15px; font-weight: 700; cursor: pointer; background: #fff8eb; }
-        
-        /* Bottom Sheet & Swiggy-Style Center Pin Map */
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 999; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(2px); }
-        .bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-radius: 24px 24px 0 0; z-index: 1000; transform: translateY(100%); transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1); padding: 20px; max-height: 94vh; overflow-y: auto; }
-        .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .sheet-header h3 { font-size: 17px; font-weight: 800; color: #0f172a; }
-        .close-sheet { font-size: 20px; color: #94a3b8; cursor: pointer; padding: 5px; }
-        
-        .map-container { position: relative; width: 100%; height: 250px; border-radius: 16px; overflow: hidden; margin-bottom: 10px; border: 2px solid #e2e8f0; background: #e2e8f0; }
-        #google-loc-map { width: 100%; height: 100%; z-index: 1; }
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
-        /* Swiggy-Style Fixed Center Pin Overlay */
-        .center-pin-overlay {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -100%);
-            z-index: 500; pointer-events: none;
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .center-pin-tooltip {
-            background: #0f172a; color: #fff; font-size: 10px; font-weight: 800;
-            padding: 3px 9px; border-radius: 8px; margin-bottom: 3px;
-            white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-        }
-        .center-pin-icon {
-            font-size: 36px; color: #ff5200;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.35));
-            transition: transform 0.15s ease;
-        }
-        .center-pin-overlay.moving .center-pin-icon {
-            transform: translateY(-8px) scale(1.08);
-        }
-        
-        /* Unobstructed Locate Me Button */
-        .map-gps-btn {
-            position: absolute; bottom: 12px; right: 12px;
-            padding: 0 14px; height: 40px; background: #ffffff;
-            border-radius: 20px; display: flex; justify-content: center; align-items: center; gap: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25); z-index: 600;
-            color: #ff5200; font-size: 12.5px; font-weight: 800; cursor: pointer;
-            border: 1.5px solid #fed7aa;
-        }
-        .map-gps-btn i { font-size: 16px; }
-        
-        .detected-bar { display: flex; align-items: center; gap: 8px; background: #ecfdf5; border: 1px solid #d1fae5; color: #059669; padding: 8px 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700; margin-bottom: 12px; }
-        .detected-bar.warn { background: #fffbeb; border-color: #fde68a; color: #d97706; }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+    -webkit-tap-highlight-color:transparent;
+}
 
-        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
-        .input-group { flex: 1; }
-        .input-group input, .input-group textarea { width: 100%; padding: 13px 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #f8fafc; font-size: 13.5px; outline: none; color: #0f172a; font-weight: 600; }
-        .input-group input:focus, .input-group textarea:focus { border-color: #ff5200; background: #fff; }
-        .input-group textarea { resize: none; height: 78px; line-height: 1.4; }
-        
-        .address-type-section { margin-bottom: 18px; }
-        .type-buttons { display: flex; gap: 10px; }
-        .type-btn { flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 11px; border: 1.5px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 700; cursor: pointer; }
-        .type-btn.active { background: #fff8eb; border-color: #ff5200; color: #ff5200; }
+body{
+    background:#fafafa;
+    color:#1a202c;
+    overflow-x:hidden;
+}
 
-        .save-btn { width: 100%; background: linear-gradient(135deg, #ff6a00, #ff5200); color: white; padding: 15px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(255, 82, 0, 0.25); }
-    </style>
+.top-bar{
+    display:flex;
+    align-items:center;
+    padding:18px 20px;
+    background:#fff;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 2px 10px rgba(0,0,0,.04);
+}
+
+.back-btn{
+    width:38px;
+    height:38px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:50%;
+    background:#f7fafc;
+    font-size:19px;
+    margin-right:14px;
+}
+
+.top-bar h2{
+    font-size:18px;
+    font-weight:700;
+}
+
+.search-container{
+    padding:18px 20px;
+    background:#fff;
+}
+
+.search-box{
+    display:flex;
+    align-items:center;
+    background:#f7fafc;
+    border:1px solid #e2e8f0;
+    border-radius:13px;
+    padding:12px 15px;
+}
+
+.search-box input{
+    flex:1;
+    border:0;
+    outline:0;
+    background:transparent;
+    font-size:14px;
+    padding:0 10px;
+}
+
+.search-icon{
+    color:#ff5200;
+    font-size:18px;
+}
+
+.current-loc-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 20px;
+    background:#fff;
+    border-bottom:1px solid #edf2f7;
+    color:#ff5200;
+    cursor:pointer;
+}
+
+.current-loc-btn i{
+    font-size:21px;
+}
+
+.current-loc-btn h3{
+    font-size:15px;
+    font-weight:600;
+}
+
+.current-loc-btn p{
+    font-size:11px;
+    color:#718096;
+    margin-top:2px;
+}
+
+.section-container{
+    padding:20px;
+}
+
+.section-title{
+    font-size:13px;
+    color:#718096;
+    text-transform:uppercase;
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+.address-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.address-item{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:15px;
+    background:#fff;
+    border-radius:16px;
+    border:1px solid #f1f5f9;
+    box-shadow:0 2px 12px rgba(0,0,0,.04);
+    cursor:pointer;
+}
+
+.address-icon{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#fff8eb;
+    color:#ff5200;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:18px;
+    flex-shrink:0;
+}
+
+.address-details{
+    flex:1;
+}
+
+.address-details h3{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:4px;
+}
+
+.address-details p{
+    font-size:12px;
+    color:#718096;
+    line-height:1.45;
+}
+
+.change-btn{
+    color:#ff5200;
+    font-size:12px;
+    font-weight:700;
+    margin-top:6px;
+    display:inline-block;
+}
+
+.add-new-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin:5px 20px 25px;
+    padding:15px;
+    border-radius:12px;
+    border:1.5px dashed #ff5200;
+    color:#ff5200;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    background:#fff8eb;
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.62);
+    z-index:999;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+}
+
+.bottom-sheet{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#fff;
+    border-radius:24px 24px 0 0;
+    z-index:1000;
+    transform:translateY(100%);
+    transition:.3s cubic-bezier(.25,1,.5,1);
+    padding:22px 20px;
+    max-height:92vh;
+    overflow-y:auto;
+}
+
+.sheet-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.sheet-header h3{
+    font-size:18px;
+    font-weight:700;
+}
+
+.close-sheet{
+    font-size:20px;
+    color:#a0aec0;
+    padding:5px;
+}
+
+.map-container{
+    position:relative;
+    width:100%;
+    height:230px;
+    border-radius:16px;
+    overflow:hidden;
+    margin-bottom:10px;
+    border:2px solid #edf2f7;
+}
+
+#google-map{
+    width:100%;
+    height:100%;
+}
+
+.map-gps-btn{
+    position:absolute;
+    bottom:15px;
+    right:15px;
+    width:44px;
+    height:44px;
+    background:#fff;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow:0 2px 12px rgba(0,0,0,.18);
+    color:#ff5200;
+    font-size:18px;
+    cursor:pointer;
+    z-index:10;
+}
+
+.map-hint{
+    font-size:11px;
+    color:#718096;
+    text-align:center;
+    margin-bottom:12px;
+}
+
+.manual-entry-link{
+    font-size:13px;
+    color:#ff5200;
+    font-weight:600;
+    text-align:right;
+    margin-bottom:15px;
+    cursor:pointer;
+    display:block;
+}
+
+.input-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.input-group{
+    flex:1;
+}
+
+.input-group input,
+.input-group textarea{
+    width:100%;
+    padding:14px 15px;
+    border-radius:12px;
+    border:1px solid #e2e8f0;
+    background:#f8fafc;
+    font-size:14px;
+    outline:none;
+    color:#1e293b;
+}
+
+.input-group input:focus,
+.input-group textarea:focus{
+    border-color:#ff5200;
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(255,82,0,.1);
+}
+
+.input-group textarea{
+    resize:none;
+    height:80px;
+}
+
+.address-type-section{
+    margin-bottom:20px;
+}
+
+.type-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.type-btn{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    padding:12px 5px;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+    background:#f8fafc;
+    color:#4a5568;
+    font-size:12px;
+    font-weight:600;
+}
+
+.type-btn.active{
+    background:#fff8eb;
+    border-color:#ff5200;
+    color:#ff5200;
+}
+
+.save-btn{
+    width:100%;
+    background:#ff5200;
+    color:#fff;
+    padding:15px;
+    border:0;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:600;
+}
+
+.pac-container{
+    border-radius:12px;
+    border:1px solid #e2e8f0;
+    box-shadow:0 4px 20px rgba(0,0,0,.08);
+    font-family:'Poppins',sans-serif;
+    margin-top:5px;
+    padding:5px 0;
+    z-index:2000!important;
+}
+
+.pac-item{
+    padding:10px 15px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.empty-address{
+    text-align:center;
+    padding:25px 10px;
+    color:#718096;
+    font-size:13px;
+}
+</style>
 </head>
+
 <body>
-    <div class="top-bar">
-        <a href="javascript:history.back()" class="back-btn clickable"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2>Select Delivery Location</h2>
+
+<div class="top-bar">
+    <a href="javascript:history.back()" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2>Select a location</h2>
+</div>
+
+<div class="search-container">
+    <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input
+            type="text"
+            id="pac-input"
+            placeholder="Search area, village, street..."
+            autocomplete="off">
+    </div>
+</div>
+
+<div class="current-loc-btn" onclick="fetchRealLocationMain()">
+    <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
+    <div>
+        <h3 id="gps-text">Use current location</h3>
+        <p>Use GPS to select your exact location</p>
+    </div>
+</div>
+
+<div class="section-container">
+    <h4 class="section-title">Saved Addresses</h4>
+    <div class="address-list" id="savedAddressesList"></div>
+</div>
+
+<div class="add-new-btn" onclick="startNewAddress()">
+    <i class="fa-solid fa-plus"></i>
+    Add New Address
+</div>
+
+<div class="overlay" id="sheetOverlay" onclick="closeBottomSheet()"></div>
+
+<div class="bottom-sheet" id="addressSheet">
+
+    <div class="sheet-header">
+        <h3>Confirm your location</h3>
+        <i class="fa-solid fa-xmark close-sheet" onclick="closeBottomSheet()"></i>
     </div>
 
-    <div class="search-container">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="pac-input" placeholder="Search street, landmark, Tenali, Guntur..." oninput="handleAreaSearch(this.value)">
+    <div class="map-container">
+        <div id="google-map"></div>
+
+        <div class="map-gps-btn" onclick="fetchRealLocationFromMap()">
+            <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
         </div>
-        <div class="search-suggestions" id="searchSuggestions"></div>
     </div>
 
-    <div class="current-loc-btn clickable" onclick="startLiveGpsAndOpenSheet()">
-        <i class="fa-solid fa-location-crosshairs" id="gps-icon"></i>
-        <div class="text-content">
-            <h3 id="gps-text">Use Current Location</h3>
-            <p id="gps-subtext">Lock onto your exact live GPS position</p>
+    <div class="map-hint">
+        Tap on the map or drag the marker to adjust your exact location
+    </div>
+
+    <span class="manual-entry-link" onclick="toggleMap()" id="manualBtn">
+        Enter address manually
+    </span>
+
+    <div class="input-row">
+        <div class="input-group">
+            <input type="text" id="recvName" placeholder="First Name">
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="recvSurname" placeholder="Last Name">
         </div>
     </div>
 
-    <div class="section-container">
-        <h4 class="section-title">Saved Address</h4>
-        <div class="address-list" id="savedAddressesList">
-            <p style="font-size: 12px; color: #94a3b8;">No saved address yet. Tap above to detect.</p>
-        </div>
+    <div class="input-group" style="margin-bottom:15px;">
+        <textarea
+            id="fullAddress"
+            placeholder="House No, Street, Landmark, Village"></textarea>
     </div>
 
-    <div class="add-new-btn clickable" onclick="openBottomSheetManual()">
-        <i class="fa-solid fa-plus"></i> Add / Edit Complete Address
-    </div>
+    <div class="address-type-section">
 
-    <!-- Bottom Sheet -->
-    <div class="overlay" id="sheetOverlay" onclick="closeBottomSheet()"></div>
-    <div class="bottom-sheet" id="addressSheet">
-        <div class="sheet-header">
-            <h3 id="sheet-title">Pin Your Exact Location</h3>
-            <i class="fa-solid fa-xmark close-sheet clickable" onclick="closeBottomSheet()"></i>
+        <div style="font-size:13px;color:#718096;font-weight:600;margin-bottom:10px;">
+            Save address as:
         </div>
-        
-        <div class="map-container" id="mapWrapper">
-            <div id="google-loc-map"></div>
-            
-            <!-- Swiggy-Style Fixed Center Pin (Move map to place pin on your exact building!) -->
-            <div class="center-pin-overlay" id="centerPinOverlay">
-                <div class="center-pin-tooltip">Order will be delivered here</div>
-                <i class="fa-solid fa-location-dot center-pin-icon"></i>
+
+        <div class="type-buttons">
+
+            <div class="type-btn active" onclick="selectType('Home',this)">
+                <i class="fa-solid fa-house"></i> Home
             </div>
 
-            <!-- Live GPS Button -->
-            <div class="map-gps-btn clickable" onclick="triggerHighAccuracyGpsLock()">
-                <i class="fa-solid fa-location-crosshairs" id="map-gps-icon"></i>
-                <span id="map-gps-label">Locate Me</span>
+            <div class="type-btn" onclick="selectType('Work',this)">
+                <i class="fa-solid fa-briefcase"></i> Work
             </div>
+
+            <div class="type-btn" onclick="selectType('Other',this)">
+                <i class="fa-solid fa-location-dot"></i> Other
+            </div>
+
         </div>
 
-        <div class="detected-bar" id="detectedBarBox">
-            <i class="fa-solid fa-satellite-dish"></i>
-            <span id="pinCoordStatus">Move map or tap 'Locate Me' for exact GPS</span>
-        </div>
-        
-        <div class="input-row">
-            <div class="input-group"><input type="text" id="recvName" placeholder="Receiver First Name"></div>
-            <div class="input-group"><input type="text" id="recvSurname" placeholder="Last Name"></div>
-        </div>
-        
-        <div class="input-group" style="margin-bottom: 14px;">
-            <textarea id="fullAddress" placeholder="House / Flat No, Street, Landmark, Area..."></textarea>
+        <div class="input-group" id="otherInputWrapper"
+             style="display:none;margin-top:12px;">
+            <input type="text" id="customType"
+                   placeholder="e.g. Friend's House, Shop">
         </div>
 
-        <div class="address-type-section">
-            <div style="font-size: 12px; color: #64748b; font-weight: 700; margin-bottom: 8px;">Save address as:</div>
-            <div class="type-buttons">
-                <div class="type-btn active" onclick="selectType('Home', this)"><i class="fa-solid fa-house"></i> Home</div>
-                <div class="type-btn" onclick="selectType('Work', this)"><i class="fa-solid fa-briefcase"></i> Work</div>
-                <div class="type-btn" onclick="selectType('Other', this)"><i class="fa-solid fa-location-dot"></i> Other</div>
-            </div>
-            <div class="input-group" id="otherInputWrapper" style="display: none; margin-top: 10px;">
-                <input type="text" id="customType" placeholder="e.g. Friend's House, Shop">
-            </div>
-        </div>
-
-        <button class="save-btn clickable" id="saveAddrBtn" onclick="saveLocation()">Save & Proceed</button>
     </div>
 
-    <!-- ⚡ GOOGLE MAPS API KEY: AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0 -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCnFpeVwtaQ1u0_zrY3o50qQGE1SFZj0E0&libraries=places&callback=initLocMap"></script>
+    <button class="save-btn" id="saveAddrBtn" onclick="saveLocation()">
+        Save Address
+    </button>
 
-    <script>
-        // ⚡ FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvjFcKKiu4OMmQckYXMTejdBJh9tC6TjM",
-            authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
-            databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
-            projectId: "sri-vishnu-priya-finance-c591f",
-            storageBucket: "sri-vishnu-priya-finance-c591f.firebasestorage.app",
-            messagingSenderId: "184676228358",
-            appId: "1:184676228358:web:c2b32b68debeeadadfd287",
-            measurementId: "G-E3TT96ZH1T"
-        };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const database = firebase.database();
+</div>
 
-        const sheet = document.getElementById('addressSheet');
-        const overlay = document.getElementById('sheetOverlay');
-        let currentPickedLat = parseFloat(localStorage.getItem('userLat')) || 16.2366;
-        let currentPickedLng = parseFloat(localStorage.getItem('userLng')) || 80.6405;
-        let selectedAddressType = 'Home';
-        let searchTimer = null;
+<script async defer
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAITao9tzWyZuXcMiGCfoTF3GboS32_48U&libraries=places&callback=initMap">
+</script>
 
-        let locMap = null;
-        let blueUserDot = null;
-        let accuracyCircle = null;
-        let geocoder = null;
-        let gpsWatchId = null;
-        let isProgrammaticPan = false;
+<script>
 
-        window.initLocMap = function() {
-            geocoder = new google.maps.Geocoder();
-            locMap = new google.maps.Map(document.getElementById('google-loc-map'), {
-                center: { lat: currentPickedLat, lng: currentPickedLng },
-                zoom: 18,
-                disableDefaultUI: true,
-                zoomControl: false,
-                gestureHandling: 'greedy'
-            });
+/* =========================
+   FIREBASE
+========================= */
 
-            // Blue dot showing live hardware GPS position
-            blueUserDot = new google.maps.Marker({
-                position: { lat: currentPickedLat, lng: currentPickedLng },
-                map: locMap,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 7,
-                    fillColor: '#2563eb',
-                    fillOpacity: 1,
-                    strokeColor: '#ffffff',
-                    strokeWeight: 2.5
-                },
-                zIndex: 999
-            });
+const firebaseConfig = {
+    apiKey: "AIzaSyC9PnjAdBeOEy0TLQvUBJUznlZFKSS82uI",
+    authDomain: "sri-vishnu-priya-finance-c591f.firebaseapp.com",
+    databaseURL: "https://sri-vishnu-priya-finance-c591f-default-rtdb.firebaseio.com",
+    projectId: "sri-vishnu-priya-finance-c591f"
+};
 
-            accuracyCircle = new google.maps.Circle({
-                strokeColor: '#3b82f6',
-                strokeOpacity: 0.5,
-                strokeWeight: 1.5,
-                fillColor: '#3b82f6',
-                fillOpacity: 0.15,
-                map: locMap,
-                center: { lat: currentPickedLat, lng: currentPickedLng },
-                radius: 15
-            });
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-            // Swiggy-Style Center Map Drag Listener:
-            // Whenever user moves the map with their finger, the center pin locks onto that exact spot!
-            locMap.addListener('dragstart', () => {
-                document.getElementById('centerPinOverlay').classList.add('moving');
-            });
+const database = firebase.database();
 
-            locMap.addListener('idle', () => {
-                document.getElementById('centerPinOverlay').classList.remove('moving');
-                if (isProgrammaticPan) {
-                    isProgrammaticPan = false;
-                    return;
-                }
-                const center = locMap.getCenter();
-                if (center) {
-                    currentPickedLat = center.lat();
-                    currentPickedLng = center.lng();
-                    reverseGeocodeCoordinates(currentPickedLat, currentPickedLng);
-                }
-            });
-        };
 
-        function panMapToExactLatLng(lat, lng, accuracyMeters) {
-            currentPickedLat = parseFloat(lat);
-            currentPickedLng = parseFloat(lng);
+/* =========================
+   VARIABLES
+========================= */
 
-            if (locMap) {
-                isProgrammaticPan = true;
-                const pt = { lat: currentPickedLat, lng: currentPickedLng };
-                locMap.panTo(pt);
-                locMap.setZoom(19); // Street & Building level zoom
-                if (blueUserDot) blueUserDot.setPosition(pt);
-                if (accuracyCircle) {
-                    accuracyCircle.setCenter(pt);
-                    accuracyCircle.setRadius(Math.min(accuracyMeters || 15, 80));
-                }
+let map = null;
+let marker = null;
+let blueDotMarker = null;
+
+let selectedAddressType = "Home";
+
+let currentLat = null;
+let currentLng = null;
+
+let mapReady = false;
+
+const defaultLat = 16.2366;
+const defaultLng = 80.6405;
+
+
+/* =========================
+   LOAD SAVED ADDRESS
+========================= */
+
+window.addEventListener("pageshow", function(){
+
+    const list = document.getElementById("savedAddressesList");
+
+    const userPhone = localStorage.getItem("userPhone");
+
+    if(userPhone){
+
+        database.ref(
+            "users/" + userPhone + "/profile/address"
+        ).once("value").then(snapshot => {
+
+            const address = snapshot.val();
+
+            if(address){
+                displayDynamicAddress(address);
+            }else{
+                showNoAddress();
             }
-            reverseGeocodeCoordinates(currentPickedLat, currentPickedLng, accuracyMeters);
+
+        }).catch(() => {
+
+            loadLocalAddress();
+
+        });
+
+    }else{
+
+        loadLocalAddress();
+
+    }
+
+});
+
+
+function loadLocalAddress(){
+
+    const saved = localStorage.getItem("userSavedAddress");
+
+    if(saved){
+        displayDynamicAddress(saved);
+    }else{
+        showNoAddress();
+    }
+}
+
+
+function showNoAddress(){
+
+    document.getElementById("savedAddressesList").innerHTML = `
+        <div class="empty-address">
+            <i class="fa-solid fa-location-dot"
+               style="font-size:28px;color:#ff5200;margin-bottom:8px;"></i>
+            <br>
+            No saved address yet
+        </div>
+    `;
+}
+
+
+/* =========================
+   DISPLAY ADDRESS
+========================= */
+
+function displayDynamicAddress(fullStr){
+
+    let type = "Saved";
+    let name = "";
+    let details = fullStr;
+
+    if(fullStr.includes("|")){
+
+        const parts = fullStr.split("|");
+
+        type = parts[0] || "Saved";
+        name = parts[1] || "";
+        details = parts.slice(2).join("|");
+
+    }
+
+    let iconClass = "fa-location-dot";
+
+    if(type.toLowerCase() === "home"){
+        iconClass = "fa-house";
+    }
+
+    if(type.toLowerCase() === "work"){
+        iconClass = "fa-briefcase";
+    }
+
+    const safeAddress = encodeURIComponent(fullStr);
+
+    document.getElementById("savedAddressesList").innerHTML = `
+
+        <div class="address-item" onclick="selectExistingAddress(decodeURIComponent('${safeAddress}'))">
+
+            <div class="address-icon">
+                <i class="fa-solid ${iconClass}"></i>
+            </div>
+
+            <div class="address-details">
+
+                <h3>${escapeHtml(type)}</h3>
+
+                <p>
+                    ${name ? escapeHtml(name) + " • " : ""}
+                    ${escapeHtml(details)}
+                </p>
+
+                <span class="change-btn">
+                    Change location
+                </span>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"
+               style="color:#cbd5e0;margin-top:12px;"></i>
+
+        </div>
+    `;
+}
+
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================
+   GOOGLE MAP INITIALIZATION
+========================= */
+
+function initMap(){
+
+    map = new google.maps.Map(
+        document.getElementById("google-map"),
+        {
+            center:{
+                lat:defaultLat,
+                lng:defaultLng
+            },
+
+            zoom:15,
+
+            disableDefaultUI:true,
+
+            zoomControl:true
         }
+    );
 
-        // ⚡ PURE HARDWARE SATELLITE GPS LOCK (Ignores Guntur cell-tower jumps!)
-        window.triggerHighAccuracyGpsLock = function() {
-            const mapIcon = document.getElementById('map-gps-icon');
-            const mapLabel = document.getElementById('map-gps-label');
-            const statusSpan = document.getElementById('pinCoordStatus');
-            const barBox = document.getElementById('detectedBarBox');
+    marker = new google.maps.Marker({
 
-            if (!navigator.geolocation) {
-                barBox.classList.add('warn');
-                statusSpan.innerText = "GPS not supported on this device.";
+        position:{
+            lat:defaultLat,
+            lng:defaultLng
+        },
+
+        map:map,
+
+        draggable:true,
+
+        animation:google.maps.Animation.DROP
+    });
+
+
+    marker.addListener("dragend",function(){
+
+        const position = marker.getPosition();
+
+        currentLat = position.lat();
+        currentLng = position.lng();
+
+        reverseGeocode(
+            currentLat,
+            currentLng
+        );
+
+    });
+
+
+    map.addListener("click",function(event){
+
+        marker.setPosition(event.latLng);
+
+        map.panTo(event.latLng);
+
+        currentLat = event.latLng.lat();
+        currentLng = event.latLng.lng();
+
+        reverseGeocode(
+            currentLat,
+            currentLng
+        );
+
+    });
+
+
+    /* GOOGLE PLACES SEARCH */
+
+    const input = document.getElementById("pac-input");
+
+    const autocomplete =
+        new google.maps.places.Autocomplete(
+            input,
+            {
+                componentRestrictions:{
+                    country:"in"
+                },
+
+                fields:[
+                    "formatted_address",
+                    "geometry",
+                    "name"
+                ]
+            }
+        );
+
+
+    autocomplete.addListener(
+        "place_changed",
+        function(){
+
+            const place =
+                autocomplete.getPlace();
+
+            if(
+                !place.geometry ||
+                !place.geometry.location
+            ){
+
+                alert(
+                    "Please select a location from the suggestions."
+                );
+
                 return;
             }
 
-            if (gpsWatchId !== null) {
-                navigator.geolocation.clearWatch(gpsWatchId);
-                gpsWatchId = null;
-            }
 
-            mapIcon.className = "fa-solid fa-spinner fa-spin";
-            mapLabel.innerText = "Locking GPS...";
-            barBox.classList.remove('warn');
-            statusSpan.innerText = "Connecting to phone GPS satellite...";
+            const location =
+                place.geometry.location;
 
-            let bestAccuracy = 999999;
-            let lockCount = 0;
+            currentLat = location.lat();
+            currentLng = location.lng();
 
-            gpsWatchId = navigator.geolocation.watchPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lng = pos.coords.longitude;
-                    const acc = Math.round(pos.coords.accuracy || 50);
 
-                    // Ignore wild cell-tower jumps (> 2500m error like Guntur tower) if we already have a better lock
-                    if (acc > 2500 && lockCount > 0) return;
+            map.setCenter(location);
 
-                    lockCount++;
-                    if (acc <= bestAccuracy || lockCount === 1) {
-                        bestAccuracy = acc;
-                        panMapToExactLatLng(lat, lng, acc);
-                    }
+            map.setZoom(17);
 
-                    mapIcon.className = "fa-solid fa-location-crosshairs";
-                    mapLabel.innerText = "Locate Me";
+            marker.setPosition(location);
 
-                    // Once we have a sharp satellite lock (<= 20 meters), stop draining battery
-                    if (acc <= 20 && gpsWatchId !== null) {
-                        navigator.geolocation.clearWatch(gpsWatchId);
-                        gpsWatchId = null;
-                    }
-                },
-                (err) => {
-                    mapIcon.className = "fa-solid fa-location-crosshairs";
-                    mapLabel.innerText = "Locate Me";
-                    barBox.classList.add('warn');
 
-                    if (err.code === 1) {
-                        statusSpan.innerText = "Location Permission Denied! Enable Location for Local Boy in Phone Settings.";
-                        alert("Please allow Location Permission for Local Boy app in your Phone Settings -> Apps -> Permissions.");
-                    } else {
-                        statusSpan.innerText = "GPS signal weak indoors. Move map with your finger to place pin.";
-                    }
-                },
-                {
-                    enableHighAccuracy: true, // Forces hardware GPS chip, NEVER ISP/Cell tower!
-                    maximumAge: 0,            // Never use old cached location
-                    timeout: 20000            // Give hardware GPS 20 full seconds to lock satellites
-                }
+            openBottomSheet(
+                currentLat,
+                currentLng
             );
 
-            // Stop watching after 12 seconds automatically
-            setTimeout(() => {
-                if (gpsWatchId !== null) {
-                    navigator.geolocation.clearWatch(gpsWatchId);
-                    gpsWatchId = null;
-                    mapIcon.className = "fa-solid fa-location-crosshairs";
-                    mapLabel.innerText = "Locate Me";
-                }
-            }, 12000);
-        };
 
-        window.startLiveGpsAndOpenSheet = function() {
-            openBottomSheetUI();
-            triggerHighAccuracyGpsLock();
-        };
+            if(place.formatted_address){
 
-        window.openBottomSheetManual = function() {
-            openBottomSheetUI();
-            setTimeout(() => {
-                if (locMap) {
-                    google.maps.event.trigger(locMap, 'resize');
-                    locMap.setCenter({ lat: currentPickedLat, lng: currentPickedLng });
-                    locMap.setZoom(18);
-                }
-            }, 150);
-        };
+                document.getElementById(
+                    "fullAddress"
+                ).value =
+                    place.formatted_address;
 
-        function openBottomSheetUI() {
-            overlay.style.opacity = '1';
-            overlay.style.pointerEvents = 'auto'; 
-            sheet.style.transform = 'translateY(0)'; 
+            }else{
 
-            const profile = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-            if (profile.firstName && !document.getElementById('recvName').value) {
-                document.getElementById('recvName').value = profile.firstName;
-                if (profile.lastName) document.getElementById('recvSurname').value = profile.lastName;
+                reverseGeocode(
+                    currentLat,
+                    currentLng
+                );
+
             }
 
-            setTimeout(() => {
-                if (locMap) google.maps.event.trigger(locMap, 'resize');
-            }, 120);
+
+            input.value = "";
+
+        }
+    );
+
+
+    mapReady = true;
+}
+
+
+/* =========================
+   START NEW ADDRESS
+========================= */
+
+function startNewAddress(){
+
+    /* IMPORTANT:
+       Do NOT force Tenali location.
+    */
+
+    if(
+        currentLat !== null &&
+        currentLng !== null
+    ){
+
+        openBottomSheet(
+            currentLat,
+            currentLng
+        );
+
+        return;
+    }
+
+
+    /* Try GPS first */
+
+    if(
+        navigator.geolocation
+    ){
+
+        document.getElementById(
+            "gps-text"
+        ).innerText =
+            "Finding your location...";
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position){
+
+                currentLat =
+                    position.coords.latitude;
+
+                currentLng =
+                    position.coords.longitude;
+
+
+                openBottomSheet(
+                    currentLat,
+                    currentLng
+                );
+
+                addBlueDot(
+                    currentLat,
+                    currentLng
+                );
+
+            },
+
+            function(){
+
+                /* If GPS fails,
+                   open map without forcing address.
+                */
+
+                openBottomSheet(
+                    defaultLat,
+                    defaultLng
+                );
+
+            },
+
+            {
+                enableHighAccuracy:true,
+                timeout:10000,
+                maximumAge:0
+            }
+        );
+
+    }else{
+
+        openBottomSheet(
+            defaultLat,
+            defaultLng
+        );
+
+    }
+
+}
+
+
+/* =========================
+   CURRENT LOCATION
+========================= */
+
+function fetchRealLocationMain(){
+
+    const text =
+        document.getElementById("gps-text");
+
+    const icon =
+        document.getElementById("gps-icon");
+
+
+    text.innerText =
+        "Locating you...";
+
+    icon.className =
+        "fa-solid fa-spinner fa-spin";
+
+
+    if(!navigator.geolocation){
+
+        alert(
+            "GPS is not supported on this device."
+        );
+
+        resetMainGps();
+
+        return;
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+            currentLat =
+                position.coords.latitude;
+
+            currentLng =
+                position.coords.longitude;
+
+
+            resetMainGps();
+
+
+            openBottomSheet(
+                currentLat,
+                currentLng
+            );
+
+
+            addBlueDot(
+                currentLat,
+                currentLng
+            );
+
+
+            reverseGeocode(
+                currentLat,
+                currentLng
+            );
+
+        },
+
+        function(error){
+
+            resetMainGps();
+
+            let msg =
+                "Unable to get your location.";
+
+            if(error.code === 1){
+
+                msg =
+                    "Location permission denied. Please allow Location permission in browser settings.";
+
+            }
+
+            if(error.code === 2){
+
+                msg =
+                    "Location unavailable. Please turn ON GPS and try again.";
+
+            }
+
+            if(error.code === 3){
+
+                msg =
+                    "Location request timed out. Please try again.";
+
+            }
+
+            alert(msg);
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000,
+            maximumAge:0
         }
 
-        async function reverseGeocodeCoordinates(lat, lng, accMeters) {
-            currentPickedLat = parseFloat(lat);
-            currentPickedLng = parseFloat(lng);
-            const statusSpan = document.getElementById('pinCoordStatus');
-            const addrInput = document.getElementById('fullAddress');
-            const accText = accMeters ? ` (GPS ±${accMeters}m)` : '';
+    );
 
-            statusSpan.innerText = `Fetching street address...${accText}`;
+}
 
-            if (geocoder) {
-                geocoder.geocode({ location: { lat: currentPickedLat, lng: currentPickedLng } }, async (results, status) => {
-                    if (status === "OK" && results && results[0]) {
-                        // Pick the most detailed street/premise result rather than broad city level
-                        const bestResult = results.find(r => r.types.includes('street_address') || r.types.includes('premise') || r.types.includes('sublocality')) || results[0];
-                        addrInput.value = bestResult.formatted_address;
-                        statusSpan.innerText = `Exact Location Locked!${accText}`;
-                    } else {
-                        await fetchNominatimAddress(currentPickedLat, currentPickedLng, accText);
-                    }
-                });
-            } else {
-                await fetchNominatimAddress(currentPickedLat, currentPickedLng, accText);
-            }
+
+function resetMainGps(){
+
+    document.getElementById(
+        "gps-text"
+    ).innerText =
+        "Use current location";
+
+    document.getElementById(
+        "gps-icon"
+    ).className =
+        "fa-solid fa-location-crosshairs";
+
+}
+
+
+/* =========================
+   MAP GPS
+========================= */
+
+function fetchRealLocationFromMap(){
+
+    const icon =
+        document.getElementById(
+            "map-gps-icon"
+        );
+
+
+    icon.className =
+        "fa-solid fa-spinner fa-spin";
+
+
+    if(!navigator.geolocation){
+
+        icon.className =
+            "fa-solid fa-location-crosshairs";
+
+        alert(
+            "GPS is not supported."
+        );
+
+        return;
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+            currentLat =
+                position.coords.latitude;
+
+            currentLng =
+                position.coords.longitude;
+
+
+            const pos = {
+                lat:currentLat,
+                lng:currentLng
+            };
+
+
+            map.setCenter(pos);
+
+            map.setZoom(17);
+
+            marker.setPosition(pos);
+
+
+            addBlueDot(
+                currentLat,
+                currentLng
+            );
+
+
+            reverseGeocode(
+                currentLat,
+                currentLng
+            );
+
+
+            icon.className =
+                "fa-solid fa-location-crosshairs";
+
+        },
+
+        function(){
+
+            icon.className =
+                "fa-solid fa-location-crosshairs";
+
+            alert(
+                "Unable to get GPS location. Please allow location permission."
+            );
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:15000,
+            maximumAge:0
         }
 
-        async function fetchNominatimAddress(lat, lng, accText) {
-            const statusSpan = document.getElementById('pinCoordStatus');
-            const addrInput = document.getElementById('fullAddress');
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
-                    headers: { 'Accept-Language': 'en' }
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.display_name) {
-                        addrInput.value = data.display_name;
-                        statusSpan.innerText = `Exact Location Locked!${accText}`;
-                        return;
-                    }
-                }
-            } catch (e) {}
-            statusSpan.innerText = `Location Pinned!${accText}`;
+    );
+
+}
+
+
+/* =========================
+   BLUE GPS DOT
+========================= */
+
+function addBlueDot(lat,lng){
+
+    if(!map) return;
+
+
+    const icon = {
+
+        path:
+            google.maps.SymbolPath.CIRCLE,
+
+        fillColor:"#4285F4",
+
+        fillOpacity:1,
+
+        scale:8,
+
+        strokeColor:"#fff",
+
+        strokeWeight:2
+    };
+
+
+    const position = {
+        lat:lat,
+        lng:lng
+    };
+
+
+    if(!blueDotMarker){
+
+        blueDotMarker =
+            new google.maps.Marker({
+
+                position:position,
+
+                map:map,
+
+                icon:icon,
+
+                zIndex:999
+
+            });
+
+    }else{
+
+        blueDotMarker.setPosition(
+            position
+        );
+
+    }
+
+}
+
+
+/* =========================
+   REVERSE GEOCODING
+========================= */
+
+function reverseGeocode(lat,lng){
+
+    if(!google || !google.maps)
+        return;
+
+
+    const geocoder =
+        new google.maps.Geocoder();
+
+
+    geocoder.geocode(
+
+        {
+            location:{
+                lat:lat,
+                lng:lng
+            }
+        },
+
+        function(results,status){
+
+            if(
+                status === "OK" &&
+                results &&
+                results.length
+            ){
+
+                document.getElementById(
+                    "fullAddress"
+                ).value =
+                    results[0].formatted_address;
+
+            }
+
         }
 
-        // Google Geocoder + Nominatim Area Search
-        window.handleAreaSearch = function(query) {
-            const sugBox = document.getElementById('searchSuggestions');
-            if (searchTimer) clearTimeout(searchTimer);
+    );
 
-            if (!query || query.trim().length < 3) {
-                sugBox.style.display = 'none';
-                return;
+}
+
+
+/* =========================
+   OPEN SHEET
+========================= */
+
+function openBottomSheet(lat,lng){
+
+    currentLat = lat;
+    currentLng = lng;
+
+
+    document.getElementById(
+        "sheetOverlay"
+    ).style.opacity = "1";
+
+
+    document.getElementById(
+        "sheetOverlay"
+    ).style.pointerEvents =
+        "auto";
+
+
+    document.getElementById(
+        "addressSheet"
+    ).style.transform =
+        "translateY(0)";
+
+
+    if(map && marker){
+
+        const position = {
+            lat:lat,
+            lng:lng
+        };
+
+
+        map.setCenter(position);
+
+        map.setZoom(17);
+
+        marker.setPosition(position);
+
+    }
+
+
+    /* Fill profile name */
+
+    try{
+
+        const profile =
+            JSON.parse(
+                localStorage.getItem(
+                    "userProfileData"
+                )
+            );
+
+
+        if(
+            profile &&
+            profile.firstName
+        ){
+
+            document.getElementById(
+                "recvName"
+            ).value =
+                profile.firstName;
+
+
+            if(profile.lastName){
+
+                document.getElementById(
+                    "recvSurname"
+                ).value =
+                    profile.lastName;
+
             }
 
-            searchTimer = setTimeout(async () => {
-                // First try Google Geocoder with your API Key
-                if (geocoder) {
-                    geocoder.geocode({ address: query.trim() + ", Andhra Pradesh, India" }, (results, status) => {
-                        if (status === "OK" && results && results.length > 0) {
-                            sugBox.innerHTML = '';
-                            results.slice(0, 5).forEach(place => {
-                                const lat = place.geometry.location.lat();
-                                const lng = place.geometry.location.lng();
-                                const disp = place.formatted_address;
-                                sugBox.innerHTML += `
-                                    <div class="sug-item" onclick="pickSearchSuggestion(${lat}, ${lng}, '${disp.replace(/'/g, "\\'")}')">
-                                        <i class="fa-solid fa-location-dot"></i>
-                                        <span>${disp}</span>
-                                    </div>
-                                `;
-                            });
-                            sugBox.style.display = 'block';
-                        }
-                    });
-                    return;
-                }
-            }, 300);
-        };
-
-        window.pickSearchSuggestion = function(lat, lng, addressText) {
-            document.getElementById('searchSuggestions').style.display = 'none';
-            document.getElementById('pac-input').value = '';
-            openBottomSheetUI();
-            setTimeout(() => {
-                panMapToExactLatLng(lat, lng);
-                document.getElementById('fullAddress').value = addressText;
-            }, 200);
-        };
-        
-        window.closeBottomSheet = function() { 
-            if (gpsWatchId !== null) {
-                navigator.geolocation.clearWatch(gpsWatchId);
-                gpsWatchId = null;
-            }
-            overlay.style.opacity = '0'; 
-            overlay.style.pointerEvents = 'none'; 
-            sheet.style.transform = 'translateY(100%)'; 
-        };
-
-        window.selectType = function(type, element) {
-            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
-            element.classList.add('active');
-            selectedAddressType = type;
-            document.getElementById('otherInputWrapper').style.display = (type === 'Other') ? 'block' : 'none';
-        };
-
-        function displayDynamicAddress(fullStr) {
-            let type = "Saved"; let details = fullStr; let iconClass = "fa-location-dot";
-            if (fullStr.includes('|')) {
-                let parts = fullStr.split('|');
-                type = parts[0]; details = parts[2]; 
-            }
-            if (type.toLowerCase() === 'home') iconClass = "fa-house";
-            else if (type.toLowerCase() === 'work') iconClass = "fa-briefcase";
-
-            document.getElementById('savedAddressesList').innerHTML = `
-                <div class="address-item clickable" onclick="selectExistingAddress('${fullStr.replace(/'/g, "\\'")}')">
-                    <div class="address-icon"><i class="fa-solid ${iconClass}"></i></div>
-                    <div class="address-details">
-                        <h3>${type} <span style="font-size:10px; color:#10b981; background:#ecfdf5; padding:2px 7px; border-radius:6px; margin-left:6px;">Tap to Use</span></h3>
-                        <p>${details}</p>
-                    </div>
-                </div>
-            `;
         }
 
-        function goBackToCorrectPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('from') === 'cart') window.location.replace("cart.html");
-            else window.location.replace("home.html"); 
+    }catch(e){}
+
+
+    /* Get address automatically */
+
+    if(
+        lat &&
+        lng &&
+        !document.getElementById(
+            "fullAddress"
+        ).value
+    ){
+
+        reverseGeocode(
+            lat,
+            lng
+        );
+
+    }
+
+}
+
+
+/* =========================
+   CLOSE SHEET
+========================= */
+
+function closeBottomSheet(){
+
+    document.getElementById(
+        "sheetOverlay"
+    ).style.opacity =
+        "0";
+
+
+    document.getElementById(
+        "sheetOverlay"
+    ).style.pointerEvents =
+        "none";
+
+
+    document.getElementById(
+        "addressSheet"
+    ).style.transform =
+        "translateY(100%)";
+
+}
+
+
+/* =========================
+   MAP / MANUAL
+========================= */
+
+function toggleMap(){
+
+    const wrapper =
+        document.querySelector(
+            ".map-container"
+        );
+
+    const btn =
+        document.getElementById(
+            "manualBtn"
+        );
+
+
+    if(wrapper.style.display === "none"){
+
+        wrapper.style.display =
+            "block";
+
+        btn.innerText =
+            "Enter address manually";
+
+    }else{
+
+        wrapper.style.display =
+            "none";
+
+        btn.innerText =
+            "Pick on map instead";
+
+    }
+
+}
+
+
+/* =========================
+   ADDRESS TYPE
+========================= */
+
+function selectType(type,element){
+
+    document
+        .querySelectorAll(".type-btn")
+        .forEach(btn =>
+            btn.classList.remove("active")
+        );
+
+
+    element.classList.add("active");
+
+    selectedAddressType =
+        type;
+
+
+    document.getElementById(
+        "otherInputWrapper"
+    ).style.display =
+        type === "Other"
+            ? "block"
+            : "none";
+
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBackToCorrectPage(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    if(params.get("from") === "cart"){
+
+        window.location.href =
+            "cart.html";
+
+    }else{
+
+        window.history.back();
+
+    }
+
+}
+
+
+/* =========================
+   SAVE ADDRESS
+========================= */
+
+function saveToFirebaseAndRedirect(
+    addressText
+){
+
+    localStorage.setItem(
+        "userSavedAddress",
+        addressText
+    );
+
+
+    const userPhone =
+        localStorage.getItem(
+            "userPhone"
+        );
+
+
+    if(!userPhone){
+
+        goBackToCorrectPage();
+
+        return;
+    }
+
+
+    const btn =
+        document.getElementById(
+            "saveAddrBtn"
+        );
+
+
+    btn.innerText =
+        "Saving...";
+
+    btn.disabled =
+        true;
+
+
+    database.ref(
+        "users/" +
+        userPhone +
+        "/profile/address"
+    )
+    .set(addressText)
+
+    .then(function(){
+
+        goBackToCorrectPage();
+
+    })
+
+    .catch(function(error){
+
+        console.error(error);
+
+        btn.innerText =
+            "Save Address";
+
+        btn.disabled =
+            false;
+
+        alert(
+            "Address saved on this device, but cloud save failed."
+        );
+
+        goBackToCorrectPage();
+
+    });
+
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+function saveLocation(){
+
+    const fname =
+        document.getElementById(
+            "recvName"
+        ).value.trim();
+
+
+    const sname =
+        document.getElementById(
+            "recvSurname"
+        ).value.trim();
+
+
+    const fullAddr =
+        document.getElementById(
+            "fullAddress"
+        ).value.trim();
+
+
+    let finalType =
+        selectedAddressType;
+
+
+    if(
+        selectedAddressType === "Other"
+    ){
+
+        const custom =
+            document.getElementById(
+                "customType"
+            ).value.trim();
+
+
+        if(!custom){
+
+            alert(
+                "Please enter the address type."
+            );
+
+            return;
         }
 
-        function saveToFirebaseAndRedirect(addressText, lat, lng) {
-            localStorage.setItem("userSavedAddress", addressText);
-            localStorage.setItem("userLat", lat);
-            localStorage.setItem("userLng", lng);
-            
-            const userPhone = localStorage.getItem('userPhone');
-            if (userPhone) {
-                const btn = document.getElementById('saveAddrBtn');
-                if (btn) { btn.innerText = "Saving Address..."; btn.disabled = true; }
-                database.ref('users/' + userPhone + '/profile').update({
-                    address: addressText,
-                    latitude: lat,
-                    longitude: lng
-                }).finally(() => goBackToCorrectPage());
-            } else {
-                goBackToCorrectPage();
-            }
-        }
 
-        window.saveLocation = function() {
-            const fname = document.getElementById('recvName').value.trim() || 'Customer'; 
-            const sname = document.getElementById('recvSurname').value.trim(); 
-            const fullAddr = document.getElementById('fullAddress').value.trim();
-            
-            let finalType = selectedAddressType;
-            if (selectedAddressType === 'Other') {
-                const custom = document.getElementById('customType').value.trim();
-                if (!custom) { alert("Please enter address label"); return; }
-                finalType = custom;
-            }
-            if (!fullAddr) { alert("Please enter your Full Address"); return; }
-            
-            const finalName = fname + (sname ? ` ${sname}` : "");
-            saveToFirebaseAndRedirect(finalType + "|" + finalName + "|" + fullAddr, currentPickedLat, currentPickedLng);
-        };
+        finalType =
+            custom;
 
-        window.selectExistingAddress = function(addressText) { 
-            saveToFirebaseAndRedirect(addressText, currentPickedLat, currentPickedLng); 
-        };
+    }
 
-        window.addEventListener('pageshow', function() {
-            const localAddr = localStorage.getItem("userSavedAddress");
-            if (localAddr) displayDynamicAddress(localAddr);
-        });
-    </script>
+
+    if(!fname){
+
+        alert(
+            "Please enter your first name."
+        );
+
+        return;
+
+    }
+
+
+    if(!fullAddr){
+
+        alert(
+            "Please enter your full address."
+        );
+
+        return;
+
+    }
+
+
+    const finalName =
+        fname +
+        (sname ? " " + sname : "");
+
+
+    const finalAddressString =
+        finalType +
+        "|" +
+        finalName +
+        "|" +
+        fullAddr;
+
+
+    saveToFirebaseAndRedirect(
+        finalAddressString
+    );
+
+}
+
+
+/* =========================
+   EXISTING ADDRESS
+========================= */
+
+function selectExistingAddress(
+    addressText
+){
+
+    /*
+       Existing address is NOT locked.
+       User can always choose Change Location
+       or Add New Address.
+    */
+
+    localStorage.setItem(
+        "userSavedAddress",
+        addressText
+    );
+
+
+    goBackToCorrectPage();
+
+}
+
+</script>
+
 </body>
 </html>
